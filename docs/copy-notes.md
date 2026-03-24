@@ -1,10 +1,10 @@
 # Copy Notes
 
 ## Brand
-- Project name: GROUND ZERO
+- Project name: Daniel Oyegade
 
 ## Key Interface Copy
-- GROUND ZERO
+- Daniel Oyegade
 - INFORMATION
 
 ## Entrance Sequence Copy
@@ -12,7 +12,7 @@
 - FOURTH FLOOR
 - FIRST FLOOR
 - GROUND FLOOR
-- GROUND ZERO
+- Daniel Oyegade
 
 ## Tone
 - Minimal

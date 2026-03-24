@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This file tracks the placeholder asset structure defined by the GROUND ZERO technical specification so files can be swapped cleanly during implementation.
+This file tracks the placeholder asset structure defined by the Daniel Oyegade technical specification so files can be swapped cleanly during implementation.
 
 ## Base Image Location
 

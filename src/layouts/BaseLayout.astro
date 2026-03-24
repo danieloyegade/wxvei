@@ -1,6 +1,5 @@
 ---
 import "../styles/global.css";
-import PersistentGroundZero from "../components/PersistentGroundZero.astro";
 import { withBase, withoutBase } from "../lib/site";
 
 interface Props {
@@ -11,15 +10,12 @@ interface Props {
 
 const {
   title,
-  description = "GROUND ZERO is a minimal editorial portfolio built with Astro.",
+  description = "Daniel Oyegade is a minimal editorial portfolio built with Astro.",
   preloadImage,
 } = Astro.props;
 const pathname = withoutBase(Astro.url.pathname);
 const isSelectedWorkPage = pathname === "/" || pathname.startsWith("/selected-work");
 const isInformationPage = pathname.startsWith("/information");
-const shouldAnimatePersistentGroundZero = pathname === "/";
-const shouldFadePersistentGroundZero = pathname === "/selected-work" || pathname === "/selected-work/";
-const showPersistentGroundZero = pathname === "/" || pathname === "/selected-work" || pathname === "/selected-work/";
 
 const canonicalPath = Astro.url.pathname.endsWith("/")
   ? Astro.url.pathname
@@ -35,7 +31,7 @@ const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
     <meta name="description" content={description} />
     <meta name="theme-color" content="#ffffff" />
     <link rel="canonical" href={canonicalUrl} />
-    <link rel="icon" href={withBase("/gz_favicon_new.svg")} type="image/svg+xml" />
+    <link rel="icon" href={withBase("/daniel-oyegade-favicon.svg")} type="image/svg+xml" />
     <link rel="icon" href={withBase("/favicon-32x32.png")} sizes="32x32" type="image/png" />
     <link rel="icon" href={withBase("/favicon-16x16.png")} sizes="16x16" type="image/png" />
     <link rel="apple-touch-icon" href={withBase("/apple-touch-icon.png")} sizes="180x180" />
@@ -50,7 +46,7 @@ const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
             href={withBase("/")}
             class="site-header__link site-header__link--brand"
           >
-            GROUND ZERO
+            Daniel Oyegade
           </a>
           <a
             href={withBase("/selected-work/")}
@@ -72,12 +68,6 @@ const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
           </a>
         </nav>
       </header>
-      {showPersistentGroundZero && (
-        <PersistentGroundZero
-          animateOnReveal={shouldAnimatePersistentGroundZero}
-          fadeOnHover={shouldFadePersistentGroundZero}
-        />
-      )}
       <main class="site-main">
         <slot />
       </main>
@@ -148,6 +138,8 @@ const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
 
   .site-header__link--brand {
     justify-self: start;
+    font-size: clamp(0.82rem, 0.74rem + 0.22vw, 1.14rem);
+    letter-spacing: 0.098em;
   }
 
   .site-header__link--work {
@@ -172,6 +164,11 @@ const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
     .site-header__link {
       font-size: 0.89rem;
       letter-spacing: 0.096em;
+    }
+
+    .site-header__link--brand {
+      font-size: 0.72rem;
+      letter-spacing: 0.07em;
     }
   }
 </style>

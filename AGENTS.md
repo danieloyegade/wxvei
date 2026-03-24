@@ -1,7 +1,7 @@
 # AGENTS.md
 
 ## Project
-- Name: GROUND ZERO
+- Name: Daniel Oyegade
 - Stack: Astro, TypeScript, Tailwind CSS
 
 ## Design Direction

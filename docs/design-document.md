@@ -1,21 +1,21 @@
-# GROUND ZERO Complete Technical Design Document (V1)
+# Daniel Oyegade Complete Technical Design Document (V1)
 
 Portfolio site specification for the creative collective.
 
 Prepared for:
-- GROUND ZERO collective website build
+- Daniel Oyegade collective website build
 
 Purpose:
 - Codex-ready design and implementation specification
 
 ## Project Overview
 
-GROUND ZERO is a high-end portfolio site for a creative collective. Version 1 is a proof of concept designed to function as a calling card: minimal, editorial, image-led, and expensive in feel without becoming over-designed.
+Daniel Oyegade is a high-end portfolio site for a creative collective. Version 1 is a proof of concept designed to function as a calling card: minimal, editorial, image-led, and expensive in feel without becoming over-designed.
 
 The site is not a general agency brochure. It is a controlled visual statement.
 
 Its primary purpose is to:
-- present GROUND ZERO as a serious creative collective
+- present Daniel Oyegade as a serious creative collective
 - foreground image-making, film, and creative direction
 - create immediate visual confidence
 - give the collective a coherent aesthetic identity
@@ -35,12 +35,12 @@ The site should not feel like:
 
 ## Core Concept
 
-GROUND ZERO v1 is built around a short transition from an intro image into a scrolling work index.
+Daniel Oyegade v1 is built around a short transition from an intro image into a scrolling work index.
 
 The logic is:
 1. Visitor lands on a full-screen intro image.
 2. Floor labels descend through the frame.
-3. The sequence holds briefly on GROUND ZERO.
+3. The sequence holds briefly on Daniel Oyegade.
 4. The intro image swipes upward.
 5. The main site is revealed beneath.
 6. The user lands directly in the work page.
@@ -60,7 +60,7 @@ A full-screen intro state that appears when the user first lands on the site.
 Contains:
 - one full-screen intro image
 - descending floor labels
-- final hold on GROUND ZERO
+- final hold on Daniel Oyegade
 - upward swipe reveal into the main page
 
 ### Main Page / Work Index
@@ -68,7 +68,7 @@ Contains:
 The main page of the site.
 
 Contains:
-- fixed site name at top left: GROUND ZERO
+- fixed site name at top left: Daniel Oyegade
 - fixed navigation item at top right: INFORMATION
 - freeform editorial project layout
 - hover reveal of project titles and short descriptors
@@ -102,7 +102,7 @@ If these are not built in the first pass, project cards can temporarily be non-c
 
 ### Brand Name
 
-GROUND ZERO
+Daniel Oyegade
 
 Always styled in uppercase for site identity and top-level navigation.
 
@@ -127,7 +127,7 @@ The tone should not be:
 
 ### Positioning Summary
 
-GROUND ZERO is a creative collective focused on image, moving image, and direction. The visual identity should communicate seriousness and taste through restraint.
+Daniel Oyegade is a creative collective focused on image, moving image, and direction. The visual identity should communicate seriousness and taste through restraint.
 
 ## Visual Direction
 
@@ -202,7 +202,7 @@ The overall effect should feel calm and exact. Typography should support the ima
 Satoshi should be the dominant typeface across the site.
 
 Use Satoshi for:
-- site name: GROUND ZERO
+- site name: Daniel Oyegade
 - navigation
 - intro floor labels
 - descriptors / discipline lines
@@ -242,7 +242,7 @@ Style the site name as:
 - sharp, restrained, and not oversized
 - set in Satoshi
 
-Example style: GROUND ZERO
+Example style: Daniel Oyegade
 
 #### Navigation
 
@@ -300,7 +300,7 @@ Sequence:
 - FOURTH FLOOR
 - FIRST FLOOR
 - GROUND FLOOR
-- GROUND ZERO
+- Daniel Oyegade
 
 These labels should not feel dramatic or cinematic in an obvious way. They should feel calm, spatial, and architectural.
 
@@ -329,7 +329,7 @@ If the serif ever starts to feel too decorative, too romantic, or too self-consc
 
 ### Purpose
 
-The intro sequence is the site’s threshold. It introduces the descent motif and gives GROUND ZERO a distinct conceptual identity.
+The intro sequence is the site’s threshold. It introduces the descent motif and gives Daniel Oyegade a distinct conceptual identity.
 
 ### Layout
 
@@ -347,7 +347,7 @@ The exact sequence is:
 2. FOURTH FLOOR
 3. FIRST FLOOR
 4. GROUND FLOOR
-5. GROUND ZERO
+5. Daniel Oyegade
 
 ### Motion Logic
 
@@ -362,12 +362,12 @@ Each label:
 
 Recommended pacing:
 - each floor label visible for approximately 300–500ms
-- GROUND ZERO holds slightly longer than the others
+- Daniel Oyegade holds slightly longer than the others
 - total intro duration approximately 2.5–4 seconds
 
 ### Intro Image Transition
 
-After the GROUND ZERO hold:
+After the Daniel Oyegade hold:
 - the full-screen intro image swipes upward as a single plane
 - the main page is revealed beneath it
 - motion is clean, direct, and architectural
@@ -408,7 +408,7 @@ The main page should reveal the collective’s work immediately. It is the actua
 ### Main Layout
 
 The page should have:
-- fixed site name at top left: GROUND ZERO
+- fixed site name at top left: Daniel Oyegade
 - fixed right navigation item: INFORMATION
 - large scrolling field of projects beneath
 - generous margins and white space
@@ -419,7 +419,7 @@ The page should have:
 The header should remain fixed or visually stable while the user scrolls.
 
 #### Left side
-- GROUND ZERO
+- Daniel Oyegade
 - upper-left corner
 - small, restrained, consistently positioned
 
@@ -534,7 +534,7 @@ The Information page should be:
 
 ### Suggested Structure
 
-1. GROUND ZERO
+1. Daniel Oyegade
 2. Short collective statement
 3. Team member names and roles
 4. One concise paragraph about approach
@@ -543,7 +543,7 @@ The Information page should be:
 
 ### Example Structure
 
-GROUND ZERO is a creative collective working across image, moving image, direction, and strategy.
+Daniel Oyegade is a creative collective working across image, moving image, direction, and strategy.
 
 - Daniel Oyegade — Photographer, Writer, Director, Creative Director
 - Fea — Creative Strategist
@@ -772,7 +772,7 @@ The repo should be structured clearly so images and content are easy to replace.
 ### Recommended Project Structure
 
 ```text
-ground-zero/
+daniel-oyegade/
   public/
     images/
       intro-image.jpg
@@ -824,15 +824,15 @@ Use the following as the build brief for Codex.
 
 ### Codex Brief
 
-Build a premium, minimal portfolio site for a creative collective called GROUND ZERO.
+Build a premium, minimal portfolio site for a creative collective called Daniel Oyegade.
 
 Use Astro, TypeScript, and Tailwind CSS.
 
-The site must open with a full-screen intro image named `intro-image.jpg`. Over this image, display a descending sequence of floor labels in uppercase: EIGHTH FLOOR, FOURTH FLOOR, FIRST FLOOR, GROUND FLOOR, GROUND ZERO.
+The site must open with a full-screen intro image named `intro-image.jpg`. Over this image, display a descending sequence of floor labels in uppercase: EIGHTH FLOOR, FOURTH FLOOR, FIRST FLOOR, GROUND FLOOR, Daniel Oyegade.
 
-Each label should appear lower on the screen than the previous one. The labels should replace one another, not stack visibly. The motion should be restrained, cool, architectural, and minimal. After holding slightly on GROUND ZERO, the intro image should swipe upward as a single clean plane and reveal the homepage beneath.
+Each label should appear lower on the screen than the previous one. The labels should replace one another, not stack visibly. The motion should be restrained, cool, architectural, and minimal. After holding slightly on Daniel Oyegade, the intro image should swipe upward as a single clean plane and reveal the homepage beneath.
 
-The homepage should be a white or off-white image-led work index. Keep a fixed navigation with GROUND ZERO on the top left and INFORMATION on the top right.
+The homepage should be a white or off-white image-led work index. Keep a fixed navigation with Daniel Oyegade on the top left and INFORMATION on the top right.
 
 The project layout should feel editorial, asymmetrical, and freeform, but still sit on a hidden grid and remain visually disciplined. Each project should use a simple image file such as `project-1.jpg`, `project-2.jpg`, and so on. On hover, a project should reveal text in the bottom left over the image. The hover treatment should be restrained: the image remains mostly stable, the title fades in, a short one-line descriptor appears beneath, and the image may darken slightly by roughly 3–8%. Avoid dramatic scale shifts or flashy overlays.
 
@@ -886,7 +886,7 @@ Avoid overcomplicated mobile adaptations. Simplicity will help preserve the feel
 
 ## Final Design Summary
 
-GROUND ZERO v1 should be:
+Daniel Oyegade v1 should be:
 - minimal
 - severe in a calm way
 - editorial
@@ -899,10 +899,10 @@ It should open with an intro image and descending floor labels:
 - FOURTH FLOOR
 - FIRST FLOOR
 - GROUND FLOOR
-- GROUND ZERO
+- Daniel Oyegade
 
 The intro then swipes away to reveal a scrolling work index with:
-- GROUND ZERO fixed top left
+- Daniel Oyegade fixed top left
 - INFORMATION fixed top right
 - freeform project layout
 - bottom-left hover titles over images

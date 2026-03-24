@@ -23,9 +23,9 @@ const floorLabels = [
       "top: 56.5%; --label-delay: 4600ms; --label-duration: 1110ms; --code-shift-x: 0.008em; --code-shift-y: 0.005em;",
   },
   {
-    code: "GZ",
+    code: "DO",
     style:
-      "bottom: var(--gz-marker-bottom); --label-delay: 5460ms; --label-duration: 2360ms; --code-shift-x: 0.02em; --code-shift-y: 0.004em;",
+      "bottom: var(--brand-marker-bottom); --label-delay: 5460ms; --label-duration: 2360ms; --code-shift-x: 0.02em; --code-shift-y: 0.004em;",
   },
 ];
 const introImageSrc = withBase("/images/intro-image.jpg");
@@ -148,19 +148,19 @@ const introImageSrc = withBase("/images/intro-image.jpg");
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    width: var(--gz-marker-width);
-    height: var(--gz-marker-height);
+    width: var(--brand-marker-width);
+    height: var(--brand-marker-height);
     box-sizing: border-box;
     margin: 0;
     font-family: var(--font-sans);
-    padding-bottom: calc(var(--gz-marker-line-gap) + var(--gz-marker-line-thickness) + 0.02rem);
-    font-size: var(--gz-marker-font-size);
+    padding-bottom: calc(var(--brand-marker-line-gap) + var(--brand-marker-line-thickness) + 0.02rem);
+    font-size: var(--brand-marker-font-size);
     font-weight: 500;
-    letter-spacing: var(--gz-marker-letter-spacing);
+    letter-spacing: var(--brand-marker-letter-spacing);
     line-height: 1;
     text-align: center;
     text-transform: uppercase;
-    color: var(--gz-marker-text-color);
+    color: var(--brand-marker-text-color);
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
     font-kerning: none;
     font-variant-ligatures: none;
@@ -179,13 +179,13 @@ const introImageSrc = withBase("/images/intro-image.jpg");
     position: absolute;
     left: 50%;
     bottom: 0;
-    width: var(--gz-marker-line-width);
-    height: var(--gz-marker-line-thickness);
+    width: var(--brand-marker-line-width);
+    height: var(--brand-marker-line-thickness);
     background: linear-gradient(
       to right,
       rgba(247, 243, 235, 0),
-      var(--gz-marker-line-color) 18%,
-      var(--gz-marker-line-color) 82%,
+      var(--brand-marker-line-color) 18%,
+      var(--brand-marker-line-color) 82%,
       rgba(247, 243, 235, 0)
     );
     transform: translateX(-50%);

@@ -9,39 +9,39 @@ const { animateOnReveal = false, fadeOnHover = false } = Astro.props;
 
 <div
   class:list={[
-    "persistent-ground-zero",
+    "persistent-monogram",
     animateOnReveal && "is-revealing",
     fadeOnHover && "is-hover-fading",
   ]}
   aria-hidden="true"
 >
-  <p class="persistent-ground-zero__marker">
-    <span class="persistent-ground-zero__graphic">
-      <span class="persistent-ground-zero__code">GZ</span>
+  <p class="persistent-monogram__marker">
+    <span class="persistent-monogram__graphic">
+      <span class="persistent-monogram__code">DO</span>
     </span>
   </p>
 </div>
 
 <style>
-  .persistent-ground-zero {
-    --persistent-gz-width: calc(var(--gz-marker-width) * 0.68);
-    --persistent-gz-height: calc(var(--gz-marker-height) * 0.7);
-    --persistent-gz-font-size: calc(var(--gz-marker-font-size) * 0.72);
-    --persistent-gz-letter-spacing: calc(var(--gz-marker-letter-spacing) * 0.84);
-    --persistent-gz-line-width: calc(var(--gz-marker-line-width) * 0.72);
-    --persistent-gz-line-thickness: var(--gz-marker-line-thickness);
-    --persistent-gz-line-gap: calc(var(--gz-marker-line-gap) * 0.82);
+  .persistent-monogram {
+    --persistent-marker-width: calc(var(--brand-marker-width) * 0.68);
+    --persistent-marker-height: calc(var(--brand-marker-height) * 0.7);
+    --persistent-marker-font-size: calc(var(--brand-marker-font-size) * 0.72);
+    --persistent-marker-letter-spacing: calc(var(--brand-marker-letter-spacing) * 0.84);
+    --persistent-marker-line-width: calc(var(--brand-marker-line-width) * 0.72);
+    --persistent-marker-line-thickness: var(--brand-marker-line-thickness);
+    --persistent-marker-line-gap: calc(var(--brand-marker-line-gap) * 0.82);
     position: fixed;
     right: var(--page-inline-offset);
-    bottom: var(--gz-marker-bottom);
+    bottom: var(--brand-marker-bottom);
     z-index: 20;
     pointer-events: none;
     mix-blend-mode: difference;
   }
 
-  .persistent-ground-zero__marker {
-    width: var(--persistent-gz-width);
-    height: var(--persistent-gz-height);
+  .persistent-monogram__marker {
+    width: var(--persistent-marker-width);
+    height: var(--persistent-marker-height);
     box-sizing: border-box;
     margin: 0;
     display: block;
@@ -51,20 +51,20 @@ const { animateOnReveal = false, fadeOnHover = false } = Astro.props;
     user-select: none;
   }
 
-  .persistent-ground-zero__graphic {
+  .persistent-monogram__graphic {
     position: relative;
     display: flex;
     align-items: flex-end;
     justify-content: center;
     width: 100%;
     height: 100%;
-    padding-bottom: calc(var(--persistent-gz-line-gap) + var(--persistent-gz-line-thickness) + 0.02rem);
+    padding-bottom: calc(var(--persistent-marker-line-gap) + var(--persistent-marker-line-thickness) + 0.02rem);
     background: transparent;
     color: #ffffff;
     font-family: var(--font-sans);
-    font-size: var(--persistent-gz-font-size);
+    font-size: var(--persistent-marker-font-size);
     font-weight: 500;
-    letter-spacing: var(--persistent-gz-letter-spacing);
+    letter-spacing: var(--persistent-marker-letter-spacing);
     line-height: 1;
     text-align: center;
     text-transform: uppercase;
@@ -76,13 +76,13 @@ const { animateOnReveal = false, fadeOnHover = false } = Astro.props;
     transform: translateZ(0);
   }
 
-  .persistent-ground-zero__graphic::before {
+  .persistent-monogram__graphic::before {
     content: "";
     position: absolute;
     left: 50%;
     bottom: 0;
-    width: var(--persistent-gz-line-width);
-    height: var(--persistent-gz-line-thickness);
+    width: var(--persistent-marker-line-width);
+    height: var(--persistent-marker-line-thickness);
     background: linear-gradient(
       to right,
       rgba(255, 255, 255, 0),
@@ -95,7 +95,7 @@ const { animateOnReveal = false, fadeOnHover = false } = Astro.props;
     pointer-events: none;
   }
 
-  .persistent-ground-zero__code {
+  .persistent-monogram__code {
     position: relative;
     z-index: 1;
     display: inline-flex;
@@ -106,16 +106,16 @@ const { animateOnReveal = false, fadeOnHover = false } = Astro.props;
     transform: translate3d(0.02em, 0.004em, 0);
   }
 
-  .persistent-ground-zero.is-revealing .persistent-ground-zero__marker {
-    animation: persistent-gz-settle 760ms linear
+  .persistent-monogram.is-revealing .persistent-monogram__marker {
+    animation: persistent-marker-settle 760ms linear
       calc(var(--intro-image-settle-delay) + var(--intro-pre-swipe-duration)) forwards;
   }
 
-  .persistent-ground-zero.is-hover-fading .persistent-ground-zero__marker:hover {
+  .persistent-monogram.is-hover-fading .persistent-monogram__marker:hover {
     opacity: 0;
   }
 
-  @keyframes persistent-gz-settle {
+  @keyframes persistent-marker-settle {
     0% {
       opacity: 0.92;
     }

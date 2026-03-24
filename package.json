@@ -1,5 +1,5 @@
 {
-  "name": "ground-zero",
+  "name": "daniel-oyegade",
   "version": "0.1.0",
   "type": "module",
   "private": true,
@@ -9,7 +9,7 @@
     "build": "astro build",
     "preview": "astro preview"
   },
-  "description": "GROUND ZERO site built with Astro, TypeScript, and Tailwind CSS.",
+  "description": "Daniel Oyegade site built with Astro, TypeScript, and Tailwind CSS.",
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.1",
     "astro": "^5.18.1",

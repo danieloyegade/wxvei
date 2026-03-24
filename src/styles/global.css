@@ -46,16 +46,16 @@
     var(--page-inline-padding),
     calc((100vw - var(--page-max-width)) / 2 + var(--page-inline-padding))
   );
-  --gz-marker-width: clamp(5.8rem, 8.9vw, 7.35rem);
-  --gz-marker-height: clamp(2.8rem, 4.6vw, 3.72rem);
-  --gz-marker-font-size: clamp(1.62rem, 3.05vw, 2.38rem);
-  --gz-marker-letter-spacing: 0.072em;
-  --gz-marker-bottom: 4.35%;
-  --gz-marker-text-color: rgba(247, 243, 235, 0.97);
-  --gz-marker-line-width: clamp(3.08rem, 4.9vw, 4.18rem);
-  --gz-marker-line-thickness: 1.05px;
-  --gz-marker-line-gap: clamp(0.42rem, 0.8vw, 0.56rem);
-  --gz-marker-line-color: rgba(247, 243, 235, 0.76);
+  --brand-marker-width: clamp(5.8rem, 8.9vw, 7.35rem);
+  --brand-marker-height: clamp(2.8rem, 4.6vw, 3.72rem);
+  --brand-marker-font-size: clamp(1.62rem, 3.05vw, 2.38rem);
+  --brand-marker-letter-spacing: 0.072em;
+  --brand-marker-bottom: 4.35%;
+  --brand-marker-text-color: rgba(247, 243, 235, 0.97);
+  --brand-marker-line-width: clamp(3.08rem, 4.9vw, 4.18rem);
+  --brand-marker-line-thickness: 1.05px;
+  --brand-marker-line-gap: clamp(0.42rem, 0.8vw, 0.56rem);
+  --brand-marker-line-color: rgba(247, 243, 235, 0.76);
   --intro-image-settle-delay: 220ms;
   --intro-pre-swipe-duration: 8120ms;
   --intro-swipe-duration: 800ms;
@@ -98,13 +98,13 @@ img {
 
 @media (max-width: 40rem) {
   :root {
-    --gz-marker-width: clamp(4.8rem, 20vw, 5.55rem);
-    --gz-marker-height: clamp(2.3rem, 10vw, 2.92rem);
-    --gz-marker-font-size: clamp(1.32rem, 5.9vw, 1.82rem);
-    --gz-marker-letter-spacing: 0.068em;
-    --gz-marker-line-width: clamp(2.56rem, 10vw, 3.18rem);
-    --gz-marker-line-thickness: 1px;
-    --gz-marker-line-gap: clamp(0.3rem, 1.2vw, 0.42rem);
+    --brand-marker-width: clamp(4.8rem, 20vw, 5.55rem);
+    --brand-marker-height: clamp(2.3rem, 10vw, 2.92rem);
+    --brand-marker-font-size: clamp(1.32rem, 5.9vw, 1.82rem);
+    --brand-marker-letter-spacing: 0.068em;
+    --brand-marker-line-width: clamp(2.56rem, 10vw, 3.18rem);
+    --brand-marker-line-thickness: 1px;
+    --brand-marker-line-gap: clamp(0.3rem, 1.2vw, 0.42rem);
   }
 }
 
