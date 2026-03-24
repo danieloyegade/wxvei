@@ -1,0 +1,329 @@
+---
+import { withBase } from "../lib/site";
+
+const floorLabels = [
+  {
+    code: "8TH",
+    style:
+      "top: 10%; --label-delay: 2020ms; --label-duration: 1140ms; --code-shift-x: 0.016em; --code-shift-y: 0.006em;",
+  },
+  {
+    code: "4TH",
+    style:
+      "top: 25.5%; --label-delay: 2880ms; --label-duration: 1100ms; --code-shift-x: 0.014em; --code-shift-y: 0.006em;",
+  },
+  {
+    code: "1ST",
+    style:
+      "top: 41%; --label-delay: 3740ms; --label-duration: 1080ms; --code-shift-x: 0.042em; --code-shift-y: 0.01em;",
+  },
+  {
+    code: "G",
+    style:
+      "top: 56.5%; --label-delay: 4600ms; --label-duration: 1110ms; --code-shift-x: 0.008em; --code-shift-y: 0.005em;",
+  },
+  {
+    code: "GZ",
+    style:
+      "bottom: var(--gz-marker-bottom); --label-delay: 5460ms; --label-duration: 2360ms; --code-shift-x: 0.02em; --code-shift-y: 0.004em;",
+  },
+];
+const introImageSrc = withBase("/images/intro-image.jpg");
+---
+
+<div
+  class="intro-overlay"
+  data-intro-overlay
+  data-ready="false"
+  aria-hidden="true"
+>
+  <div class="intro-overlay__image-wrap">
+    <img
+      src={introImageSrc}
+      alt=""
+      class="intro-overlay__image"
+      loading="eager"
+      decoding="async"
+      fetchpriority="high"
+    />
+    <div class="intro-overlay__scrim"></div>
+  </div>
+
+  <div class="intro-overlay__labels">
+    {
+      floorLabels.map((label, index) => (
+        <p
+          class={`intro-overlay__label ${index === floorLabels.length - 1 ? "is-final" : ""}`}
+          style={label.style}
+        >
+          <span class="intro-overlay__label-code">{label.code}</span>
+        </p>
+      ))
+    }
+  </div>
+</div>
+
+<script is:inline>
+  const overlay = document.querySelector("[data-intro-overlay]");
+  const image = overlay?.querySelector(".intro-overlay__image");
+
+  const markReady = () => {
+    if (!overlay || overlay.getAttribute("data-ready") === "true") return;
+
+    requestAnimationFrame(() => {
+      overlay.setAttribute("data-ready", "true");
+    });
+  };
+
+  const waitForDecode = () => {
+    if (!image) {
+      markReady();
+      return;
+    }
+
+    if (typeof image.decode === "function") {
+      image.decode().catch(() => {}).finally(markReady);
+      return;
+    }
+
+    markReady();
+  };
+
+  if (image?.complete && image.naturalWidth > 0) {
+    waitForDecode();
+  } else if (image) {
+    image.addEventListener("load", waitForDecode, { once: true });
+    image.addEventListener("error", markReady, { once: true });
+  } else {
+    markReady();
+  }
+</script>
+
+<style>
+  .intro-overlay {
+    --image-settle-delay: var(--intro-image-settle-delay);
+    --pre-swipe-duration: var(--intro-pre-swipe-duration);
+    --swipe-duration: var(--intro-swipe-duration);
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    overflow: hidden;
+    background: #050505;
+    will-change: transform, visibility;
+  }
+
+  .intro-overlay__image-wrap,
+  .intro-overlay__image,
+  .intro-overlay__scrim,
+  .intro-overlay__labels {
+    position: absolute;
+    inset: 0;
+  }
+
+  .intro-overlay__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 260ms ease-out;
+  }
+
+  .intro-overlay__scrim {
+    background:
+      linear-gradient(to bottom, rgba(10, 10, 10, 0.3), rgba(10, 10, 10, 0.14) 42%, rgba(10, 10, 10, 0.22)),
+      linear-gradient(to left, rgba(10, 10, 10, 0.26), rgba(10, 10, 10, 0.1) 18%, rgba(10, 10, 10, 0) 34%),
+      linear-gradient(to right, rgba(10, 10, 10, 0.08), rgba(10, 10, 10, 0));
+    opacity: 0;
+    transition: opacity 260ms ease-out;
+  }
+
+  .intro-overlay__labels {
+    --rail-inline-end: var(--page-inline-offset);
+    padding: 0;
+  }
+
+  .intro-overlay__label {
+    position: absolute;
+    right: var(--rail-inline-end);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: var(--gz-marker-width);
+    height: var(--gz-marker-height);
+    box-sizing: border-box;
+    margin: 0;
+    font-family: var(--font-sans);
+    padding-bottom: calc(var(--gz-marker-line-gap) + var(--gz-marker-line-thickness) + 0.02rem);
+    font-size: var(--gz-marker-font-size);
+    font-weight: 500;
+    letter-spacing: var(--gz-marker-letter-spacing);
+    line-height: 1;
+    text-align: center;
+    text-transform: uppercase;
+    color: var(--gz-marker-text-color);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
+    font-kerning: none;
+    font-variant-ligatures: none;
+    font-variant-numeric: tabular-nums lining-nums;
+    text-rendering: geometricPrecision;
+    backface-visibility: hidden;
+    transform-origin: 100% 100%;
+    will-change: opacity, transform, filter;
+    opacity: 0;
+    filter: blur(0.046rem);
+    transform: translate3d(0, -1.18rem, 0);
+  }
+
+  .intro-overlay__label::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: var(--gz-marker-line-width);
+    height: var(--gz-marker-line-thickness);
+    background: linear-gradient(
+      to right,
+      rgba(247, 243, 235, 0),
+      var(--gz-marker-line-color) 18%,
+      var(--gz-marker-line-color) 82%,
+      rgba(247, 243, 235, 0)
+    );
+    transform: translateX(-50%);
+    opacity: 0.94;
+    pointer-events: none;
+  }
+
+  .intro-overlay__label-code {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    transform: translate3d(var(--code-shift-x, 0em), var(--code-shift-y, 0em), 0);
+  }
+
+  .intro-overlay[data-ready="true"] .intro-overlay__image,
+  .intro-overlay[data-ready="true"] .intro-overlay__scrim {
+    opacity: 1;
+  }
+
+  .intro-overlay[data-ready="true"] {
+    animation: intro-plane-swipe var(--swipe-duration) cubic-bezier(0.52, 0, 0.16, 1)
+      calc(var(--image-settle-delay) + var(--pre-swipe-duration)) forwards;
+  }
+
+  .intro-overlay[data-ready="true"] .intro-overlay__label {
+    animation: intro-stop-label var(--label-duration) linear
+      calc(var(--image-settle-delay) + var(--label-delay)) forwards;
+  }
+
+  .intro-overlay[data-ready="true"] .intro-overlay__label.is-final {
+    animation: intro-final-label var(--label-duration) linear
+      calc(var(--image-settle-delay) + var(--label-delay)) forwards;
+  }
+
+  @keyframes intro-stop-label {
+    0% {
+      opacity: 0;
+      filter: blur(0.046rem);
+      transform: translate3d(0, -1.18rem, 0);
+    }
+
+    16% {
+      opacity: 0.22;
+      filter: blur(0.034rem);
+      transform: translate3d(0, -0.64rem, 0);
+    }
+
+    30% {
+      opacity: 0.74;
+      filter: blur(0.012rem);
+      transform: translate3d(0, -0.12rem, 0);
+    }
+
+    40%,
+    64% {
+      opacity: 0.97;
+      filter: blur(0);
+      transform: translate3d(0, 0, 0);
+    }
+
+    76% {
+      opacity: 0.58;
+      filter: blur(0.008rem);
+      transform: translate3d(0, 0.01rem, 0);
+    }
+
+    100% {
+      opacity: 0;
+      filter: blur(0.026rem);
+      transform: translate3d(0, 0.34rem, 0);
+    }
+  }
+
+  @keyframes intro-final-label {
+    0% {
+      opacity: 0;
+      filter: blur(0.046rem);
+      transform: translate3d(0, -1.1rem, 0);
+    }
+
+    16% {
+      opacity: 0.22;
+      filter: blur(0.032rem);
+      transform: translate3d(0, -0.58rem, 0);
+    }
+
+    30% {
+      opacity: 0.78;
+      filter: blur(0.012rem);
+      transform: translate3d(0, -0.1rem, 0);
+    }
+
+    40%,
+    88% {
+      opacity: 0.97;
+      filter: blur(0);
+      transform: translate3d(0, 0, 0);
+    }
+
+    100% {
+      opacity: 0.97;
+      filter: blur(0);
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes intro-plane-swipe {
+    0% {
+      transform: translate3d(0, 0, 0);
+      visibility: visible;
+    }
+
+    99% {
+      transform: translate3d(0, -100vh, 0);
+      visibility: visible;
+    }
+
+    100% {
+      transform: translate3d(0, -100vh, 0);
+      visibility: hidden;
+      pointer-events: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .intro-overlay {
+      animation: none;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .intro-overlay__label {
+      animation: none;
+      opacity: 0;
+    }
+  }
+</style>

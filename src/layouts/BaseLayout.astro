@@ -1,0 +1,177 @@
+---
+import "../styles/global.css";
+import PersistentGroundZero from "../components/PersistentGroundZero.astro";
+import { withBase, withoutBase } from "../lib/site";
+
+interface Props {
+  title: string;
+  description?: string;
+  preloadImage?: string;
+}
+
+const {
+  title,
+  description = "GROUND ZERO is a minimal editorial portfolio built with Astro.",
+  preloadImage,
+} = Astro.props;
+const pathname = withoutBase(Astro.url.pathname);
+const isSelectedWorkPage = pathname === "/" || pathname.startsWith("/selected-work");
+const isInformationPage = pathname.startsWith("/information");
+const shouldAnimatePersistentGroundZero = pathname === "/";
+const shouldFadePersistentGroundZero = pathname === "/selected-work" || pathname === "/selected-work/";
+const showPersistentGroundZero = pathname === "/" || pathname === "/selected-work" || pathname === "/selected-work/";
+
+const canonicalPath = Astro.url.pathname.endsWith("/")
+  ? Astro.url.pathname
+  : `${Astro.url.pathname}/`;
+const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" href={withBase("/gz_favicon_new.svg")} type="image/svg+xml" />
+    <link rel="icon" href={withBase("/favicon-32x32.png")} sizes="32x32" type="image/png" />
+    <link rel="icon" href={withBase("/favicon-16x16.png")} sizes="16x16" type="image/png" />
+    <link rel="apple-touch-icon" href={withBase("/apple-touch-icon.png")} sizes="180x180" />
+    {preloadImage && <link rel="preload" as="image" href={withBase(preloadImage)} />}
+    <title>{title}</title>
+  </head>
+  <body class="bg-[var(--page-background)] text-[var(--page-foreground)] antialiased">
+    <div class="min-h-screen">
+      <header class="site-header">
+        <nav class="site-header__nav" aria-label="Primary">
+          <a
+            href={withBase("/")}
+            class="site-header__link site-header__link--brand"
+          >
+            GROUND ZERO
+          </a>
+          <a
+            href={withBase("/selected-work/")}
+            class:list={[
+              "site-header__link site-header__link--work",
+              isSelectedWorkPage && "is-active",
+            ]}
+          >
+            Selected Works
+          </a>
+          <a
+            href={withBase("/information/")}
+            class:list={[
+              "site-header__link site-header__link--information",
+              isInformationPage && "is-active",
+            ]}
+          >
+            Information
+          </a>
+        </nav>
+      </header>
+      {showPersistentGroundZero && (
+        <PersistentGroundZero
+          animateOnReveal={shouldAnimatePersistentGroundZero}
+          fadeOnHover={shouldFadePersistentGroundZero}
+        />
+      )}
+      <main class="site-main">
+        <slot />
+      </main>
+    </div>
+  </body>
+</html>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 30;
+    pointer-events: none;
+    mix-blend-mode: difference;
+  }
+
+  .site-header__nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: baseline;
+    gap: clamp(0.65rem, 1.6vw, 1.6rem);
+    max-width: var(--page-max-width);
+    margin: 0 auto;
+    min-height: var(--header-clearance);
+    padding: 1.42rem var(--page-inline-padding) 0.76rem;
+    pointer-events: auto;
+  }
+
+  .site-header__link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    color: #ffffff;
+    font-family: var(--font-sans);
+    font-size: clamp(0.96rem, 0.82rem + 0.28vw, 1.32rem);
+    font-weight: 700;
+    font-synthesis: weight;
+    font-stretch: 108%;
+    letter-spacing: 0.114em;
+    line-height: 0.92;
+    text-transform: uppercase;
+    white-space: nowrap;
+    font-kerning: none;
+    font-variant-ligatures: none;
+    text-rendering: geometricPrecision;
+    text-decoration-color: currentColor;
+    text-decoration-line: none;
+    text-decoration-skip-ink: none;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.28em;
+    transition: opacity 160ms ease-out, text-decoration-color 160ms ease-out;
+    opacity: 0.74;
+  }
+
+  .site-header__link:hover {
+    opacity: 0.9;
+  }
+
+  .site-header__link--brand,
+  .site-header__link.is-active {
+    opacity: 0.98;
+  }
+
+  .site-header__link.is-active {
+    text-decoration-line: underline;
+  }
+
+  .site-header__link--brand {
+    justify-self: start;
+  }
+
+  .site-header__link--work {
+    justify-self: center;
+  }
+
+  .site-header__link--information {
+    justify-self: end;
+  }
+
+  .site-main {
+    padding-top: var(--header-clearance);
+  }
+
+  @media (max-width: 40rem) {
+    .site-header__nav {
+      gap: 0.5rem;
+      padding-top: 1.18rem;
+      padding-bottom: 0.74rem;
+    }
+
+    .site-header__link {
+      font-size: 0.89rem;
+      letter-spacing: 0.096em;
+    }
+  }
+</style>

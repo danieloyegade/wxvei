@@ -1,0 +1,15 @@
+---
+import { getCollection } from "astro:content";
+import ProjectGrid from "../../components/ProjectGrid.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { mapProjectForGrid, sortProjectsByOrder } from "../../lib/projects";
+
+const projects = sortProjectsByOrder(await getCollection("projects"));
+---
+
+<BaseLayout
+  title="Selected Works | GROUND ZERO"
+  description="Selected work from the GROUND ZERO portfolio."
+>
+  <ProjectGrid projects={projects.map(mapProjectForGrid)} />
+</BaseLayout>

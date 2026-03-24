@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title>GROUND ZERO favicon</title>
+  <rect width="64" height="64" fill="#ffffff" />
+  <text
+    x="32"
+    y="34"
+    fill="#000000"
+    font-family="Arial, Helvetica Neue, sans-serif"
+    font-size="52"
+    font-weight="900"
+    letter-spacing="-3.8"
+    text-anchor="middle"
+    dominant-baseline="central"
+    lengthAdjust="spacingAndGlyphs"
+    textLength="54"
+  >
+    GZ
+  </text>
+</svg>

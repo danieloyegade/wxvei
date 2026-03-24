@@ -1,0 +1,436 @@
+---
+import { withBase } from "../lib/site";
+
+interface SequenceLink {
+  title: string;
+  href: string;
+}
+
+interface Props {
+  title: string;
+  image: string;
+  infoLines?: string[];
+  detailImages?: string[];
+  showBody?: boolean;
+  previousProject: SequenceLink;
+  nextProject: SequenceLink;
+}
+
+const {
+  title,
+  image,
+  infoLines = [],
+  detailImages = [],
+  showBody = false,
+  previousProject,
+  nextProject,
+} = Astro.props;
+
+const hasGallery = detailImages.length > 0;
+const hasInfoLines = infoLines.length > 0;
+const hasSupplementalContent = showBody || hasGallery;
+---
+
+<article class="project-detail">
+  <div class="project-detail__frame">
+    <a class="project-detail__back-link" href={withBase("/selected-work/")}>
+      Selected Works
+    </a>
+
+    <header class="project-detail__header">
+      <div class="project-detail__copy">
+        <p class="project-detail__eyebrow">Project</p>
+        <h1 class="project-detail__title">{title}</h1>
+      </div>
+      {hasInfoLines && (
+        <aside class="project-detail__info" aria-label="Project information">
+          <p class="project-detail__info-label">Information</p>
+          <ul class="project-detail__info-list">
+            {infoLines.map((line) => (
+              <li class="project-detail__info-line">{line}</li>
+            ))}
+          </ul>
+        </aside>
+      )}
+    </header>
+
+    <figure class="project-detail__hero">
+      <img
+        src={withBase(image)}
+        alt={title}
+        class="project-detail__hero-image"
+        loading="eager"
+        decoding="async"
+      />
+    </figure>
+
+    {hasSupplementalContent && (
+      <section class="project-detail__supplemental">
+        {showBody && (
+          <div class="project-detail__body">
+            <slot />
+          </div>
+        )}
+
+        {hasGallery && (
+          <div class="project-detail__gallery" aria-label={`${title} additional images`}>
+            {detailImages.map((detailImage, index) => (
+              <figure class="project-detail__detail-figure">
+                <img
+                  src={withBase(detailImage)}
+                  alt={`${title} detail ${index + 1}`}
+                  class="project-detail__detail-image"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </figure>
+            ))}
+          </div>
+        )}
+      </section>
+    )}
+
+    <nav
+      class="project-detail__sequence-nav"
+      aria-label="Project sequence"
+      data-project-sequence-nav
+      data-project-previous={previousProject.href}
+      data-project-next={nextProject.href}
+    >
+      <a class="project-detail__sequence-link project-detail__sequence-link--previous" href={previousProject.href}>
+        <span class="project-detail__sequence-label">&lt; Previous Project</span>
+        <span class="project-detail__sequence-title">{previousProject.title}</span>
+      </a>
+      <a class="project-detail__sequence-link project-detail__sequence-link--next" href={nextProject.href}>
+        <span class="project-detail__sequence-label">Next Project &gt;</span>
+        <span class="project-detail__sequence-title">{nextProject.title}</span>
+      </a>
+    </nav>
+  </div>
+</article>
+
+<script is:inline>
+  const projectSequenceNav = document.querySelector("[data-project-sequence-nav]");
+
+  if (projectSequenceNav instanceof HTMLElement) {
+    const previousHref = projectSequenceNav.dataset.projectPrevious;
+    const nextHref = projectSequenceNav.dataset.projectNext;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartTime = 0;
+
+    const navigateTo = (href) => {
+      if (!href) return;
+      window.location.assign(href);
+    };
+
+    const isEditableTarget = (target) =>
+      target instanceof Element &&
+      !!target.closest('input, textarea, select, [contenteditable="true"], [contenteditable=""], [role="textbox"]');
+
+    const handleKeydown = (event) => {
+      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+      if (isEditableTarget(event.target)) return;
+
+      if (event.key === "ArrowLeft") {
+        navigateTo(previousHref);
+      }
+
+      if (event.key === "ArrowRight") {
+        navigateTo(nextHref);
+      }
+    };
+
+    const handleTouchStart = (event) => {
+      if (event.touches.length !== 1) return;
+
+      const touch = event.touches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+      touchStartTime = Date.now();
+    };
+
+    const handleTouchEnd = (event) => {
+      if (!touchStartTime || event.changedTouches.length !== 1) return;
+
+      const touch = event.changedTouches[0];
+      const deltaX = touch.clientX - touchStartX;
+      const deltaY = touch.clientY - touchStartY;
+      const elapsed = Date.now() - touchStartTime;
+      const absoluteX = Math.abs(deltaX);
+      const absoluteY = Math.abs(deltaY);
+
+      touchStartTime = 0;
+
+      if (absoluteX < 72 || absoluteX < absoluteY * 1.35 || elapsed > 900) return;
+
+      if (deltaX < 0) {
+        navigateTo(nextHref);
+      } else {
+        navigateTo(previousHref);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeydown);
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+  }
+</script>
+
+<style>
+  .project-detail {
+    padding: 1.75rem 1.5rem 6rem;
+  }
+
+  .project-detail__frame {
+    max-width: min(92rem, calc(100vw - (var(--page-inline-padding) * 2)));
+    margin: 0 auto;
+  }
+
+  .project-detail__back-link {
+    display: inline-flex;
+    align-items: center;
+    color: rgba(16, 15, 13, 0.64);
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 160ms ease-out, opacity 160ms ease-out;
+  }
+
+  .project-detail__back-link:hover,
+  .project-detail__back-link:focus-visible {
+    color: rgba(16, 15, 13, 0.92);
+    opacity: 1;
+  }
+
+  .project-detail__back-link:focus-visible {
+    outline: none;
+  }
+
+  .project-detail__header {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: 1.9rem;
+    margin-bottom: 1.85rem;
+  }
+
+  .project-detail__copy {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .project-detail__eyebrow {
+    margin: 0;
+    color: rgba(16, 15, 13, 0.48);
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .project-detail__title {
+    margin: 0;
+    max-width: 14ch;
+    color: rgba(16, 15, 13, 0.98);
+    font-family: var(--font-serif);
+    font-size: clamp(2.1rem, 4.2vw, 4.5rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 0.92;
+    text-wrap: balance;
+  }
+
+  .project-detail__info {
+    display: grid;
+    gap: 0.78rem;
+    width: min(100%, 18.25rem);
+    min-height: 5.6rem;
+    justify-self: start;
+    align-content: start;
+  }
+
+  .project-detail__info-label {
+    margin: 0;
+    color: rgba(16, 15, 13, 0.46);
+    font-family: var(--font-sans);
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .project-detail__info-list {
+    display: grid;
+    gap: 0.44rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .project-detail__info-line {
+    margin: 0;
+    color: rgba(16, 15, 13, 0.76);
+    font-family: var(--font-sans);
+    font-size: clamp(0.88rem, 0.8rem + 0.18vw, 1rem);
+    font-weight: 400;
+    letter-spacing: 0.008em;
+    line-height: 1.38;
+    text-wrap: balance;
+  }
+
+  .project-detail__hero {
+    margin: 0;
+    overflow: clip;
+    background: rgba(20, 18, 16, 0.04);
+  }
+
+  .project-detail__hero-image,
+  .project-detail__detail-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  .project-detail__supplemental {
+    display: grid;
+    gap: 3rem;
+    margin-top: 2.5rem;
+  }
+
+  .project-detail__body {
+    max-width: 40rem;
+    color: rgba(16, 15, 13, 0.78);
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .project-detail__body :global(p:first-child) {
+    margin-top: 0;
+  }
+
+  .project-detail__body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .project-detail__gallery {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .project-detail__detail-figure {
+    margin: 0;
+    overflow: clip;
+    background: rgba(20, 18, 16, 0.04);
+  }
+
+  .project-detail__sequence-nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+    align-items: end;
+    margin-top: clamp(4rem, 8vw, 7rem);
+    padding-bottom: 1rem;
+  }
+
+  .project-detail__sequence-link {
+    display: grid;
+    gap: 0.36rem;
+    color: rgba(16, 15, 13, 0.82);
+    text-decoration: none;
+    transition: opacity 160ms ease-out, transform 160ms ease-out;
+  }
+
+  .project-detail__sequence-link:hover,
+  .project-detail__sequence-link:focus-visible {
+    opacity: 1;
+    transform: translateY(-0.04rem);
+  }
+
+  .project-detail__sequence-link:focus-visible {
+    outline: none;
+  }
+
+  .project-detail__sequence-link--next {
+    justify-items: end;
+    text-align: right;
+  }
+
+  .project-detail__sequence-label {
+    color: rgba(16, 15, 13, 0.46);
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .project-detail__sequence-title {
+    max-width: 14ch;
+    font-family: var(--font-serif);
+    font-size: clamp(1.1rem, 1rem + 0.38vw, 1.45rem);
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    line-height: 0.96;
+    text-wrap: balance;
+  }
+
+  @media (min-width: 48rem) {
+    .project-detail {
+      padding: 2.25rem 2.5rem 8rem;
+    }
+
+    .project-detail__header {
+      grid-template-columns: minmax(0, 1.35fr) minmax(15.5rem, 18.25rem);
+      align-items: start;
+      gap: 2.25rem;
+      margin-top: 2.35rem;
+      margin-bottom: 2.4rem;
+    }
+
+    .project-detail__info {
+      justify-self: end;
+      padding-top: 0.16rem;
+    }
+
+    .project-detail__supplemental {
+      gap: 3.5rem;
+      margin-top: 3rem;
+    }
+
+    .project-detail__gallery {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2rem;
+    }
+  }
+
+  @media (min-width: 72rem) {
+    .project-detail {
+      padding-inline: 3.5rem;
+    }
+
+    .project-detail__supplemental {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 4rem;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .project-detail__sequence-nav {
+      gap: 2rem;
+    }
+
+    .project-detail__sequence-title {
+      max-width: 10ch;
+    }
+  }
+</style>

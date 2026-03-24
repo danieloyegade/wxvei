@@ -1,0 +1,18 @@
+---
+import { getCollection } from "astro:content";
+import IntroOverlay from "../components/IntroOverlay.astro";
+import ProjectGrid from "../components/ProjectGrid.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { mapProjectForGrid, sortProjectsByOrder } from "../lib/projects";
+
+const projects = sortProjectsByOrder(await getCollection("projects"));
+---
+
+<BaseLayout
+  title="GROUND ZERO"
+  description="A minimal editorial portfolio with a restrained, image-led layout."
+  preloadImage="/images/intro-image.jpg"
+>
+  <IntroOverlay />
+  <ProjectGrid projects={projects.map(mapProjectForGrid)} />
+</BaseLayout>

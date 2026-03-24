@@ -1,0 +1,48 @@
+---
+import { getCollection } from "astro:content";
+import ProjectDetailPage from "../../components/ProjectDetailPage.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import type { ProjectEntry, ProjectSequenceLink } from "../../lib/projects";
+import { getProjectInfoLines, getProjectSequence, sortProjectsByOrder } from "../../lib/projects";
+
+export async function getStaticPaths() {
+  const projects = sortProjectsByOrder(await getCollection("projects"));
+
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: {
+      project,
+      ...getProjectSequence(projects, project.slug),
+    },
+  }));
+}
+
+interface Props {
+  project: ProjectEntry;
+  previousProject: ProjectSequenceLink;
+  nextProject: ProjectSequenceLink;
+}
+
+const { project, previousProject, nextProject } = Astro.props;
+const { Content } = await project.render();
+const hasProjectBody = project.data.status !== "placeholder" && project.body.trim().length > 0;
+const infoLines = getProjectInfoLines(project);
+---
+
+<BaseLayout
+  title={`${project.data.title} | GROUND ZERO`}
+  description={project.data.descriptor}
+  preloadImage={project.data.image}
+>
+  <ProjectDetailPage
+    title={project.data.title}
+    image={project.data.image}
+    infoLines={infoLines}
+    detailImages={project.data.detailImages}
+    showBody={hasProjectBody}
+    previousProject={previousProject}
+    nextProject={nextProject}
+  >
+    {hasProjectBody && <Content />}
+  </ProjectDetailPage>
+</BaseLayout>

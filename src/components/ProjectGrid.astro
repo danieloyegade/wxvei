@@ -1,0 +1,167 @@
+---
+import ProjectCard from "./ProjectCard.astro";
+import type {
+  ProjectCropFocus,
+  ProjectLayoutPattern,
+  ProjectOrientation,
+  ProjectVisualWeight,
+} from "../lib/projectLayout";
+import { projectFrameClasses, projectLayoutClasses } from "../lib/projectLayout";
+
+interface ProjectEntry {
+  slug: string;
+  title: string;
+  image: string;
+  descriptor: string;
+  order: number;
+  layoutPattern?: ProjectLayoutPattern;
+  visualWeight?: ProjectVisualWeight;
+  orientation?: ProjectOrientation;
+  cropFocus?: ProjectCropFocus;
+  detailImages?: string[];
+  display?: {
+    orientation?: ProjectOrientation;
+    cropFocus?: ProjectCropFocus;
+    size?: "small" | "medium" | "large" | "hero";
+  };
+}
+
+interface Props {
+  projects: ProjectEntry[];
+}
+
+const { projects } = Astro.props;
+
+const fallbackPatterns: ProjectLayoutPattern[] = [
+  "lead-left",
+  "support-right",
+  "wide-band",
+  "support-left",
+  "lead-right",
+  "paired-left",
+  "paired-right",
+  "hero-left",
+  "tail-right",
+  "offset-right",
+];
+
+const sizeToWeightMap = {
+  small: "support",
+  medium: "standard",
+  large: "dominant",
+  hero: "hero",
+} as const;
+
+const normalizedProjects = projects.map((project, index) => {
+  const orientation = project.orientation ?? project.display?.orientation ?? "landscape";
+  const cropFocus = project.cropFocus ?? project.display?.cropFocus ?? "center";
+  const visualWeight =
+    project.visualWeight ??
+    (project.display?.size ? sizeToWeightMap[project.display.size] : undefined) ??
+    "standard";
+  const layoutPattern = project.layoutPattern ?? fallbackPatterns[index % fallbackPatterns.length];
+
+  return {
+    ...project,
+    orientation,
+    cropFocus,
+    visualWeight,
+    layoutPattern,
+  };
+});
+---
+
+<section id="selected-work" class="selected-work">
+  <div class="selected-work__frame">
+    <div class="selected-work__grid">
+      {
+        normalizedProjects.map((project) => (
+          <ProjectCard
+            slug={project.slug}
+            title={project.title}
+            image={project.image}
+            descriptor={project.descriptor}
+            visualWeight={project.visualWeight}
+            layoutClass={projectLayoutClasses[project.layoutPattern]}
+            frameClass={projectFrameClasses[project.orientation]}
+            cropFocus={project.cropFocus}
+          />
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  const revealTargets = Array.from(document.querySelectorAll("[data-project-reveal]"));
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    revealTargets.forEach((element) => {
+      element.setAttribute("data-reveal-state", "visible");
+    });
+  } else if ("IntersectionObserver" in window) {
+    const revealObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+
+          entry.target.setAttribute("data-reveal-state", "visible");
+          observer.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: 0.18,
+        rootMargin: "0px 0px -8% 0px",
+      }
+    );
+
+    revealTargets.forEach((element) => {
+      if (element.getAttribute("data-reveal-state") === "visible") return;
+
+      revealObserver.observe(element);
+    });
+  } else {
+    revealTargets.forEach((element) => {
+      element.setAttribute("data-reveal-state", "visible");
+    });
+  }
+</script>
+
+<style>
+  .selected-work {
+    padding: 1.5rem 1.5rem 8rem;
+  }
+
+  .selected-work__frame {
+    max-width: 96rem;
+    margin: 0 auto;
+  }
+
+  .selected-work__grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 2.5rem;
+  }
+
+  @media (min-width: 40rem) {
+    .selected-work {
+      padding: 2rem 2.5rem 10rem;
+    }
+
+    .selected-work__grid {
+      column-gap: 2rem;
+      row-gap: 5.5rem;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .selected-work {
+      padding-inline: 3.5rem;
+    }
+
+    .selected-work__grid {
+      column-gap: 3rem;
+      row-gap: 7rem;
+    }
+  }
+</style>

@@ -1,0 +1,121 @@
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/satoshi-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/satoshi-medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/fonts/cormorant-garamond-regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/fonts/cormorant-garamond-medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@import "tailwindcss";
+
+:root {
+  --font-sans: "Satoshi", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-serif: "Cormorant Garamond", "Iowan Old Style", "Times New Roman", serif;
+  --page-background: #ffffff;
+  --page-foreground: #161412;
+  --muted-foreground: #403a34;
+  --subtle-foreground: #756d66;
+  --page-max-width: 96rem;
+  --page-inline-padding: 1.75rem;
+  --header-clearance: clamp(5.55rem, 5.9vw, 6.35rem);
+  --page-inline-offset: max(
+    var(--page-inline-padding),
+    calc((100vw - var(--page-max-width)) / 2 + var(--page-inline-padding))
+  );
+  --gz-marker-width: clamp(5.8rem, 8.9vw, 7.35rem);
+  --gz-marker-height: clamp(2.8rem, 4.6vw, 3.72rem);
+  --gz-marker-font-size: clamp(1.62rem, 3.05vw, 2.38rem);
+  --gz-marker-letter-spacing: 0.072em;
+  --gz-marker-bottom: 4.35%;
+  --gz-marker-text-color: rgba(247, 243, 235, 0.97);
+  --gz-marker-line-width: clamp(3.08rem, 4.9vw, 4.18rem);
+  --gz-marker-line-thickness: 1.05px;
+  --gz-marker-line-gap: clamp(0.42rem, 0.8vw, 0.56rem);
+  --gz-marker-line-color: rgba(247, 243, 235, 0.76);
+  --intro-image-settle-delay: 220ms;
+  --intro-pre-swipe-duration: 8120ms;
+  --intro-swipe-duration: 800ms;
+}
+
+html {
+  background: var(--page-background);
+  color: var(--page-foreground);
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  letter-spacing: -0.01em;
+  text-rendering: optimizeLegibility;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+  font-weight: 500;
+}
+
+::selection {
+  background: rgba(22, 20, 18, 0.12);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+@media (max-width: 40rem) {
+  :root {
+    --gz-marker-width: clamp(4.8rem, 20vw, 5.55rem);
+    --gz-marker-height: clamp(2.3rem, 10vw, 2.92rem);
+    --gz-marker-font-size: clamp(1.32rem, 5.9vw, 1.82rem);
+    --gz-marker-letter-spacing: 0.068em;
+    --gz-marker-line-width: clamp(2.56rem, 10vw, 3.18rem);
+    --gz-marker-line-thickness: 1px;
+    --gz-marker-line-gap: clamp(0.3rem, 1.2vw, 0.42rem);
+  }
+}
+
+@media (min-width: 40rem) {
+  :root {
+    --page-inline-padding: 2.75rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --page-inline-padding: 4rem;
+  }
+}
