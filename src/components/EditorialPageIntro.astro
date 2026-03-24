@@ -1,0 +1,86 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  summary: string;
+}
+
+const { eyebrow, title, summary } = Astro.props;
+---
+
+<section class="editorial-page-intro">
+  <div class="editorial-page-intro__frame">
+    <div class="editorial-page-intro__copy">
+      <p class="editorial-page-intro__eyebrow">{eyebrow}</p>
+      <h1 class="editorial-page-intro__title">{title}</h1>
+      <p class="editorial-page-intro__summary">{summary}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .editorial-page-intro {
+    padding: 1.35rem 1.5rem 0.8rem;
+  }
+
+  .editorial-page-intro__frame {
+    max-width: 96rem;
+    margin: 0 auto;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .editorial-page-intro__copy {
+    display: grid;
+    gap: 0.85rem;
+    max-width: 38rem;
+  }
+
+  .editorial-page-intro__eyebrow {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.32em;
+    line-height: 1;
+    text-transform: uppercase;
+    color: rgba(64, 58, 52, 0.72);
+  }
+
+  .editorial-page-intro__title {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(2.7rem, 5.8vw, 4.9rem);
+    font-weight: 500;
+    letter-spacing: -0.042em;
+    line-height: 0.94;
+    color: var(--page-foreground);
+    text-wrap: balance;
+  }
+
+  .editorial-page-intro__summary {
+    margin: 0;
+    max-width: 34rem;
+    font-family: var(--font-sans);
+    font-size: clamp(0.92rem, 0.86rem + 0.12vw, 1rem);
+    line-height: 1.72;
+    color: rgba(64, 58, 52, 0.92);
+    text-wrap: pretty;
+  }
+
+  @media (min-width: 40rem) {
+    .editorial-page-intro {
+      padding: 1.85rem 2.5rem 1rem;
+    }
+
+    .editorial-page-intro__frame {
+      padding-top: 1.28rem;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .editorial-page-intro {
+      padding-inline: 3.5rem;
+    }
+  }
+</style>

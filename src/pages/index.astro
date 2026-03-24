@@ -14,5 +14,5 @@ const projects = sortProjectsByOrder(await getCollection("projects"));
   preloadImage="/images/intro-image.jpg"
 >
   <IntroOverlay />
-  <ProjectGrid projects={projects.map(mapProjectForGrid)} />
+  <ProjectGrid projects={projects.map(mapProjectForGrid)} isLandingPage />
 </BaseLayout>

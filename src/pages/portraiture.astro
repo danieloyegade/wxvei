@@ -1,0 +1,39 @@
+---
+import { getCollection } from "astro:content";
+import EditorialPageIntro from "../components/EditorialPageIntro.astro";
+import ProjectGrid from "../components/ProjectGrid.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { mapProjectForGrid, sortProjectsByOrder } from "../lib/projects";
+
+const selectedSlugs = [
+  "reny",
+  "mia",
+  "annabella",
+  "abiola",
+  "lola",
+  "dj-paullette-for-seen-mag",
+  "isaac",
+];
+
+const projectMap = new Map(
+  sortProjectsByOrder(await getCollection("projects")).map((project) => [project.slug, project])
+);
+
+const projects = selectedSlugs.flatMap((slug) => {
+  const project = projectMap.get(slug);
+
+  return project ? [project] : [];
+});
+---
+
+<BaseLayout
+  title="Portraiture | Daniel Oyegade"
+  description="Portrait-led work shaped through restraint, closeness, and a quieter attention to character."
+>
+  <EditorialPageIntro
+    eyebrow="Curated Edit"
+    title="Portraiture"
+    summary="Portrait-led work shaped through restraint, closeness, and a quieter attention to character."
+  />
+  <ProjectGrid projects={projects.map(mapProjectForGrid)} />
+</BaseLayout>

@@ -1,0 +1,37 @@
+---
+import { getCollection } from "astro:content";
+import EditorialPageIntro from "../components/EditorialPageIntro.astro";
+import ProjectGrid from "../components/ProjectGrid.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { mapProjectForGrid, sortProjectsByOrder } from "../lib/projects";
+
+const selectedSlugs = [
+  "moving-images-in-g-sharp-minor",
+  "someplace-else",
+  "reny",
+  "zealots",
+  "lola",
+];
+
+const projectMap = new Map(
+  sortProjectsByOrder(await getCollection("projects")).map((project) => [project.slug, project])
+);
+
+const projects = selectedSlugs.flatMap((slug) => {
+  const project = projectMap.get(slug);
+
+  return project ? [project] : [];
+});
+---
+
+<BaseLayout
+  title="Mixed Media | Daniel Oyegade"
+  description="A cross-disciplinary edit spanning image, moving image, and looser studies in texture, atmosphere, and form."
+>
+  <EditorialPageIntro
+    eyebrow="Curated Edit"
+    title="Mixed Media"
+    summary="A cross-disciplinary edit spanning image, moving image, and looser studies in texture, atmosphere, and form."
+  />
+  <ProjectGrid projects={projects.map(mapProjectForGrid)} />
+</BaseLayout>

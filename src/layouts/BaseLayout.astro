@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import HeaderMenu from "../components/HeaderMenu.astro";
 import { withBase, withoutBase } from "../lib/site";
 
 interface Props {
@@ -14,7 +15,15 @@ const {
   preloadImage,
 } = Astro.props;
 const pathname = withoutBase(Astro.url.pathname);
-const isSelectedWorkPage = pathname === "/" || pathname.startsWith("/selected-work");
+const isSelectedWorkPage =
+  pathname === "/" ||
+  pathname.startsWith("/selected-work") ||
+  pathname === "/mixed-media" ||
+  pathname === "/mixed-media/" ||
+  pathname === "/portraiture" ||
+  pathname === "/portraiture/" ||
+  pathname === "/short-films" ||
+  pathname === "/short-films/";
 const isInformationPage = pathname.startsWith("/information");
 
 const canonicalPath = Astro.url.pathname.endsWith("/")
@@ -42,30 +51,37 @@ const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
     <div class="min-h-screen">
       <header class="site-header">
         <nav class="site-header__nav" aria-label="Primary">
-          <a
-            href={withBase("/")}
-            class="site-header__link site-header__link--brand"
-          >
-            Daniel Oyegade
-          </a>
-          <a
-            href={withBase("/selected-work/")}
-            class:list={[
-              "site-header__link site-header__link--work",
-              isSelectedWorkPage && "is-active",
-            ]}
-          >
-            Selected Works
-          </a>
-          <a
-            href={withBase("/information/")}
-            class:list={[
-              "site-header__link site-header__link--information",
-              isInformationPage && "is-active",
-            ]}
-          >
-            Information
-          </a>
+          <div class="site-header__zone site-header__zone--left">
+            <span
+              class="site-header__link site-header__link--brand"
+              aria-label="Daniel Oyegade"
+            >
+              Daniel Oyegade
+            </span>
+          </div>
+          <div class="site-header__zone site-header__zone--center">
+            <a
+              href={withBase("/selected-work/")}
+              class:list={[
+                "site-header__link site-header__link--work",
+                isSelectedWorkPage && "is-active",
+              ]}
+            >
+              Selected Works
+            </a>
+          </div>
+          <div class="site-header__zone site-header__zone--right">
+            <a
+              href={withBase("/information/")}
+              class:list={[
+                "site-header__link site-header__link--information",
+                isInformationPage && "is-active",
+              ]}
+            >
+              Information
+            </a>
+            <HeaderMenu pathname={pathname} />
+          </div>
         </nav>
       </header>
       <main class="site-main">
@@ -77,6 +93,13 @@ const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
 
 <style>
   .site-header {
+    --header-inline-padding: clamp(0.8rem, 1.1vw, 1.45rem);
+    --header-block-start: clamp(0.42rem, 0.78vw, 0.82rem);
+    --header-block-end: clamp(0.78rem, 0.92vw, 1rem);
+    --header-column-gap: clamp(1.4rem, 2.8vw, 3.6rem);
+    --header-right-gap: clamp(1rem, 1.4vw, 1.7rem);
+    --header-link-size: clamp(1.12rem, 0.9rem + 0.48vw, 1.72rem);
+    --header-letter-spacing: 0.158em;
     position: fixed;
     inset: 0 0 auto;
     z-index: 30;
@@ -86,14 +109,33 @@ const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
 
   .site-header__nav {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    align-items: baseline;
-    gap: clamp(0.65rem, 1.6vw, 1.6rem);
-    max-width: var(--page-max-width);
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: start;
+    column-gap: var(--header-column-gap);
+    width: 100%;
     margin: 0 auto;
     min-height: var(--header-clearance);
-    padding: 1.42rem var(--page-inline-padding) 0.76rem;
+    padding: var(--header-block-start) var(--header-inline-padding) var(--header-block-end);
     pointer-events: auto;
+  }
+
+  .site-header__zone {
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+  }
+
+  .site-header__zone--left {
+    justify-content: flex-start;
+  }
+
+  .site-header__zone--center {
+    justify-content: center;
+  }
+
+  .site-header__zone--right {
+    justify-content: flex-end;
+    gap: var(--header-right-gap);
   }
 
   .site-header__link {
@@ -103,12 +145,12 @@ const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
     width: fit-content;
     color: #ffffff;
     font-family: var(--font-sans);
-    font-size: clamp(0.96rem, 0.82rem + 0.28vw, 1.32rem);
-    font-weight: 700;
+    font-size: var(--header-link-size);
+    font-weight: 500;
     font-synthesis: weight;
-    font-stretch: 108%;
-    letter-spacing: 0.114em;
-    line-height: 0.92;
+    font-stretch: 112%;
+    letter-spacing: var(--header-letter-spacing);
+    line-height: 0.82;
     text-transform: uppercase;
     white-space: nowrap;
     font-kerning: none;
@@ -137,17 +179,17 @@ const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
   }
 
   .site-header__link--brand {
-    justify-self: start;
-    font-size: clamp(0.82rem, 0.74rem + 0.22vw, 1.14rem);
-    letter-spacing: 0.098em;
+    letter-spacing: var(--header-letter-spacing);
   }
 
   .site-header__link--work {
-    justify-self: center;
+    min-width: 13.6ch;
+    justify-content: center;
+    text-align: center;
   }
 
   .site-header__link--information {
-    justify-self: end;
+    letter-spacing: var(--header-letter-spacing);
   }
 
   .site-main {
@@ -155,20 +197,26 @@ const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
   }
 
   @media (max-width: 40rem) {
+    .site-header {
+      --header-inline-padding: clamp(0.68rem, 3vw, 0.94rem);
+      --header-block-start: 0.42rem;
+      --header-block-end: 0.72rem;
+      --header-column-gap: 0.78rem;
+      --header-right-gap: 0.58rem;
+      --header-link-size: 0.98rem;
+      --header-letter-spacing: 0.13em;
+    }
+
     .site-header__nav {
-      gap: 0.5rem;
-      padding-top: 1.18rem;
-      padding-bottom: 0.74rem;
+      width: 100%;
     }
 
-    .site-header__link {
-      font-size: 0.89rem;
-      letter-spacing: 0.096em;
+    .site-header__link--work {
+      min-width: auto;
     }
 
-    .site-header__link--brand {
-      font-size: 0.72rem;
-      letter-spacing: 0.07em;
+    .site-header__link--information {
+      display: none;
     }
   }
 </style>

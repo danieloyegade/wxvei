@@ -28,9 +28,10 @@ interface ProjectEntry {
 
 interface Props {
   projects: ProjectEntry[];
+  isLandingPage?: boolean;
 }
 
-const { projects } = Astro.props;
+const { projects, isLandingPage = false } = Astro.props;
 
 const fallbackPatterns: ProjectLayoutPattern[] = [
   "lead-left",
@@ -71,7 +72,10 @@ const normalizedProjects = projects.map((project, index) => {
 });
 ---
 
-<section id="selected-work" class="selected-work">
+<section
+  id="selected-work"
+  class:list={["selected-work", isLandingPage && "selected-work--landing"]}
+>
   <div class="selected-work__frame">
     <div class="selected-work__grid">
       {
@@ -132,6 +136,10 @@ const normalizedProjects = projects.map((project, index) => {
     padding: 1.5rem 1.5rem 8rem;
   }
 
+  .selected-work--landing {
+    padding-top: 20rem;
+  }
+
   .selected-work__frame {
     max-width: 96rem;
     margin: 0 auto;
@@ -146,6 +154,10 @@ const normalizedProjects = projects.map((project, index) => {
   @media (min-width: 40rem) {
     .selected-work {
       padding: 2rem 2.5rem 10rem;
+    }
+
+    .selected-work--landing {
+      padding-top: 4rem;
     }
 
     .selected-work__grid {

@@ -1,0 +1,76 @@
+---
+import EditorialPageIntro from "../components/EditorialPageIntro.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Blog | Daniel Oyegade"
+  description="Notes, references, and short-form writing will live here in time, kept in the same restrained register as the work itself."
+>
+  <EditorialPageIntro
+    eyebrow="Journal"
+    title="Blog"
+    summary="Notes, references, and short-form writing will live here in time, kept in the same restrained register as the work itself."
+  />
+
+  <section class="blog-note">
+    <div class="blog-note__frame">
+      <div class="blog-note__copy">
+        <p class="blog-note__label">Soon</p>
+        <p class="blog-note__text">
+          Essays, references, and in-progress thoughts will gather here gradually. The pace is
+          intended to stay measured.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .blog-note {
+    padding: 0 1.5rem 8rem;
+  }
+
+  .blog-note__frame {
+    max-width: 96rem;
+    margin: 0 auto;
+  }
+
+  .blog-note__copy {
+    display: grid;
+    gap: 0.48rem;
+    max-width: 26rem;
+  }
+
+  .blog-note__label {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    line-height: 1;
+    text-transform: uppercase;
+    color: rgba(117, 109, 102, 0.86);
+  }
+
+  .blog-note__text {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: clamp(0.92rem, 0.86rem + 0.12vw, 1rem);
+    line-height: 1.78;
+    color: rgba(64, 58, 52, 0.92);
+    text-wrap: pretty;
+  }
+
+  @media (min-width: 40rem) {
+    .blog-note {
+      padding: 0 2.5rem 10rem;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .blog-note {
+      padding-inline: 3.5rem;
+    }
+  }
+</style>

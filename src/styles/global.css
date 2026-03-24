@@ -41,7 +41,7 @@
   --subtle-foreground: #756d66;
   --page-max-width: 96rem;
   --page-inline-padding: 1.75rem;
-  --header-clearance: clamp(5.55rem, 5.9vw, 6.35rem);
+  --header-clearance: clamp(4.9rem, 5.4vw, 5.9rem);
   --page-inline-offset: max(
     var(--page-inline-padding),
     calc((100vw - var(--page-max-width)) / 2 + var(--page-inline-padding))
