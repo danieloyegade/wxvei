@@ -29,9 +29,10 @@ interface ProjectEntry {
 interface Props {
   projects: ProjectEntry[];
   isLandingPage?: boolean;
+  sectionId?: string;
 }
 
-const { projects, isLandingPage = false } = Astro.props;
+const { projects, isLandingPage = false, sectionId = "selected-work" } = Astro.props;
 
 const fallbackPatterns: ProjectLayoutPattern[] = [
   "lead-left",
@@ -73,7 +74,7 @@ const normalizedProjects = projects.map((project, index) => {
 ---
 
 <section
-  id="selected-work"
+  id={sectionId}
   class:list={["selected-work", isLandingPage && "selected-work--landing"]}
 >
   <div class="selected-work__frame">

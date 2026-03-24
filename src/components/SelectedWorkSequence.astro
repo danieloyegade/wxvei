@@ -1,0 +1,256 @@
+---
+import ProjectCard from "./ProjectCard.astro";
+import { projectFrameClasses } from "../lib/projectLayout";
+import type {
+  ProjectCropFocus,
+  ProjectOrientation,
+  ProjectVisualWeight,
+} from "../lib/projectLayout";
+
+interface SelectedWorkProject {
+  slug: string;
+  title: string;
+  image: string;
+  descriptor: string;
+  order: number;
+  visualWeight?: ProjectVisualWeight;
+  orientation?: ProjectOrientation;
+  cropFocus?: ProjectCropFocus;
+}
+
+interface Props {
+  projects: SelectedWorkProject[];
+}
+
+const { projects } = Astro.props as Props;
+const projectMap = new Map(projects.map((project) => [project.slug, project]));
+
+const getProject = (slug: string) => {
+  const project = projectMap.get(slug);
+
+  if (!project) {
+    throw new Error(`Selected Works sequence could not find project "${slug}".`);
+  }
+
+  return project;
+};
+
+const beatTemplates = {
+  opening: {
+    className: "selected-work-sequence__beat--opening",
+    layoutClasses: [
+      "col-span-12 md:col-span-8 md:col-start-1 xl:col-span-8 xl:col-start-1",
+      "col-span-12 md:col-span-3 md:col-start-10 md:mt-14 xl:col-span-3 xl:col-start-10 xl:mt-20",
+    ],
+  },
+  reverse: {
+    className: "selected-work-sequence__beat--reverse",
+    layoutClasses: [
+      "col-span-12 md:col-span-3 md:col-start-1 md:mt-8 xl:col-span-3 xl:col-start-1 xl:mt-12",
+      "col-span-12 md:col-span-8 md:col-start-5 xl:col-span-8 xl:col-start-5",
+    ],
+  },
+  balanced: {
+    className: "selected-work-sequence__beat--balanced",
+    layoutClasses: [
+      "col-span-12 md:col-span-4 md:col-start-1 xl:col-span-4 xl:col-start-1",
+      "col-span-12 md:col-span-6 md:col-start-7 md:mt-8 xl:col-span-6 xl:col-start-7 xl:mt-12",
+    ],
+  },
+  split: {
+    className: "selected-work-sequence__beat--split",
+    layoutClasses: [
+      "col-span-12 md:col-span-4 md:col-start-2 xl:col-span-4 xl:col-start-2",
+      "col-span-12 md:col-span-7 md:col-start-6 md:mt-10 xl:col-span-7 xl:col-start-6 xl:mt-14",
+    ],
+  },
+  solo: {
+    className: "selected-work-sequence__beat--solo",
+    layoutClasses: ["col-span-12 md:col-span-7 md:col-start-4 xl:col-span-6 xl:col-start-4"],
+  },
+  closing: {
+    className: "selected-work-sequence__beat--closing",
+    layoutClasses: [
+      "col-span-12 md:col-span-4 md:col-start-1 xl:col-span-4 xl:col-start-1",
+      "col-span-12 md:col-span-7 md:col-start-6 md:mt-12 xl:col-span-7 xl:col-start-6 xl:mt-16",
+    ],
+  },
+} as const;
+
+const beats = [
+  {
+    template: "opening",
+    items: [
+      { slug: "jamime" },
+      { slug: "reny" },
+    ],
+  },
+  {
+    template: "reverse",
+    items: [
+      { slug: "moving-images-in-g-sharp-minor" },
+      { slug: "someplace-else" },
+    ],
+  },
+  {
+    template: "balanced",
+    items: [
+      { slug: "mia" },
+      { slug: "annabella" },
+    ],
+  },
+  {
+    template: "split",
+    items: [
+      { slug: "abiola" },
+      { slug: "zealots" },
+    ],
+  },
+  {
+    template: "solo",
+    items: [{ slug: "lola" }],
+  },
+  {
+    template: "closing",
+    items: [
+      { slug: "dj-paullette-for-seen-mag" },
+      { slug: "isaac" },
+    ],
+  },
+] as const;
+
+const resolvedBeats = beats.map((beat) => ({
+  ...beat,
+  className: beatTemplates[beat.template].className,
+  items: beat.items.map((item, index) => {
+    const project = getProject(item.slug);
+    const layoutClass = beatTemplates[beat.template].layoutClasses[index] ?? beatTemplates[beat.template].layoutClasses[0];
+
+    return {
+      ...project,
+      layoutClass,
+    };
+  }),
+}));
+---
+
+<section id="selected-work" class="selected-work-sequence" aria-label="Selected Works">
+  <div class="selected-work-sequence__frame">
+    <div class="selected-work-sequence__stack">
+      {
+        resolvedBeats.map((beat) => (
+          <div class:list={["selected-work-sequence__beat", beat.className]}>
+            {beat.items.map((project) => (
+              <ProjectCard
+                slug={project.slug}
+                title={project.title}
+                image={project.image}
+                descriptor={project.descriptor}
+                visualWeight={project.visualWeight}
+                layoutClass={project.layoutClass}
+                frameClass={projectFrameClasses[project.orientation ?? "landscape"]}
+                cropFocus={project.cropFocus}
+              />
+            ))}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  const revealTargets = Array.from(document.querySelectorAll("[data-project-reveal]"));
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    revealTargets.forEach((element) => {
+      element.setAttribute("data-reveal-state", "visible");
+    });
+  } else if ("IntersectionObserver" in window) {
+    const revealObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+
+          entry.target.setAttribute("data-reveal-state", "visible");
+          observer.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: 0.18,
+        rootMargin: "0px 0px -8% 0px",
+      }
+    );
+
+    revealTargets.forEach((element) => {
+      if (element.getAttribute("data-reveal-state") === "visible") return;
+
+      revealObserver.observe(element);
+    });
+  } else {
+    revealTargets.forEach((element) => {
+      element.setAttribute("data-reveal-state", "visible");
+    });
+  }
+</script>
+
+<style>
+  .selected-work-sequence {
+    padding: 1.5rem 1.5rem 8rem;
+  }
+
+  .selected-work-sequence__frame {
+    max-width: 96rem;
+    margin: 0 auto;
+  }
+
+  .selected-work-sequence__stack {
+    display: grid;
+    gap: clamp(3rem, 6vw, 6.75rem);
+  }
+
+  .selected-work-sequence__beat {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  .selected-work-sequence__beat--opening,
+  .selected-work-sequence__beat--reverse,
+  .selected-work-sequence__beat--closing {
+    align-items: end;
+  }
+
+  .selected-work-sequence__beat--solo {
+    justify-items: center;
+  }
+
+  @media (min-width: 40rem) {
+    .selected-work-sequence {
+      padding: 2rem 2.5rem 10rem;
+    }
+
+    .selected-work-sequence__stack {
+      gap: clamp(3.5rem, 6vw, 7rem);
+    }
+
+    .selected-work-sequence__beat {
+      gap: 2rem;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .selected-work-sequence {
+      padding-inline: 3.5rem;
+    }
+
+    .selected-work-sequence__stack {
+      gap: clamp(4rem, 6.5vw, 8rem);
+    }
+
+    .selected-work-sequence__beat {
+      gap: 3rem;
+    }
+  }
+</style>

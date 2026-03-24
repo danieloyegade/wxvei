@@ -1,0 +1,91 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  summary: string;
+}
+
+const { eyebrow, title, summary } = Astro.props;
+---
+
+<section class="mixed-media-intro" aria-labelledby="mixed-media-title">
+  <div class="mixed-media-intro__frame">
+    <div class="mixed-media-intro__copy">
+      <p class="mixed-media-intro__eyebrow">{eyebrow}</p>
+      <h1 class="mixed-media-intro__title" id="mixed-media-title">{title}</h1>
+      <p class="mixed-media-intro__summary">{summary}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .mixed-media-intro {
+    padding: 1.15rem 1.5rem 0.8rem;
+  }
+
+  .mixed-media-intro__frame {
+    max-width: 96rem;
+    margin: 0 auto;
+    padding-top: 0.9rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .mixed-media-intro__copy {
+    display: grid;
+    gap: 0.95rem;
+    max-width: 38rem;
+  }
+
+  .mixed-media-intro__eyebrow {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.32em;
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--subtle-foreground);
+  }
+
+  .mixed-media-intro__title {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(1.95rem, 2.6vw, 3.1rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+    max-width: 9ch;
+    color: var(--page-foreground);
+    text-wrap: balance;
+  }
+
+  .mixed-media-intro__summary {
+    margin: 0;
+    max-width: 34rem;
+    font-family: var(--font-sans);
+    font-size: clamp(0.9rem, 0.84rem + 0.12vw, 0.99rem);
+    line-height: 1.74;
+    color: var(--muted-foreground);
+    text-wrap: pretty;
+  }
+
+  @media (min-width: 40rem) {
+    .mixed-media-intro {
+      padding: 1.7rem 2.5rem 1rem;
+    }
+
+    .mixed-media-intro__frame {
+      padding-top: 1.1rem;
+    }
+
+    .mixed-media-intro__copy {
+      gap: 1.05rem;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .mixed-media-intro {
+      padding-inline: 3.5rem;
+    }
+  }
+</style>

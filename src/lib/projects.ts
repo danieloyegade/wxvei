@@ -77,15 +77,26 @@ export const getProjectInfoLines = (project: ProjectEntry) => {
 
 export const getProjectSequence = (projects: ProjectEntry[], slug: string) => {
   const orderedProjects = sortProjectsByOrder(projects);
-  const currentIndex = orderedProjects.findIndex((project) => project.slug === slug);
+  const currentProject = orderedProjects.find((project) => project.slug === slug);
 
-  if (currentIndex === -1) {
+  if (!currentProject) {
     throw new Error(`Project sequence could not find slug "${slug}".`);
   }
 
+  const sequenceProjects =
+    currentProject.data.status === "mixed-media"
+      ? orderedProjects.filter((project) => project.data.status === "mixed-media")
+      : orderedProjects.filter((project) => project.data.status !== "mixed-media");
+
+  const currentIndex = sequenceProjects.findIndex((project) => project.slug === slug);
+
+  if (currentIndex === -1) {
+    throw new Error(`Project sequence could not find slug "${slug}" in its sequence group.`);
+  }
+
   const previousProject =
-    orderedProjects[(currentIndex - 1 + orderedProjects.length) % orderedProjects.length];
-  const nextProject = orderedProjects[(currentIndex + 1) % orderedProjects.length];
+    sequenceProjects[(currentIndex - 1 + sequenceProjects.length) % sequenceProjects.length];
+  const nextProject = sequenceProjects[(currentIndex + 1) % sequenceProjects.length];
 
   return {
     previousProject: {

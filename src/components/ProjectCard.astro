@@ -42,7 +42,7 @@ const objectPositionMap = {
     <div class:list={["project-card__image-wrap", frameClass]} data-project-reveal data-reveal-state="pending">
       <div class="project-card__overlay"></div>
       <img
-        src={withBase(image)}
+        src={encodeURI(withBase(image))}
         alt={title}
         class="project-card__image"
         style={`object-position: ${objectPositionMap[cropFocus]}; object-fit: cover;`}

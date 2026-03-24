@@ -1,15 +1,18 @@
 ---
 import { getCollection } from "astro:content";
-import ProjectGrid from "../../components/ProjectGrid.astro";
+import SelectedWorkSequence from "../../components/SelectedWorkSequence.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { mapProjectForGrid, sortProjectsByOrder } from "../../lib/projects";
 
-const projects = sortProjectsByOrder(await getCollection("projects"));
+const projects = sortProjectsByOrder(await getCollection("projects")).filter(
+  (project) => project.data.status !== "mixed-media"
+);
+const selectedWorkProjects = projects.map(mapProjectForGrid);
 ---
 
 <BaseLayout
   title="Selected Works | Daniel Oyegade"
   description="Selected work from the Daniel Oyegade portfolio."
 >
-  <ProjectGrid projects={projects.map(mapProjectForGrid)} />
+  <SelectedWorkSequence projects={selectedWorkProjects} />
 </BaseLayout>

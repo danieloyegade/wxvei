@@ -5,7 +5,9 @@ import ProjectGrid from "../components/ProjectGrid.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { mapProjectForGrid, sortProjectsByOrder } from "../lib/projects";
 
-const projects = sortProjectsByOrder(await getCollection("projects"));
+const projects = sortProjectsByOrder(await getCollection("projects")).filter(
+  (project) => project.data.status !== "mixed-media"
+);
 ---
 
 <BaseLayout
