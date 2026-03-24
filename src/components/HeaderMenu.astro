@@ -14,8 +14,14 @@ const menuItems = [
   { label: "Blog", href: "/blog/" },
 ];
 
+const matchesMenuPath = (currentPath: string, itemHref: string) => {
+  const normalizedHref = itemHref.endsWith("/") ? itemHref.slice(0, -1) : itemHref;
+
+  return currentPath === normalizedHref || currentPath.startsWith(`${normalizedHref}/`);
+};
+
 const menuIsActive = menuItems.some(
-  (item) => pathname === item.href || pathname === item.href.slice(0, -1)
+  (item) => matchesMenuPath(pathname, item.href)
 );
 const menuId = "site-header-editorial-menu";
 ---
@@ -49,7 +55,7 @@ const menuId = "site-header-editorial-menu";
     <ul class="header-menu__list">
       {
         menuItems.map((item) => {
-          const isCurrent = pathname === item.href || pathname === item.href.slice(0, -1);
+          const isCurrent = matchesMenuPath(pathname, item.href);
 
           return (
             <li class="header-menu__item">

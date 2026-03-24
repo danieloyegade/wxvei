@@ -3,26 +3,19 @@ import { getCollection } from "astro:content";
 import MixedMediaIntro from "../components/MixedMediaIntro.astro";
 import ProjectGrid from "../components/ProjectGrid.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { mapProjectForGrid, sortProjectsByOrder } from "../lib/projects";
+import {
+  getProjectsBySlugs,
+  mapProjectForGrid,
+  mixedMediaProjectSlugs,
+  sortProjectsByOrder,
+} from "../lib/projects";
 
-const selectedSlugs = [
-  "rectangle-with-embellishments",
-  "telfar-with-embelishments",
-  "home-improvement",
-  "spectres-under-glass",
-];
-
-const projectMap = new Map(
-  sortProjectsByOrder(await getCollection("projects"))
-    .filter((project) => project.data.status === "mixed-media")
-    .map((project) => [project.slug, project])
+const projects = getProjectsBySlugs(
+  sortProjectsByOrder(await getCollection("projects")).filter(
+    (project) => project.data.status === "mixed-media"
+  ),
+  mixedMediaProjectSlugs
 );
-
-const projects = selectedSlugs.flatMap((slug) => {
-  const project = projectMap.get(slug);
-
-  return project ? [project] : [];
-});
 ---
 
 <BaseLayout
@@ -34,5 +27,9 @@ const projects = selectedSlugs.flatMap((slug) => {
     title="Mixed Media"
     summary="A cross-disciplinary edit spanning image, moving image, and looser studies in texture, atmosphere, and form."
   />
-  <ProjectGrid sectionId="mixed-media" projects={projects.map(mapProjectForGrid)} />
+  <ProjectGrid
+    sectionId="mixed-media"
+    detailBasePath="/mixed-media/"
+    projects={projects.map(mapProjectForGrid)}
+  />
 </BaseLayout>

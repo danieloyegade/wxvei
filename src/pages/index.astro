@@ -1,20 +1,18 @@
 ---
 import { getCollection } from "astro:content";
-import IntroOverlay from "../components/IntroOverlay.astro";
-import ProjectGrid from "../components/ProjectGrid.astro";
+import SelectedWorkSequence from "../components/SelectedWorkSequence.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { mapProjectForGrid, sortProjectsByOrder } from "../lib/projects";
 
 const projects = sortProjectsByOrder(await getCollection("projects")).filter(
   (project) => project.data.status !== "mixed-media"
 );
+const selectedWorkProjects = projects.map(mapProjectForGrid);
 ---
 
 <BaseLayout
-  title="Daniel Oyegade"
-  description="A minimal editorial portfolio for Daniel Oyegade with a restrained, image-led layout."
-  preloadImage="/images/intro-image.jpg"
+  title="Selected Works | Daniel Oyegade"
+  description="Selected work from the Daniel Oyegade portfolio."
 >
-  <IntroOverlay />
-  <ProjectGrid projects={projects.map(mapProjectForGrid)} isLandingPage />
+  <SelectedWorkSequence projects={selectedWorkProjects} />
 </BaseLayout>

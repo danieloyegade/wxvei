@@ -1,5 +1,6 @@
 ---
 import ProjectCard from "./ProjectCard.astro";
+import { projectPath } from "../lib/projects";
 import type {
   ProjectCropFocus,
   ProjectLayoutPattern,
@@ -30,9 +31,15 @@ interface Props {
   projects: ProjectEntry[];
   isLandingPage?: boolean;
   sectionId?: string;
+  detailBasePath?: string;
 }
 
-const { projects, isLandingPage = false, sectionId = "selected-work" } = Astro.props;
+const {
+  projects,
+  isLandingPage = false,
+  sectionId = "selected-work",
+  detailBasePath,
+} = Astro.props;
 
 const fallbackPatterns: ProjectLayoutPattern[] = [
   "lead-left",
@@ -86,6 +93,7 @@ const normalizedProjects = projects.map((project, index) => {
             title={project.title}
             image={project.image}
             descriptor={project.descriptor}
+            href={projectPath(project.slug, detailBasePath)}
             visualWeight={project.visualWeight}
             layoutClass={projectLayoutClasses[project.layoutPattern]}
             frameClass={projectFrameClasses[project.orientation]}

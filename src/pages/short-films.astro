@@ -3,22 +3,17 @@ import { getCollection } from "astro:content";
 import EditorialPageIntro from "../components/EditorialPageIntro.astro";
 import ProjectGrid from "../components/ProjectGrid.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { mapProjectForGrid, sortProjectsByOrder } from "../lib/projects";
+import {
+  getProjectsBySlugs,
+  mapProjectForGrid,
+  shortFilmProjectSlugs,
+  sortProjectsByOrder,
+} from "../lib/projects";
 
-const selectedSlugs = [
-  "moving-images-in-g-sharp-minor",
-  "someplace-else",
-];
-
-const projectMap = new Map(
-  sortProjectsByOrder(await getCollection("projects")).map((project) => [project.slug, project])
+const projects = getProjectsBySlugs(
+  sortProjectsByOrder(await getCollection("projects")),
+  shortFilmProjectSlugs
 );
-
-const projects = selectedSlugs.flatMap((slug) => {
-  const project = projectMap.get(slug);
-
-  return project ? [project] : [];
-});
 ---
 
 <BaseLayout
@@ -30,5 +25,5 @@ const projects = selectedSlugs.flatMap((slug) => {
     title="Short Films"
     summary=""
   />
-  <ProjectGrid projects={projects.map(mapProjectForGrid)} />
+  <ProjectGrid detailBasePath="/short-films/" projects={projects.map(mapProjectForGrid)} />
 </BaseLayout>

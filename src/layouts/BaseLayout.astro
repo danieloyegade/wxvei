@@ -23,15 +23,11 @@ const satoshiMediumFontSrc = `url("${satoshiMediumFontUrl}") format("woff2")`;
 const cormorantRegularFontSrc = `url("${cormorantRegularFontUrl}") format("truetype")`;
 const cormorantMediumFontSrc = `url("${cormorantMediumFontUrl}") format("truetype")`;
 const pathname = withoutBase(Astro.url.pathname);
+const isSectionPath = (basePath: string) =>
+  pathname === basePath || pathname === `${basePath}/` || pathname.startsWith(`${basePath}/`);
 const isSelectedWorkPage =
   pathname === "/" ||
-  pathname.startsWith("/selected-work") ||
-  pathname === "/mixed-media" ||
-  pathname === "/mixed-media/" ||
-  pathname === "/portraiture" ||
-  pathname === "/portraiture/" ||
-  pathname === "/short-films" ||
-  pathname === "/short-films/";
+  isSectionPath("/selected-work");
 const isInformationPage = pathname.startsWith("/information");
 
 const canonicalPath = Astro.url.pathname.endsWith("/")

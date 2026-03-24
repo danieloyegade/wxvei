@@ -7,6 +7,7 @@ interface Props {
   title: string;
   image: string;
   descriptor: string;
+  href?: string;
   indexLabel?: string;
   layoutClass: string;
   frameClass: string;
@@ -19,6 +20,7 @@ const {
   title,
   image,
   descriptor,
+  href = projectPath(slug),
   indexLabel,
   layoutClass,
   frameClass,
@@ -38,7 +40,7 @@ const objectPositionMap = {
   data-project-slug={slug}
   data-visual-weight={visualWeight}
 >
-  <a class="project-card__link" href={projectPath(slug)} aria-label={`View ${title}`}>
+  <a class="project-card__link" href={href} aria-label={`View ${title}`}>
     <div class:list={["project-card__image-wrap", frameClass]} data-project-reveal data-reveal-state="pending">
       <div class="project-card__overlay"></div>
       <img
