@@ -4,18 +4,11 @@ import MixedMediaIntro from "../components/MixedMediaIntro.astro";
 import ProjectGrid from "../components/ProjectGrid.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import {
-  getProjectsBySlugs,
+  getProjectsBySection,
   mapProjectForGrid,
-  mixedMediaProjectSlugs,
-  sortProjectsByOrder,
 } from "../lib/projects";
 
-const projects = getProjectsBySlugs(
-  sortProjectsByOrder(await getCollection("projects")).filter(
-    (project) => project.data.status === "mixed-media"
-  ),
-  mixedMediaProjectSlugs
-);
+const projects = getProjectsBySection(await getCollection("projects"), "mixed-media");
 ---
 
 <BaseLayout
@@ -23,7 +16,7 @@ const projects = getProjectsBySlugs(
   description="A cross-disciplinary edit spanning image, moving image, and looser studies in texture, atmosphere, and form."
 >
   <MixedMediaIntro
-    eyebrow=""
+    eyebrow="Section"
     title="Mixed Media"
     summary="A cross-disciplinary edit spanning image, moving image, and looser studies in texture, atmosphere, and form."
   />

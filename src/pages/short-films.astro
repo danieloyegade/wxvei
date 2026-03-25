@@ -4,16 +4,11 @@ import EditorialPageIntro from "../components/EditorialPageIntro.astro";
 import ProjectGrid from "../components/ProjectGrid.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import {
-  getProjectsBySlugs,
+  getProjectsBySection,
   mapProjectForGrid,
-  shortFilmProjectSlugs,
-  sortProjectsByOrder,
 } from "../lib/projects";
 
-const projects = getProjectsBySlugs(
-  sortProjectsByOrder(await getCollection("projects")),
-  shortFilmProjectSlugs
-);
+const projects = getProjectsBySection(await getCollection("projects"), "short-films");
 ---
 
 <BaseLayout
@@ -21,9 +16,13 @@ const projects = getProjectsBySlugs(
   description=""
 >
   <EditorialPageIntro
-    eyebrow="Curated Edit"
+    eyebrow="Section"
     title="Short Films"
     summary=""
   />
-  <ProjectGrid detailBasePath="/short-films/" projects={projects.map(mapProjectForGrid)} />
+  <ProjectGrid
+    sectionId="short-films"
+    detailBasePath="/short-films/"
+    projects={projects.map(mapProjectForGrid)}
+  />
 </BaseLayout>

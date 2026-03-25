@@ -44,6 +44,32 @@ const {
   detailBasePath,
 } = Astro.props;
 
+const mobileRhythmProfiles: Partial<Record<string, readonly string[]>> = {
+  portraiture: [
+    "project-card--section-grid",
+    "project-card--section-grid project-card--mobile-inset-end",
+    "project-card--section-grid project-card--mobile-inset-start project-card--mobile-pause",
+    "project-card--section-grid",
+    "project-card--section-grid project-card--mobile-inset-end",
+    "project-card--section-grid project-card--mobile-inset-start",
+    "project-card--section-grid",
+  ],
+  "mixed-media": [
+    "project-card--section-grid",
+    "project-card--section-grid project-card--mobile-inset-start",
+    "project-card--section-grid project-card--mobile-pause",
+    "project-card--section-grid project-card--mobile-inset-end",
+  ],
+  "short-films": [
+    "project-card--section-grid",
+    "project-card--section-grid project-card--mobile-inset-end project-card--mobile-pause",
+    "project-card--section-grid",
+  ],
+};
+
+const sectionMobileRhythm = mobileRhythmProfiles[sectionId] ?? [];
+const isSectionPageGrid = sectionMobileRhythm.length > 0;
+
 const fallbackPatterns: ProjectLayoutPattern[] = [
   "lead-left",
   "support-right",
@@ -85,12 +111,16 @@ const normalizedProjects = projects.map((project, index) => {
 
 <section
   id={sectionId}
-  class:list={["selected-work", isLandingPage && "selected-work--landing"]}
+  class:list={[
+    "selected-work",
+    isLandingPage && "selected-work--landing",
+    isSectionPageGrid && "selected-work--section-page",
+  ]}
 >
   <div class="selected-work__frame">
     <div class="selected-work__grid">
       {
-        normalizedProjects.map((project) => (
+        normalizedProjects.map((project, index) => (
           <ProjectCard
             slug={project.slug}
             title={project.title}
@@ -103,6 +133,11 @@ const normalizedProjects = projects.map((project, index) => {
             layoutClass={projectLayoutClasses[project.layoutPattern]}
             frameClass={projectFrameClasses[project.orientation]}
             cropFocus={project.cropFocus}
+            cardClassName={
+              sectionMobileRhythm.length > 0
+                ? sectionMobileRhythm[index % sectionMobileRhythm.length]
+                : undefined
+            }
           />
         ))
       }
@@ -165,6 +200,16 @@ const normalizedProjects = projects.map((project, index) => {
     gap: 2.5rem;
   }
 
+  @media (max-width: 40rem) {
+    .selected-work--section-page {
+      padding-top: 1.9rem;
+    }
+
+    .selected-work--section-page .selected-work__grid {
+      gap: clamp(2rem, 6vw, 2.75rem);
+    }
+  }
+
   @media (min-width: 40rem) {
     .selected-work {
       padding: 2rem 2.5rem 10rem;
@@ -185,9 +230,13 @@ const normalizedProjects = projects.map((project, index) => {
       padding-inline: 3.5rem;
     }
 
+    .selected-work__frame {
+      max-width: 92rem;
+    }
+
     .selected-work__grid {
       column-gap: 3rem;
-      row-gap: 7rem;
+      row-gap: clamp(6.5rem, 7vw, 8rem);
     }
   }
 </style>

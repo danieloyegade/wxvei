@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import HeaderMenu from "../components/HeaderMenu.astro";
+import { projectSectionConfigs } from "../data/projectSections";
 import { resolvePublishedAssetSrc } from "../lib/media";
 import { withBase, withoutBase } from "../lib/site";
 
@@ -31,12 +32,44 @@ const satoshiRegularFontSrc = `url("${satoshiRegularFontUrl}") format("woff2")`;
 const satoshiMediumFontSrc = `url("${satoshiMediumFontUrl}") format("woff2")`;
 const cormorantRegularFontSrc = `url("${cormorantRegularFontUrl}") format("truetype")`;
 const cormorantMediumFontSrc = `url("${cormorantMediumFontUrl}") format("truetype")`;
+const faviconVersion = "do-20260325";
+const resolveFaviconHref = (src: string) => {
+  const resolvedSrc = import.meta.env.DEV ? src : resolvePublishedAssetSrc(src) ?? src;
+  const href = withBase(resolvedSrc);
+  const separator = href.includes("?") ? "&" : "?";
+
+  return `${href}${separator}v=${faviconVersion}`;
+};
+const faviconIcoHref = resolveFaviconHref("/favicon.ico");
+const faviconSvgHref = resolveFaviconHref("/favicon.svg");
+const favicon32Href = resolveFaviconHref("/favicon-32x32.png");
+const favicon16Href = resolveFaviconHref("/favicon-16x16.png");
+const appleTouchIconHref = resolveFaviconHref("/apple-touch-icon.png");
 const pathname = withoutBase(Astro.url.pathname);
-const isSectionPath = (basePath: string) =>
-  pathname === basePath || pathname === `${basePath}/` || pathname.startsWith(`${basePath}/`);
-const isSelectedWorkPage =
-  pathname === "/" ||
-  isSectionPath("/selected-work");
+const isSectionPath = (basePath: string) => {
+  const normalizedBasePath = basePath.endsWith("/") && basePath !== "/"
+    ? basePath.slice(0, -1)
+    : basePath;
+
+  return (
+    pathname === normalizedBasePath ||
+    pathname === `${normalizedBasePath}/` ||
+    pathname.startsWith(`${normalizedBasePath}/`)
+  );
+};
+const headerSections = [
+  { id: "selected-work", ...projectSectionConfigs["selected-work"] },
+  { id: "portraiture", ...projectSectionConfigs.portraiture },
+  { id: "mixed-media", ...projectSectionConfigs["mixed-media"] },
+  { id: "short-films", ...projectSectionConfigs["short-films"] },
+] as const;
+const activeHeaderSection =
+  headerSections.find((section) =>
+    section.id === "selected-work"
+      ? pathname === "/" || isSectionPath(section.path)
+      : isSectionPath(section.path)
+  ) ?? null;
+const headerSectionLink = activeHeaderSection ?? headerSections[0];
 const isInformationPage = pathname.startsWith("/information");
 
 const canonicalPath = Astro.url.pathname.endsWith("/")
@@ -53,26 +86,28 @@ const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
     <meta name="description" content={description} />
     <meta name="theme-color" content="#ffffff" />
     <link rel="canonical" href={canonicalUrl} />
+    <link rel="shortcut icon" href={faviconIcoHref} sizes="any" type="image/x-icon" />
     <link
       rel="icon"
-      href={withBase(resolvePublishedAssetSrc("/favicon.svg") ?? "/favicon.svg")}
+      href={faviconSvgHref}
+      sizes="any"
       type="image/svg+xml"
     />
     <link
       rel="icon"
-      href={withBase(resolvePublishedAssetSrc("/favicon-32x32.png") ?? "/favicon-32x32.png")}
+      href={favicon32Href}
       sizes="32x32"
       type="image/png"
     />
     <link
       rel="icon"
-      href={withBase(resolvePublishedAssetSrc("/favicon-16x16.png") ?? "/favicon-16x16.png")}
+      href={favicon16Href}
       sizes="16x16"
       type="image/png"
     />
     <link
       rel="apple-touch-icon"
-      href={withBase(resolvePublishedAssetSrc("/apple-touch-icon.png") ?? "/apple-touch-icon.png")}
+      href={appleTouchIconHref}
       sizes="180x180"
     />
     <title>{title}</title>
@@ -91,13 +126,13 @@ const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
           </div>
           <div class="site-header__zone site-header__zone--center">
             <a
-              href={withBase("/selected-work/")}
+              href={withBase(headerSectionLink.path)}
               class:list={[
                 "site-header__link site-header__link--work",
-                isSelectedWorkPage && "is-active",
+                activeHeaderSection && "is-active",
               ]}
             >
-              Selected Works
+              {headerSectionLink.label}
             </a>
           </div>
           <div class="site-header__zone site-header__zone--right">

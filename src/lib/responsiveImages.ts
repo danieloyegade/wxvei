@@ -61,6 +61,12 @@ export const getResponsiveImageSet = (src: string): ResponsiveImageSet | null =>
     return null;
   }
 
+  // Remote image hosting only guarantees the canonical asset paths.
+  // Avoid emitting derived `-640/-960/...` URLs unless we are serving local variants.
+  if (usesRemoteProjectImages()) {
+    return null;
+  }
+
   const config = getResponsiveImageConfig(src);
 
   if (!config) {
@@ -73,9 +79,7 @@ export const getResponsiveImageSet = (src: string): ResponsiveImageSet | null =>
     width,
   }));
 
-  const hasAllVariants =
-    usesRemoteProjectImages() ||
-    [fallbackSrc, ...jpeg.map((variant) => variant.src)].every(publicAssetExists);
+  const hasAllVariants = [fallbackSrc, ...jpeg.map((variant) => variant.src)].every(publicAssetExists);
 
   if (!hasAllVariants) {
     return null;

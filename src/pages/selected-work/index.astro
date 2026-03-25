@@ -2,11 +2,9 @@
 import { getCollection } from "astro:content";
 import SelectedWorkSequence from "../../components/SelectedWorkSequence.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { mapProjectForGrid, sortProjectsByOrder } from "../../lib/projects";
+import { getProjectsBySection, mapProjectForGrid } from "../../lib/projects";
 
-const projects = sortProjectsByOrder(await getCollection("projects")).filter(
-  (project) => project.data.status !== "mixed-media"
-);
+const projects = getProjectsBySection(await getCollection("projects"), "selected-work");
 const selectedWorkProjects = projects.map(mapProjectForGrid);
 ---
 

@@ -23,20 +23,20 @@ export type ProjectOrientation = (typeof projectOrientationValues)[number];
 export type ProjectCropFocus = (typeof projectCropFocusValues)[number];
 
 export const projectLayoutClasses: Record<ProjectLayoutPattern, string> = {
-  "lead-left": "col-span-12 md:col-span-7 xl:col-span-7 xl:col-start-1",
+  "lead-left": "col-span-12 md:col-span-7 xl:col-span-7 xl:col-start-2",
   "support-right":
     "col-span-12 md:col-span-4 md:col-start-9 xl:col-span-4 xl:col-start-9 md:mt-12 xl:mt-16",
   "wide-band": "col-span-12 md:col-span-10 md:col-start-2 xl:col-span-10 xl:col-start-2",
   "support-left":
     "col-span-12 md:col-span-4 md:col-start-1 xl:col-span-4 xl:col-start-1 md:mt-10 xl:mt-14",
-  "lead-right": "col-span-12 md:col-span-7 md:col-start-6 xl:col-span-7 xl:col-start-6",
+  "lead-right": "col-span-12 md:col-span-7 md:col-start-6 xl:col-span-7 xl:col-start-5",
   "paired-left": "col-span-12 md:col-span-5 md:col-start-2 xl:col-span-5 xl:col-start-2",
   "paired-right":
     "col-span-12 md:col-span-4 md:col-start-8 xl:col-span-4 xl:col-start-8 md:mt-8 xl:mt-12",
-  "hero-left": "col-span-12 md:col-span-8 xl:col-span-7 xl:col-start-1",
+  "hero-left": "col-span-12 md:col-span-8 xl:col-span-7 xl:col-start-2",
   "tail-right":
-    "col-span-12 md:col-span-3 md:col-start-10 xl:col-span-3 xl:col-start-10 md:mt-14 xl:mt-18",
-  "offset-right": "col-span-12 md:col-span-7 md:col-start-5 xl:col-span-6 xl:col-start-6",
+    "col-span-12 md:col-span-3 md:col-start-10 xl:col-span-3 xl:col-start-9 md:mt-14 xl:mt-18",
+  "offset-right": "col-span-12 md:col-span-7 md:col-start-5 xl:col-span-6 xl:col-start-5",
 };
 
 export const projectFrameClasses: Record<ProjectOrientation, string> = {

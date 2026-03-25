@@ -2,8 +2,12 @@ import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import type { CollectionEntry } from "astro:content";
 import {
+  getProjectSectionIdsForSlug,
   mixedMediaProjectSlugs,
+  projectSectionConfigs,
+  type ProjectSectionId,
   portraitureProjectSlugs,
+  selectedWorkProjectSlugs,
   shortFilmProjectSlugs,
 } from "../data/projectSections";
 import { resolveProjectVideoSrc, usesRemoteProjectImages, usesRemoteProjectVideos } from "./media";
@@ -15,6 +19,13 @@ export interface ProjectSequenceLink {
   slug: string;
   title: string;
   href: string;
+}
+
+export interface ProjectSectionLink {
+  id: ProjectSectionId;
+  label: string;
+  href: string;
+  isCurrent: boolean;
 }
 
 export interface ProjectVideoAsset {
@@ -34,7 +45,10 @@ export interface ProjectHoverPreview {
 
 export {
   mixedMediaProjectSlugs,
+  projectSectionConfigs,
+  type ProjectSectionId,
   portraitureProjectSlugs,
+  selectedWorkProjectSlugs,
   shortFilmProjectSlugs,
 } from "../data/projectSections";
 
@@ -68,13 +82,30 @@ export const getProjectsBySlugs = (projects: ProjectEntry[], slugs: readonly str
   });
 };
 
+export const getProjectsBySection = (projects: ProjectEntry[], sectionId: ProjectSectionId) =>
+  getProjectsBySlugs(projects, projectSectionConfigs[sectionId].slugs);
+
+export const projectHasSection = (project: ProjectEntry, sectionId: ProjectSectionId) =>
+  getProjectSectionIdsForSlug(project.slug).includes(sectionId);
+
+export const getProjectSectionLinks = (
+  project: ProjectEntry,
+  currentSectionId?: ProjectSectionId
+): ProjectSectionLink[] =>
+  getProjectSectionIdsForSlug(project.slug).map((sectionId) => ({
+    id: sectionId,
+    label: projectSectionConfigs[sectionId].label,
+    href: withBase(projectSectionConfigs[sectionId].path),
+    isCurrent: sectionId === currentSectionId,
+  }));
+
 const publicRoot = resolve(process.cwd(), "public");
 
 const publicAssetExists = (src: string) =>
   existsSync(resolve(publicRoot, src.replace(/^\/+/, "")));
 
 const resolveMixedMediaAssetPath = (project: ProjectEntry, src?: string) => {
-  if (!src || project.data.status !== "mixed-media") {
+  if (!src || !projectHasSection(project, "mixed-media")) {
     return src;
   }
 
@@ -230,10 +261,12 @@ export const getProjectSequence = (
     throw new Error(`Project sequence could not find slug "${slug}".`);
   }
 
-  const sequenceProjects =
-    currentProject.data.status === "mixed-media"
-      ? orderedProjects.filter((project) => project.data.status === "mixed-media")
-      : orderedProjects.filter((project) => project.data.status !== "mixed-media");
+  const sequenceProjects = getProjectsBySlugs(
+    orderedProjects,
+    projectHasSection(currentProject, "mixed-media")
+      ? mixedMediaProjectSlugs
+      : selectedWorkProjectSlugs
+  );
 
   return createProjectSequence(sequenceProjects, slug, basePath);
 };

@@ -1,7 +1,7 @@
 ---
 import ResponsiveImage from "./ResponsiveImage.astro";
 import { getResponsiveImageFallbackSrc } from "../lib/responsiveImages";
-import type { ProjectVideoAsset } from "../lib/projects";
+import type { ProjectSectionLink, ProjectVideoAsset } from "../lib/projects";
 import { withBase } from "../lib/site";
 
 interface SequenceLink {
@@ -21,6 +21,7 @@ interface Props {
   nextProject: SequenceLink;
   backLinkHref?: string;
   backLinkLabel?: string;
+  sectionLinks?: ProjectSectionLink[];
 }
 
 const {
@@ -35,12 +36,16 @@ const {
   nextProject,
   backLinkHref = "/selected-work/",
   backLinkLabel = "Selected Works",
+  sectionLinks = [],
 } = Astro.props;
 
 const hasHeroVideo = Boolean(heroVideo?.src);
 const hasDetailVideos = detailVideos.length > 0;
 const hasGallery = detailImages.length > 0;
 const hasInfoLines = infoLines.length > 0;
+const visibleSectionLinks = sectionLinks.length > 1 ? sectionLinks : [];
+const hasSectionLinks = visibleSectionLinks.length > 0;
+const hasMetaPanel = hasInfoLines;
 const hasSupplementalContent = showBody || hasDetailVideos || hasGallery;
 const heroImageSizes = "(min-width: 96rem) 92rem, 100vw";
 const heroVideoControls = heroVideo?.controls ?? true;
@@ -59,14 +64,16 @@ const heroVideoPreload = heroVideoControls ? "metadata" : "auto";
         <p class="project-detail__eyebrow">Project</p>
         <h1 class="project-detail__title">{title}</h1>
       </div>
-      {hasInfoLines && (
+      {hasMetaPanel && (
         <aside class="project-detail__info" aria-label="Project information">
-          <p class="project-detail__info-label">Information</p>
-          <ul class="project-detail__info-list">
-            {infoLines.map((line) => (
-              <li class="project-detail__info-line">{line}</li>
-            ))}
-          </ul>
+          <div class="project-detail__meta-group">
+            <p class="project-detail__info-label">Information</p>
+            <ul class="project-detail__info-list">
+              {infoLines.map((line) => (
+                <li class="project-detail__info-line">{line}</li>
+              ))}
+            </ul>
+          </div>
         </aside>
       )}
     </header>
@@ -98,6 +105,27 @@ const heroVideoPreload = heroVideoControls ? "metadata" : "auto";
         />
       )}
     </figure>
+
+    {hasSectionLinks && (
+      <div class="project-detail__post-hero-meta" aria-label="Project sections">
+        <p class="project-detail__info-label">Also in</p>
+        <ul class="project-detail__section-list">
+          {visibleSectionLinks.map((sectionLink) => (
+            <li class="project-detail__section-item">
+              <a
+                class:list={[
+                  "project-detail__section-link",
+                  sectionLink.isCurrent && "is-current",
+                ]}
+                href={sectionLink.href}
+              >
+                {sectionLink.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
 
     {hasSupplementalContent && (
       <section class="project-detail__supplemental">
@@ -350,11 +378,16 @@ const heroVideoPreload = heroVideoControls ? "metadata" : "auto";
 
   .project-detail__info {
     display: grid;
-    gap: 0.78rem;
+    gap: 1.25rem;
     width: min(100%, 18.25rem);
     min-height: 5.6rem;
     justify-self: start;
     align-content: start;
+  }
+
+  .project-detail__meta-group {
+    display: grid;
+    gap: 0.78rem;
   }
 
   .project-detail__info-label {
@@ -387,6 +420,56 @@ const heroVideoPreload = heroVideoControls ? "metadata" : "auto";
     text-wrap: balance;
   }
 
+  .project-detail__section-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.48rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .project-detail__section-item {
+    margin: 0;
+  }
+
+  .project-detail__section-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.95rem;
+    padding: 0.42rem 0.74rem;
+    border: 1px solid rgba(16, 15, 13, 0.12);
+    border-radius: 999px;
+    color: rgba(16, 15, 13, 0.76);
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition:
+      border-color 160ms ease-out,
+      background-color 160ms ease-out,
+      color 160ms ease-out;
+  }
+
+  .project-detail__section-link:hover,
+  .project-detail__section-link:focus-visible {
+    border-color: rgba(16, 15, 13, 0.32);
+    color: rgba(16, 15, 13, 0.94);
+  }
+
+  .project-detail__section-link.is-current {
+    border-color: rgba(16, 15, 13, 0.94);
+    background: rgba(16, 15, 13, 0.94);
+    color: #ffffff;
+  }
+
+  .project-detail__section-link:focus-visible {
+    outline: none;
+  }
+
   .project-detail__hero {
     margin: 0;
     overflow: clip;
@@ -414,10 +497,21 @@ const heroVideoPreload = heroVideoControls ? "metadata" : "auto";
     background: #000;
   }
 
+  .project-detail__post-hero-meta {
+    display: grid;
+    justify-items: end;
+    gap: 0.72rem;
+    margin-top: 1rem;
+  }
+
   .project-detail__supplemental {
     display: grid;
     gap: 3rem;
     margin-top: 2.5rem;
+  }
+
+  .project-detail__post-hero-meta + .project-detail__supplemental {
+    margin-top: 1.5rem;
   }
 
   .project-detail__body {
@@ -529,6 +623,11 @@ const heroVideoPreload = heroVideoControls ? "metadata" : "auto";
       padding-top: 0.16rem;
     }
 
+    .project-detail__post-hero-meta {
+      width: min(100%, 18.25rem);
+      margin-left: auto;
+    }
+
     .project-detail__supplemental {
       gap: 3.5rem;
       margin-top: 3rem;
@@ -556,6 +655,11 @@ const heroVideoPreload = heroVideoControls ? "metadata" : "auto";
   }
 
   @media (max-width: 40rem) {
+    .project-detail__post-hero-meta {
+      justify-items: end;
+      margin-top: 0.9rem;
+    }
+
     .project-detail__sequence-nav {
       gap: 2rem;
     }

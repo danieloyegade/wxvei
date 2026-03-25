@@ -5,19 +5,27 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import type { ProjectEntry, ProjectSequenceLink } from "../../lib/projects";
 import {
   getProjectInfoLines,
-  getProjectSequence,
+  getProjectSectionLinks,
+  getProjectSequenceFromSlugs,
+  getProjectsBySection,
   getResolvedProjectMedia,
-  sortProjectsByOrder,
+  selectedWorkProjectSlugs,
 } from "../../lib/projects";
 
 export async function getStaticPaths() {
-  const projects = sortProjectsByOrder(await getCollection("projects"));
+  const projects = await getCollection("projects");
+  const selectedWorkProjects = getProjectsBySection(projects, "selected-work");
 
-  return projects.map((project) => ({
+  return selectedWorkProjects.map((project) => ({
     params: { slug: project.slug },
     props: {
       project,
-      ...getProjectSequence(projects, project.slug),
+      ...getProjectSequenceFromSlugs(
+        projects,
+        selectedWorkProjectSlugs,
+        project.slug,
+        "/selected-work/"
+      ),
     },
   }));
 }
@@ -29,12 +37,11 @@ interface Props {
 }
 
 const { project, previousProject, nextProject } = Astro.props;
-const backLinkHref = project.data.status === "mixed-media" ? "/mixed-media/" : "/selected-work/";
-const backLinkLabel = project.data.status === "mixed-media" ? "Mixed Media" : "Selected Works";
 const { Content } = await project.render();
 const hasProjectBody = project.data.status !== "placeholder" && project.body.trim().length > 0;
 const infoLines = getProjectInfoLines(project);
 const media = getResolvedProjectMedia(project);
+const sectionLinks = getProjectSectionLinks(project, "selected-work");
 ---
 
 <BaseLayout
@@ -52,8 +59,9 @@ const media = getResolvedProjectMedia(project);
     showBody={hasProjectBody}
     previousProject={previousProject}
     nextProject={nextProject}
-    backLinkHref={backLinkHref}
-    backLinkLabel={backLinkLabel}
+    backLinkHref="/selected-work/"
+    backLinkLabel="Selected Works"
+    sectionLinks={sectionLinks}
   >
     {hasProjectBody && <Content />}
   </ProjectDetailPage>

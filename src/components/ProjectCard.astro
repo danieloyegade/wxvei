@@ -18,6 +18,7 @@ interface Props {
   frameClass: string;
   cropFocus?: "center" | "top" | "upper-third";
   visualWeight?: "support" | "standard" | "dominant" | "hero";
+  cardClassName?: string;
 }
 
 const {
@@ -33,6 +34,7 @@ const {
   frameClass,
   cropFocus = "center",
   visualWeight = "standard",
+  cardClassName,
 } = Astro.props;
 
 const objectPositionMap = {
@@ -58,7 +60,7 @@ const imageClass = [
 ---
 
 <article
-  class:list={["project-card", layoutClass]}
+  class:list={["project-card", layoutClass, cardClassName]}
   data-project-card
   data-project-slug={slug}
   data-preview-in-view={playsPreviewInView ? "true" : undefined}
@@ -290,6 +292,47 @@ const imageClass = [
 
     .project-card__hover-descriptor {
       color: rgba(247, 243, 235, 0.84);
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .project-card--section-grid {
+      gap: 0.88rem;
+    }
+
+    .project-card--mobile-inset-start,
+    .project-card--mobile-inset-end {
+      width: min(100%, calc(100% - 2.4rem));
+    }
+
+    .project-card--mobile-inset-start {
+      justify-self: start;
+    }
+
+    .project-card--mobile-inset-end {
+      justify-self: end;
+    }
+
+    .project-card--mobile-pause {
+      margin-top: 0.8rem;
+    }
+
+    .project-card--section-grid .project-card__hover-copy {
+      right: 0.88rem;
+      bottom: 0.88rem;
+      left: 0.88rem;
+      gap: 0.22rem;
+      max-width: min(18rem, 76%);
+    }
+
+    .project-card--section-grid .project-card__hover-title {
+      font-size: clamp(1.14rem, 5.2vw, 1.42rem);
+    }
+
+    .project-card--section-grid .project-card__hover-descriptor {
+      max-width: 22ch;
+      font-size: 0.74rem;
+      line-height: 1.42;
     }
   }
 

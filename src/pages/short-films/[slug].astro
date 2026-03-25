@@ -5,15 +5,15 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import type { ProjectEntry, ProjectSequenceLink } from "../../lib/projects";
 import {
   getProjectInfoLines,
+  getProjectSectionLinks,
   getResolvedProjectMedia,
   getProjectSequenceFromSlugs,
-  getProjectsBySlugs,
-  shortFilmProjectSlugs,
+  getProjectsBySection,
 } from "../../lib/projects";
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
-  const shortFilmProjects = getProjectsBySlugs(projects, shortFilmProjectSlugs);
+  const shortFilmProjects = getProjectsBySection(projects, "short-films");
 
   return shortFilmProjects.map((project) => ({
     params: { slug: project.slug },
@@ -21,7 +21,7 @@ export async function getStaticPaths() {
       project,
       ...getProjectSequenceFromSlugs(
         projects,
-        shortFilmProjectSlugs,
+        shortFilmProjects.map(({ slug }) => slug),
         project.slug,
         "/short-films/"
       ),
@@ -40,6 +40,7 @@ const { Content } = await project.render();
 const hasProjectBody = project.data.status !== "placeholder" && project.body.trim().length > 0;
 const infoLines = getProjectInfoLines(project);
 const media = getResolvedProjectMedia(project);
+const sectionLinks = getProjectSectionLinks(project, "short-films");
 ---
 
 <BaseLayout
@@ -59,6 +60,7 @@ const media = getResolvedProjectMedia(project);
     nextProject={nextProject}
     backLinkHref="/short-films/"
     backLinkLabel="Short Films"
+    sectionLinks={sectionLinks}
   >
     {hasProjectBody && <Content />}
   </ProjectDetailPage>

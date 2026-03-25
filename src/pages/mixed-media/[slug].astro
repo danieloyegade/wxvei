@@ -5,15 +5,15 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import type { ProjectEntry, ProjectSequenceLink } from "../../lib/projects";
 import {
   getProjectInfoLines,
+  getProjectSectionLinks,
   getResolvedProjectMedia,
   getProjectSequenceFromSlugs,
-  getProjectsBySlugs,
-  mixedMediaProjectSlugs,
+  getProjectsBySection,
 } from "../../lib/projects";
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
-  const mixedMediaProjects = getProjectsBySlugs(projects, mixedMediaProjectSlugs);
+  const mixedMediaProjects = getProjectsBySection(projects, "mixed-media");
 
   return mixedMediaProjects.map((project) => ({
     params: { slug: project.slug },
@@ -21,7 +21,7 @@ export async function getStaticPaths() {
       project,
       ...getProjectSequenceFromSlugs(
         projects,
-        mixedMediaProjectSlugs,
+        mixedMediaProjects.map(({ slug }) => slug),
         project.slug,
         "/mixed-media/"
       ),
@@ -40,6 +40,7 @@ const { Content } = await project.render();
 const hasProjectBody = project.data.status !== "placeholder" && project.body.trim().length > 0;
 const infoLines = getProjectInfoLines(project);
 const media = getResolvedProjectMedia(project);
+const sectionLinks = getProjectSectionLinks(project, "mixed-media");
 ---
 
 <BaseLayout
@@ -58,6 +59,7 @@ const media = getResolvedProjectMedia(project);
     nextProject={nextProject}
     backLinkHref="/mixed-media/"
     backLinkLabel="Mixed Media"
+    sectionLinks={sectionLinks}
   >
     {hasProjectBody && <Content />}
   </ProjectDetailPage>
