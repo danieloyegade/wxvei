@@ -216,6 +216,46 @@ const slugify = (value) =>
     .replace(/^-+|-+$/g, "")
     .replace(/-{2,}/g, "-");
 
+const frontmatterPattern = /^---\n([\s\S]*?)\n---/;
+const readFrontmatterBlock = (source) => source.match(frontmatterPattern)?.[1];
+const readFrontmatterSlug = (frontmatter) =>
+  frontmatter?.match(/^slug:\s*"?(.*?)"?\s*$/m)?.[1];
+
+let projectContentPathIndexPromise;
+
+const getProjectContentPathIndex = async () => {
+  if (!projectContentPathIndexPromise) {
+    projectContentPathIndexPromise = (async () => {
+      const filenames = await readdir(projectContentDir);
+      const pathIndex = new Map();
+
+      for (const filename of filenames) {
+        if (!filename.endsWith(".md")) {
+          continue;
+        }
+
+        const filePath = resolve(projectContentDir, filename);
+        const source = await readFile(filePath, "utf8");
+        const frontmatter = readFrontmatterBlock(source);
+        const frontmatterSlug = readFrontmatterSlug(frontmatter);
+        const fallbackSlug = slugify(filename.replace(/\.md$/, ""));
+
+        if (frontmatterSlug) {
+          pathIndex.set(frontmatterSlug, filePath);
+        }
+
+        if (!pathIndex.has(fallbackSlug)) {
+          pathIndex.set(fallbackSlug, filePath);
+        }
+      }
+
+      return pathIndex;
+    })();
+  }
+
+  return projectContentPathIndexPromise;
+};
+
 const parseJsonManifest = async (manifestPath) => {
   const manifestSource = await readFile(manifestPath, "utf8");
 
@@ -376,16 +416,16 @@ const normalizeHoverPreview = (value) => {
 const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 const readExistingFrontmatter = async (slug) => {
-  const existingContentPath = resolve(projectContentDir, `${slug}.md`);
+  const pathIndex = await getProjectContentPathIndex();
+  const existingContentPath = pathIndex.get(slug) ?? resolve(projectContentDir, `${slug}.md`);
 
   if (!existsSync(existingContentPath)) {
     return undefined;
   }
 
   const existingSource = await readFile(existingContentPath, "utf8");
-  const frontmatterMatch = existingSource.match(/^---\n([\s\S]*?)\n---/);
 
-  return frontmatterMatch?.[1];
+  return readFrontmatterBlock(existingSource);
 };
 
 const readIndentedBlock = (source, key, indentLevel = 0) => {
