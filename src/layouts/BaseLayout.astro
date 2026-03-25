@@ -270,25 +270,68 @@ const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
 
   @media (max-width: 40rem) {
     .site-header {
-      --header-inline-padding: clamp(0.68rem, 3vw, 0.94rem);
-      --header-block-start: 0.42rem;
-      --header-block-end: 0.72rem;
-      --header-column-gap: 0.78rem;
-      --header-right-gap: 0.58rem;
-      --header-link-size: 0.98rem;
-      --header-letter-spacing: 0.13em;
+      --header-inline-padding: clamp(1rem, 4.5vw, 1.28rem);
+      --header-block-start: 0.66rem;
+      --header-block-end: 0.88rem;
+      --header-column-gap: 0.75rem;
+      --header-right-gap: 0;
+      --header-link-size: 0.84rem;
+      --header-letter-spacing: 0.1em;
     }
 
     .site-header__nav {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        "brand menu"
+        "title title";
+      row-gap: 0.5rem;
       width: 100%;
+      align-items: start;
+    }
+
+    .site-header__zone {
+      align-items: flex-start;
+    }
+
+    .site-header__zone--left {
+      grid-area: brand;
+      justify-self: start;
+      padding-right: 0.5rem;
+    }
+
+    .site-header__zone--center {
+      grid-area: title;
+      justify-self: stretch;
+      justify-content: center;
+      padding-inline: clamp(2.4rem, 12vw, 3.8rem);
+    }
+
+    .site-header__zone--right {
+      grid-area: menu;
+      justify-self: end;
+    }
+
+    .site-header__link {
+      line-height: 0.9;
     }
 
     .site-header__link--work {
-      min-width: auto;
+      min-width: 0;
+      font-size: 0.8rem;
+      letter-spacing: 0.114em;
+    }
+
+    .site-header__link--brand {
+      font-size: 0.76rem;
+      letter-spacing: 0.088em;
     }
 
     .site-header__link--information {
       display: none;
+    }
+
+    .site-main {
+      padding-top: clamp(6rem, 20vw, 6.8rem);
     }
   }
 </style>

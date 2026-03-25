@@ -306,14 +306,21 @@ const menuId = "site-header-editorial-menu";
   }
 
   @media (max-width: 40rem) {
+    .header-menu__button {
+      min-width: 2rem;
+      min-height: 1.75rem;
+      align-items: flex-start;
+      justify-content: flex-end;
+    }
+
     .header-menu__icon {
       width: 0.98rem;
       height: 0.68rem;
-      transform: translateY(-0.04rem);
+      transform: translateY(0.02rem);
     }
 
     .header-menu__panel {
-      top: calc(100% + 0.68rem);
+      top: calc(100% + 0.72rem);
     }
 
     .header-menu__list {
