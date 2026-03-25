@@ -12,11 +12,20 @@ hoverPreview:
   src: "/projects/saucony/videos/preview.mp4"
   startTime: 0
   endTime: 10
-order: 13
 layoutPattern: "wide-band"
 visualWeight: "dominant"
 orientation: "landscape"
 cropFocus: "center"
+editorial:
+  visibility: "published"
+  sections:
+    - "selected-work"
+  sectionOrder:
+    selected-work: 13
+  homepage:
+    order: 5
+    template: "solo"
+    slot: 1
 status: "placeholder"
 ---
 

@@ -25,6 +25,8 @@ const dateFormatter = new Intl.DateTimeFormat("en-GB", {
 <BaseLayout
   title={`${post.data.title} | Daniel Oyegade`}
   description={post.data.excerpt}
+  preloadImage={post.data.coverImage}
+  socialType="article"
 >
   <article class="blog-post">
     <div class="blog-post__frame">

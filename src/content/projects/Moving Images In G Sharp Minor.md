@@ -16,11 +16,22 @@ hoverPreview:
 credits:
   - role: "Directed"
     name: "Daniel Oyegade"
-order: 1
 layoutPattern: "lead-left"
 visualWeight: "dominant"
 orientation: "landscape"
 cropFocus: "upper-third"
+editorial:
+  visibility: "published"
+  sections:
+    - "selected-work"
+    - "short-films"
+  sectionOrder:
+    selected-work: 1
+    short-films: 1
+  homepage:
+    order: 2
+    template: "reverse"
+    slot: 1
 status: "placeholder"
 ---
 

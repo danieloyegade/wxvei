@@ -9,24 +9,31 @@ This file tracks the current public asset convention so project media stays grou
 Project media now lives under:
 - `public/projects/<slug>/photos/`
 - `public/projects/<slug>/videos/`
+- `public/projects/mixed-media/<slug>/photos/`
 
 Non-project imagery lives under:
 - `public/site/photos/`
+
+Source masters now live outside the published tree:
+- `media/masters/projects/<slug>/videos/`
 
 ## Project Conventions
 
 Use these canonical filenames when adding or replacing project assets:
 - `public/projects/<slug>/photos/cover.jpg`
 - `public/projects/<slug>/videos/feature.mp4`
+- `public/projects/<slug>/videos/preview.mp4`
 - `public/projects/<slug>/photos/stills/still-1.jpg`
 - `public/projects/<slug>/photos/stills/still-2.jpg`
 - `public/projects/<slug>/photos/stills/still-3.jpg`
 
-If a source file needs a different extension, keep the same base name:
-- `feature.mov`
-- `cover.png`
+Source masters can keep their original names and extensions under `media/masters/`.
+Published web-delivery assets should stay canonical in `public/`.
 
-If you want a lighter hover clip later, add another file inside the same project's `videos` folder and point `hoverPreview.src` at it in the project frontmatter.
+Run:
+
+- `npm run videos:prepare` to generate delivery MP4s and preview clips
+- `npm run images:responsive` to generate responsive JPEG variants
 
 ## Current Site Assets
 
@@ -35,25 +42,25 @@ If you want a lighter hover clip later, add another file inside the same project
 ## Current Video Projects
 
 - `public/projects/annabella/photos/cover.jpg`
-- `public/projects/annabella/videos/AnnabellaFINAL.mp4`
+- `media/masters/projects/annabella/videos/AnnabellaFINAL.mp4`
 - `public/projects/annabella/photos/stills/`
 - `public/projects/moving-images-in-g-sharp-minor/photos/cover.jpg`
-- `public/projects/moving-images-in-g-sharp-minor/videos/feature.mp4`
+- `media/masters/projects/moving-images-in-g-sharp-minor/videos/feature.mov`
 - `public/projects/moving-images-in-g-sharp-minor/photos/stills/`
 - `public/projects/someplace-else/photos/cover.jpg`
-- `public/projects/someplace-else/videos/feature.mp4`
+- `media/masters/projects/someplace-else/videos/feature.mp4`
 - `public/projects/someplace-else/photos/stills/`
 - `public/projects/of-the-sublime-and-beautiful/photos/cover.jpg`
-- `public/projects/of-the-sublime-and-beautiful/videos/feature.mp4`
+- `media/masters/projects/of-the-sublime-and-beautiful/videos/feature.mp4`
 - `public/projects/of-the-sublime-and-beautiful/photos/stills/`
 
 ## Other Project Folders Prepared
 
 - `public/projects/jamine/photos/cover.jpg`
-- `public/projects/rectangle-with-embellishments/photos/cover.jpg`
-- `public/projects/telfar-with-embelishments/photos/cover.jpg`
-- `public/projects/home-improvement/photos/cover.jpg`
-- `public/projects/spectres-under-glass/photos/cover.jpg`
+- `public/projects/mixed-media/rectangle-with-embellishments/photos/cover.jpg`
+- `public/projects/mixed-media/telfar-with-embelishments/photos/cover.jpg`
+- `public/projects/mixed-media/home-improvement/photos/cover.jpg`
+- `public/projects/mixed-media/spectres-under-glass/photos/cover.jpg`
 - `public/projects/reny/photos/cover.jpg`
 - `public/projects/mia/photos/cover.jpg`
 - `public/projects/annabella/photos/cover.jpg`

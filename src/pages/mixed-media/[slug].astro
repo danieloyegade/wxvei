@@ -5,9 +5,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import type { ProjectEntry, ProjectSequenceLink } from "../../lib/projects";
 import {
   getProjectInfoLines,
+  getProjectSequenceForSection,
   getProjectSectionLinks,
   getResolvedProjectMedia,
-  getProjectSequenceFromSlugs,
   getProjectsBySection,
 } from "../../lib/projects";
 
@@ -19,12 +19,7 @@ export async function getStaticPaths() {
     params: { slug: project.slug },
     props: {
       project,
-      ...getProjectSequenceFromSlugs(
-        projects,
-        mixedMediaProjects.map(({ slug }) => slug),
-        project.slug,
-        "/mixed-media/"
-      ),
+      ...getProjectSequenceForSection(projects, "mixed-media", project.slug, "/mixed-media/"),
     },
   }));
 }

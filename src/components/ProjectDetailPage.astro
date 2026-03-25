@@ -50,7 +50,7 @@ const hasSupplementalContent = showBody || hasDetailVideos || hasGallery;
 const heroImageSizes = "(min-width: 96rem) 92rem, 100vw";
 const heroVideoControls = heroVideo?.controls ?? true;
 const heroVideoLoop = heroVideo?.loop ?? false;
-const heroVideoPreload = heroVideoControls ? "metadata" : "auto";
+const heroVideoPreload = "metadata";
 const heroVideoUnmutedVolume = Math.min(Math.max(heroVideo?.unmutedVolume ?? 0.1, 0), 1);
 const showsHeroAudioToggle = hasHeroVideo && heroVideo?.unmutedVolume !== undefined;
 ---

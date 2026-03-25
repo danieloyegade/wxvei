@@ -9,8 +9,8 @@ storage or a CDN, then let the site load them from remote URLs.
 
 This repository is configured so that:
 - local and remote media can be switched for all published assets
-- large local video files are ignored by Git
-- deployed environments can load the same paths from external storage
+- source masters can live outside `public/`
+- deployed environments can load the same published paths from external storage
 
 Important:
 - content files continue to store repo-style paths like `/projects/.../videos/...`
@@ -23,6 +23,7 @@ Push:
 - code
 - content files
 - photos, posters, and still images
+- generated responsive image variants
 - small supporting assets that belong in the repo
 
 Do not push large source or delivery videos into normal Git history.
@@ -30,7 +31,7 @@ Do not push large source or delivery videos into normal Git history.
 ## What Can Live Where?
 
 Recommended split:
-- laptop: code and config
+- laptop: code, config, and local master media under `media/masters/`
 - Cloudflare R2: published project media, site photos, fonts, favicons
 - SSD: masters, archive files, oversized local working copies
 
@@ -90,12 +91,13 @@ Resolved example:
 
 ## Suggested Workflow
 
-1. Upload published assets to storage.
-2. Set the `PUBLIC_*` media variables in the actual production build environment.
-3. In this repository today, that means GitHub Actions variables used by
+1. Keep source video masters in `media/masters/projects/<slug>/videos/`.
+2. Run `npm run videos:prepare` to generate web-delivery videos and preview clips into `public/`.
+3. Run `npm run images:responsive` after adding or replacing JPEG assets.
+4. Upload published assets to storage.
+5. Set the `PUBLIC_*` media variables in the actual production build environment.
+6. In this repository today, that means GitHub Actions variables used by
    `.github/workflows/deploy.yml`.
-4. Keep masters and archive files on your SSD.
-5. Keep local copies only when you need offline editing or re-export work.
 
 ## Uploading Published Media To R2
 

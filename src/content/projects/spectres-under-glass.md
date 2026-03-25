@@ -1,14 +1,19 @@
 ---
 title: "Spectres under glass"
 slug: "spectres-under-glass"
-image: "/projects/spectres-under-glass/photos/cover.jpg"
+image: "/projects/mixed-media/spectres-under-glass/photos/cover.jpg"
 descriptor: "Reflections and shadow inside glass."
-order: 4
 layoutPattern: "support-right"
 visualWeight: "standard"
 orientation: "wide"
 cropFocus: "center"
-status: "mixed-media"
+editorial:
+  visibility: "published"
+  sections:
+    - "mixed-media"
+  sectionOrder:
+    mixed-media: 4
+status: "published"
 ---
 
 Mixed media study for Spectres under glass.

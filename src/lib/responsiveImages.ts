@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
-import { resolveProjectImageSrc, usesRemoteProjectImages } from "./media";
+import { resolveProjectImageSrc } from "./media";
 
 interface ResponsiveVariant {
   src: string;
@@ -58,12 +58,6 @@ const publicAssetExists = (src: string) => {
 
 export const getResponsiveImageSet = (src: string): ResponsiveImageSet | null => {
   if (!imageExtensionPattern.test(src)) {
-    return null;
-  }
-
-  // Remote image hosting only guarantees the canonical asset paths.
-  // Avoid emitting derived `-640/-960/...` URLs unless we are serving local variants.
-  if (usesRemoteProjectImages()) {
     return null;
   }
 

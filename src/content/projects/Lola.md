@@ -8,11 +8,22 @@ credits:
     name: "Daniel Oyegade"
   - role: "Styled"
     name: "Mia Chung"
-order: 8
 layoutPattern: "hero-left"
 visualWeight: "hero"
 orientation: "portrait"
 cropFocus: "upper-third"
+editorial:
+  visibility: "published"
+  sections:
+    - "selected-work"
+    - "portraiture"
+  sectionOrder:
+    selected-work: 8
+    portraiture: 4
+  homepage:
+    order: 6
+    template: "solo"
+    slot: 1
 status: "placeholder"
 ---
 

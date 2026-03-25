@@ -1,16 +1,11 @@
-import { existsSync } from "node:fs";
-import { resolve } from "node:path";
 import type { CollectionEntry } from "astro:content";
 import {
-  getProjectSectionIdsForSlug,
-  mixedMediaProjectSlugs,
   projectSectionConfigs,
+  projectSectionIds,
   type ProjectSectionId,
-  portraitureProjectSlugs,
-  selectedWorkProjectSlugs,
-  shortFilmProjectSlugs,
-} from "../data/projectSections";
-import { resolveProjectVideoSrc, usesRemoteProjectImages, usesRemoteProjectVideos } from "./media";
+  type HomepageBeatTemplate,
+} from "../data/editorial";
+import { resolveProjectImageSrc, resolveProjectVideoSrc } from "./media";
 import { withBase } from "./site";
 
 export type ProjectEntry = CollectionEntry<"projects">;
@@ -45,14 +40,18 @@ export interface ProjectHoverPreview {
   endTime?: number;
 }
 
+export interface ProjectHomepagePlacement {
+  order: number;
+  template: HomepageBeatTemplate;
+  slot: number;
+}
+
 export {
-  mixedMediaProjectSlugs,
   projectSectionConfigs,
+  projectSectionIds,
   type ProjectSectionId,
-  portraitureProjectSlugs,
-  selectedWorkProjectSlugs,
-  shortFilmProjectSlugs,
-} from "../data/projectSections";
+  type HomepageBeatTemplate,
+} from "../data/editorial";
 
 interface ResolvedProjectMedia {
   image: string;
@@ -62,96 +61,92 @@ interface ResolvedProjectMedia {
   detailImages?: string[];
 }
 
-export const sortProjectsByOrder = (projects: ProjectEntry[]) =>
-  [...projects].sort((a, b) => a.data.order - b.data.order);
+const compareNumbers = (left: number, right: number) => left - right;
+const compareTitles = (left: ProjectEntry, right: ProjectEntry) =>
+  left.data.title.localeCompare(right.data.title, "en", { sensitivity: "base" });
 
-const normalizeBasePath = (basePath: string) => {
+const resolveImagePath = (src?: string) => resolveProjectImageSrc(src) ?? src;
+const resolveVideoPath = (src?: string) => resolveProjectVideoSrc(src) ?? src;
+
+const isPublishedProject = (project: ProjectEntry) => project.data.editorial.visibility === "published";
+
+const getSectionOrder = (project: ProjectEntry, sectionId: ProjectSectionId) =>
+  project.data.editorial.sectionOrder[sectionId] ?? Number.MAX_SAFE_INTEGER;
+
+const getHomepagePlacement = (project: ProjectEntry) => project.data.editorial.homepage;
+
+export const projectPath = (slug: string, basePath = "/selected-work/") => {
   const normalizedPath = basePath.startsWith("/") ? basePath : `/${basePath}`;
+  const withTrailingSlash = normalizedPath.endsWith("/") ? normalizedPath : `${normalizedPath}/`;
 
-  return normalizedPath.endsWith("/") ? normalizedPath : `${normalizedPath}/`;
+  return withBase(`${withTrailingSlash}${slug}/`);
 };
 
-export const projectPath = (slug: string, basePath = "/selected-work/") =>
-  withBase(`${normalizeBasePath(basePath)}${slug}/`);
-
-export const getProjectsBySlugs = (projects: ProjectEntry[], slugs: readonly string[]) => {
-  const projectMap = new Map(projects.map((project) => [project.slug, project]));
-
-  return slugs.flatMap((slug) => {
-    const project = projectMap.get(slug);
-
-    return project ? [project] : [];
-  });
-};
+export const getVisibleProjects = (projects: ProjectEntry[]) => projects.filter(isPublishedProject);
 
 export const getProjectsBySection = (projects: ProjectEntry[], sectionId: ProjectSectionId) =>
-  getProjectsBySlugs(projects, projectSectionConfigs[sectionId].slugs);
+  getVisibleProjects(projects)
+    .filter((project) => project.data.editorial.sections.includes(sectionId))
+    .sort(
+      (left, right) =>
+        compareNumbers(getSectionOrder(left, sectionId), getSectionOrder(right, sectionId)) ||
+        compareTitles(left, right)
+    );
+
+export const getHomepageProjects = (projects: ProjectEntry[]) =>
+  getVisibleProjects(projects)
+    .filter((project) => Boolean(getHomepagePlacement(project)))
+    .sort((left, right) => {
+      const leftPlacement = getHomepagePlacement(left)!;
+      const rightPlacement = getHomepagePlacement(right)!;
+
+      return (
+        compareNumbers(leftPlacement.order, rightPlacement.order) ||
+        compareNumbers(leftPlacement.slot, rightPlacement.slot) ||
+        compareTitles(left, right)
+      );
+    });
 
 export const projectHasSection = (project: ProjectEntry, sectionId: ProjectSectionId) =>
-  getProjectSectionIdsForSlug(project.slug).includes(sectionId);
+  project.data.editorial.sections.includes(sectionId);
+
+export const getProjectSectionIdsForProject = (project: ProjectEntry) =>
+  projectSectionIds.filter((sectionId) => projectHasSection(project, sectionId));
 
 export const getProjectSectionLinks = (
   project: ProjectEntry,
   currentSectionId?: ProjectSectionId
 ): ProjectSectionLink[] =>
-  getProjectSectionIdsForSlug(project.slug).map((sectionId) => ({
+  getProjectSectionIdsForProject(project).map((sectionId) => ({
     id: sectionId,
     label: projectSectionConfigs[sectionId].label,
     href: withBase(projectSectionConfigs[sectionId].path),
     isCurrent: sectionId === currentSectionId,
   }));
 
-const publicRoot = resolve(process.cwd(), "public");
-
-const publicAssetExists = (src: string) =>
-  existsSync(resolve(publicRoot, src.replace(/^\/+/, "")));
-
-const resolveMixedMediaAssetPath = (project: ProjectEntry, src?: string) => {
-  if (!src || !projectHasSection(project, "mixed-media")) {
-    return src;
-  }
-
-  if (!src.startsWith("/projects/") || src.startsWith("/projects/mixed-media/")) {
-    return src;
-  }
-
-  const mixedMediaSrc = src.replace(
-    `/projects/${project.slug}/`,
-    `/projects/mixed-media/${project.slug}/`
-  );
-
-  if (usesRemoteProjectImages() || usesRemoteProjectVideos()) {
-    return mixedMediaSrc;
-  }
-
-  return publicAssetExists(mixedMediaSrc) ? mixedMediaSrc : src;
-};
-
 export const getResolvedProjectMedia = (project: ProjectEntry): ResolvedProjectMedia => ({
-  image: resolveMixedMediaAssetPath(project, project.data.image) ?? project.data.image,
+  image: resolveImagePath(project.data.image) ?? project.data.image,
   video: project.data.video
     ? {
         ...project.data.video,
-        src:
-          resolveProjectVideoSrc(resolveMixedMediaAssetPath(project, project.data.video.src)) ??
-          project.data.video.src,
-        poster: resolveMixedMediaAssetPath(project, project.data.video.poster),
+        src: resolveVideoPath(project.data.video.src) ?? project.data.video.src,
+        poster: resolveImagePath(project.data.video.poster),
       }
     : undefined,
   detailVideos: project.data.detailVideos?.map((detailVideo) => ({
     ...detailVideo,
-    src: resolveProjectVideoSrc(resolveMixedMediaAssetPath(project, detailVideo.src)) ?? detailVideo.src,
-    poster: resolveMixedMediaAssetPath(project, detailVideo.poster),
+    src: resolveVideoPath(detailVideo.src) ?? detailVideo.src,
+    poster: resolveImagePath(detailVideo.poster),
   })),
   hoverPreview: project.data.hoverPreview
     ? {
         ...project.data.hoverPreview,
-        src: resolveProjectVideoSrc(resolveMixedMediaAssetPath(project, project.data.hoverPreview.src)),
-        poster: resolveMixedMediaAssetPath(project, project.data.hoverPreview.poster),
+        src: resolveVideoPath(project.data.hoverPreview.src),
+        poster: resolveImagePath(project.data.hoverPreview.poster),
       }
     : undefined,
   detailImages: project.data.detailImages?.map(
-    (detailImage) => resolveMixedMediaAssetPath(project, detailImage) ?? detailImage
+    (detailImage) => resolveImagePath(detailImage) ?? detailImage
   ),
 });
 
@@ -163,7 +158,6 @@ export const mapProjectForGrid = (project: ProjectEntry) => {
     title: project.data.title,
     image: media.image,
     descriptor: project.data.descriptor,
-    order: project.data.order,
     layoutPattern: project.data.layoutPattern,
     visualWeight: project.data.visualWeight,
     orientation: project.data.orientation,
@@ -172,6 +166,7 @@ export const mapProjectForGrid = (project: ProjectEntry) => {
     video: media.video,
     hoverPreview: media.hoverPreview,
     detailImages: media.detailImages,
+    homepage: project.data.editorial.homepage,
   };
 };
 
@@ -252,35 +247,9 @@ const createProjectSequence = (
   };
 };
 
-export const getProjectSequence = (
+export const getProjectSequenceForSection = (
   projects: ProjectEntry[],
-  slug: string,
-  basePath = "/selected-work/"
-) => {
-  const orderedProjects = sortProjectsByOrder(projects);
-  const currentProject = orderedProjects.find((project) => project.slug === slug);
-
-  if (!currentProject) {
-    throw new Error(`Project sequence could not find slug "${slug}".`);
-  }
-
-  const sequenceProjects = getProjectsBySlugs(
-    orderedProjects,
-    projectHasSection(currentProject, "mixed-media")
-      ? mixedMediaProjectSlugs
-      : selectedWorkProjectSlugs
-  );
-
-  return createProjectSequence(sequenceProjects, slug, basePath);
-};
-
-export const getProjectSequenceFromSlugs = (
-  projects: ProjectEntry[],
-  slugs: readonly string[],
+  sectionId: ProjectSectionId,
   slug: string,
   basePath: string
-) => {
-  const sequenceProjects = getProjectsBySlugs(projects, slugs);
-
-  return createProjectSequence(sequenceProjects, slug, basePath);
-};
+) => createProjectSequence(getProjectsBySection(projects, sectionId), slug, basePath);

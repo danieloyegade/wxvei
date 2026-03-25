@@ -6,11 +6,22 @@ descriptor: "Manchester, 2025."
 metadata:
   - "Manchester"
   - "2025"
-order: 10
 layoutPattern: "offset-right"
 visualWeight: "standard"
 orientation: "landscape"
 cropFocus: "upper-third"
+editorial:
+  visibility: "published"
+  sections:
+    - "selected-work"
+    - "portraiture"
+  sectionOrder:
+    selected-work: 10
+    portraiture: 6
+  homepage:
+    order: 7
+    template: "closing"
+    slot: 2
 status: "placeholder"
 ---
 

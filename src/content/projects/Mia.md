@@ -14,11 +14,22 @@ detailImages:
   - "/projects/mia/photos/DSC_7635.jpg"
   - "/projects/mia/photos/DSC_7653.jpg"
   - "/projects/mia/photos/DSC_7768.jpg"
-order: 4
 layoutPattern: "support-left"
 visualWeight: "support"
 orientation: "landscape"
 cropFocus: "upper-third"
+editorial:
+  visibility: "published"
+  sections:
+    - "selected-work"
+    - "portraiture"
+  sectionOrder:
+    selected-work: 4
+    portraiture: 2
+  homepage:
+    order: 3
+    template: "balanced"
+    slot: 1
 status: "placeholder"
 ---
 

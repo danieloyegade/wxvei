@@ -8,6 +8,8 @@ dist/
 .env.*.local
 .dev.vars
 .DS_Store
+media/masters/
+media/legacy/
 public/projects/**/videos/*.mp4
 public/projects/**/videos/*.mov
 public/projects/**/videos/*.m4v

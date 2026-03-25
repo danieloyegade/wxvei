@@ -1,4 +1,5 @@
 import { defineCollection, z } from "astro:content";
+import { homepageBeatTemplateValues, projectSectionIds } from "./data/editorial";
 import {
   projectCropFocusValues,
   projectLayoutPatternValues,
@@ -31,13 +32,54 @@ const projectHoverPreviewSchema = z
     }
   );
 
+const projectSectionOrderSchema = z.object({
+  "selected-work": z.number().int().positive().optional(),
+  portraiture: z.number().int().positive().optional(),
+  "mixed-media": z.number().int().positive().optional(),
+  "short-films": z.number().int().positive().optional(),
+});
+
+const projectEditorialSchema = z
+  .object({
+    visibility: z.enum(["published", "draft"]).default("published"),
+    sections: z.array(z.enum(projectSectionIds)).min(1),
+    sectionOrder: projectSectionOrderSchema,
+    homepage: z
+      .object({
+        order: z.number().int().positive(),
+        template: z.enum(homepageBeatTemplateValues),
+        slot: z.number().int().positive(),
+      })
+      .optional(),
+  })
+  .superRefine((editorial, context) => {
+    const missingSectionOrders = editorial.sections.filter(
+      (sectionId) => editorial.sectionOrder[sectionId] === undefined
+    );
+
+    if (missingSectionOrders.length > 0) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Missing sectionOrder entries for: ${missingSectionOrders.join(", ")}`,
+        path: ["sectionOrder"],
+      });
+    }
+
+    if (editorial.homepage && !editorial.sections.includes("selected-work")) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "homepage entries must also belong to selected-work.",
+        path: ["homepage"],
+      });
+    }
+  });
+
 const projects = defineCollection({
   type: "content",
   schema: z.object({
     title: z.string(),
     image: z.string(),
     descriptor: z.string(),
-    order: z.number().int().positive(),
     layoutPattern: z.enum(projectLayoutPatternValues),
     visualWeight: z.enum(projectVisualWeightValues).default("standard"),
     orientation: z.enum(projectOrientationValues),
@@ -56,7 +98,8 @@ const projects = defineCollection({
         })
       )
       .optional(),
-    status: z.string().default("placeholder"),
+    editorial: projectEditorialSchema,
+    status: z.enum(["placeholder", "published"]).default("placeholder"),
   }),
 });
 

@@ -7,16 +7,20 @@ It does four things in one pass:
 
 1. Takes a project or blog manifest.
 2. Normalizes the supplied images into site-ready JPEG assets.
-3. Uploads the generated media to Cloudflare R2.
-4. Writes the matching Astro content file so the site has a new page to render.
+3. Generates responsive variants for all published JPEG images.
+4. Generates web-delivery MP4s and preview clips for project videos.
+5. Uploads the generated media to Cloudflare R2.
+6. Writes the matching Astro content file so the site has a new page to render.
 
-For project uploads, the script also updates the internal section registry for:
+Project editorial state now lives in the content frontmatter itself.
 
-- `mixed-media`
-- `portraiture`
-- `short-films`
+That single `editorial` object determines:
 
-`selected-work` does not need a registry entry.
+- section membership
+- section ordering
+- homepage inclusion
+- homepage ordering
+- publish visibility
 
 ## Command
 
@@ -46,7 +50,9 @@ Create a new project with this upload template.
 
 Type: project
 Project name: <PROJECT NAME>
-Section: <selected-work | mixed-media | portraiture | short-films>
+Sections:
+- <selected-work | mixed-media | portraiture | short-films>
+- <optional second section such as portraiture or short-films>
 Descriptor: <short card description>
 Project information:
 - <line 1>
@@ -69,6 +75,14 @@ Video files:
 
 Optional overrides:
 - slug: <custom-slug>
+- visibility: <published | draft>
+- section order:
+  - <selected-work>: <number>
+  - <portraiture>: <number>
+- homepage:
+  - order: <number>
+  - template: <opening | reverse | balanced | split | solo | closing>
+  - slot: <number>
 - hover preview start: <seconds>
 - hover preview end: <seconds>
 - layout pattern: <lead-left | support-right | wide-band | support-left | lead-right | paired-left | paired-right | hero-left | tail-right | offset-right>
@@ -109,8 +123,18 @@ This is the file shape the script expects if you want to run it directly.
 {
   "type": "project",
   "title": "Project Name",
-  "section": "portraiture",
+  "sections": ["selected-work", "portraiture"],
   "descriptor": "Short card description.",
+  "visibility": "published",
+  "sectionOrder": {
+    "selected-work": 5,
+    "portraiture": 2
+  },
+  "homepage": {
+    "order": 3,
+    "template": "balanced",
+    "slot": 2
+  },
   "metadata": [
     "London, 2026",
     "Digital photography"
@@ -162,9 +186,11 @@ Projects:
 
 - cover image becomes `/projects/<slug>/photos/cover.jpg`
 - extra images become `/projects/<slug>/photos/detail-01.jpg`, etc.
-- mixed media assets upload to `/projects/mixed-media/<slug>/...` in R2 but still use the same content-facing paths as the rest of the site
-- first video becomes `/projects/<slug>/videos/feature.<ext>`
-- additional videos become `/projects/<slug>/videos/detail-01.<ext>`, etc.
+- mixed media assets use `/projects/mixed-media/<slug>/...` as both the storage path and the content-facing path
+- all project videos are transcoded to web-delivery MP4s before upload
+- first video becomes `/projects/<slug>/videos/feature.mp4`
+- additional videos become `/projects/<slug>/videos/detail-01.mp4`, etc.
+- hover previews become `/projects/<slug>/videos/preview.mp4`
 
 Blog posts:
 

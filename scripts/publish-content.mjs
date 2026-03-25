@@ -18,22 +18,20 @@ import process from "node:process";
 const workspaceRoot = process.cwd();
 const projectContentDir = resolve(workspaceRoot, "src/content/projects");
 const postContentDir = resolve(workspaceRoot, "src/content/posts");
-const sectionDataFile = resolve(workspaceRoot, "src/data/projectSections.ts");
 const cacheControl = process.env.R2_CACHE_CONTROL ?? "public, max-age=31536000, immutable";
 const bucketName = process.env.R2_BUCKET_NAME?.trim();
 const wranglerCmd = process.env.WRANGLER_CMD?.trim() || "npx wrangler@latest";
 const coverWidths = [640, 960, 1440, 1920];
-const sectionToExportName = {
-  "mixed-media": "mixedMediaProjectSlugs",
-  portraiture: "portraitureProjectSlugs",
-  "short-films": "shortFilmProjectSlugs",
-};
+const previewWidth = 1280;
+const deliveryVideoMaxWidth = 1600;
+const ffmpegStaticBinary = resolve("/tmp/ffmpeg-static-install/node_modules/ffmpeg-static/ffmpeg");
 const supportedProjectSections = new Set([
   "selected-work",
   "mixed-media",
   "portraiture",
   "short-films",
 ]);
+const homepageTemplates = new Set(["opening", "reverse", "balanced", "split", "solo", "closing"]);
 const layoutPatterns = new Set([
   "lead-left",
   "support-right",
@@ -142,6 +140,30 @@ const formatYamlVideoList = (key, videos) => {
       ];
     }),
   ];
+};
+
+const formatYamlEditorial = (editorial) => {
+  const lines = [
+    "editorial:",
+    `  visibility: ${yamlString(editorial.visibility)}`,
+    "  sections:",
+    ...editorial.sections.map((sectionId) => `    - ${yamlString(sectionId)}`),
+    "  sectionOrder:",
+    ...editorial.sections.map(
+      (sectionId) => `    ${sectionId}: ${editorial.sectionOrder[sectionId]}`
+    ),
+  ];
+
+  if (editorial.homepage) {
+    lines.push(
+      "  homepage:",
+      `    order: ${editorial.homepage.order}`,
+      `    template: ${yamlString(editorial.homepage.template)}`,
+      `    slot: ${editorial.homepage.slot}`
+    );
+  }
+
+  return lines;
 };
 
 const parseArgs = (argv) => {
@@ -351,7 +373,9 @@ const normalizeHoverPreview = (value) => {
   };
 };
 
-const readExistingOrder = async (slug) => {
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const readExistingFrontmatter = async (slug) => {
   const existingContentPath = resolve(projectContentDir, `${slug}.md`);
 
   if (!existsSync(existingContentPath)) {
@@ -359,12 +383,101 @@ const readExistingOrder = async (slug) => {
   }
 
   const existingSource = await readFile(existingContentPath, "utf8");
-  const match = existingSource.match(/^order:\s*(\d+)\s*$/m);
+  const frontmatterMatch = existingSource.match(/^---\n([\s\S]*?)\n---/);
 
-  return match ? Number.parseInt(match[1], 10) : undefined;
+  return frontmatterMatch?.[1];
 };
 
-const readNextProjectOrder = async () => {
+const readIndentedBlock = (source, key, indentLevel = 0) => {
+  const lines = source.split(/\r?\n/);
+  const startPrefix = `${" ".repeat(indentLevel)}${key}:`;
+  const childIndent = indentLevel + 2;
+  const block = [];
+  const startIndex = lines.findIndex((line) => line === startPrefix);
+
+  if (startIndex === -1) {
+    return [];
+  }
+
+  for (let index = startIndex + 1; index < lines.length; index += 1) {
+    const line = lines[index];
+
+    if (!line.trim()) {
+      continue;
+    }
+
+    if (!line.startsWith(" ".repeat(childIndent))) {
+      break;
+    }
+
+    block.push(line.slice(childIndent));
+  }
+
+  return block;
+};
+
+const parseFlatObjectBlock = (lines) => {
+  const entries = {};
+
+  for (const line of lines) {
+    const match = line.match(/^([^:]+):\s*(.+)$/);
+
+    if (!match) {
+      continue;
+    }
+
+    entries[match[1].trim()] = match[2].trim().replace(/^"|"$/g, "");
+  }
+
+  return entries;
+};
+
+const readExistingEditorial = async (slug) => {
+  const frontmatter = await readExistingFrontmatter(slug);
+
+  if (!frontmatter) {
+    return undefined;
+  }
+
+  const editorialLines = readIndentedBlock(frontmatter, "editorial");
+
+  if (editorialLines.length === 0) {
+    return undefined;
+  }
+
+  const sectionOrderEntries = parseFlatObjectBlock(readIndentedBlock(editorialLines.join("\n"), "sectionOrder"));
+  const homepageEntries = parseFlatObjectBlock(readIndentedBlock(editorialLines.join("\n"), "homepage"));
+  const visibilityMatch = editorialLines.find((line) => line.startsWith("visibility:"));
+
+  return {
+    visibility: visibilityMatch?.split(":")[1]?.trim().replace(/^"|"$/g, ""),
+    sectionOrder: Object.fromEntries(
+      Object.entries(sectionOrderEntries).map(([sectionId, order]) => [sectionId, Number.parseInt(order, 10)])
+    ),
+    homepage:
+      Object.keys(homepageEntries).length > 0
+        ? {
+            order: Number.parseInt(homepageEntries.order ?? "", 10),
+            template: homepageEntries.template,
+            slot: Number.parseInt(homepageEntries.slot ?? "", 10),
+          }
+        : undefined,
+  };
+};
+
+const readExistingProjectStatus = async (slug) => {
+  const frontmatter = await readExistingFrontmatter(slug);
+
+  if (!frontmatter) {
+    return undefined;
+  }
+
+  const match = frontmatter.match(/^status:\s*"?(placeholder|published)"?\s*$/m);
+
+  return match?.[1];
+};
+
+const readNextSectionOrder = async (sectionId) => {
   const filenames = await readdir(projectContentDir);
   const orders = [];
 
@@ -373,11 +486,12 @@ const readNextProjectOrder = async () => {
       continue;
     }
 
-    const source = await readFile(resolve(projectContentDir, filename), "utf8");
-    const match = source.match(/^order:\s*(\d+)\s*$/m);
+    const slug = filename.replace(/\.md$/, "");
+    const editorial = await readExistingEditorial(slug);
+    const order = editorial?.sectionOrder?.[sectionId];
 
-    if (match) {
-      orders.push(Number.parseInt(match[1], 10));
+    if (Number.isInteger(order)) {
+      orders.push(order);
     }
   }
 
@@ -481,6 +595,117 @@ const generateCoverVariant = async (sourcePath, outputPath, width) => {
   throw new Error("Could not find either ffmpeg or sips for responsive image generation.");
 };
 
+const resolveFfmpegCommand = async () => {
+  const configuredBinary = process.env.FFMPEG_BIN?.trim();
+
+  if (configuredBinary) {
+    return configuredBinary;
+  }
+
+  if (existsSync(ffmpegStaticBinary)) {
+    return ffmpegStaticBinary;
+  }
+
+  if (await hasCommand("ffmpeg")) {
+    return "ffmpeg";
+  }
+
+  throw new Error("ffmpeg is required for video delivery generation.");
+};
+
+const generateImageVariants = async (sourcePath, widths) => {
+  const variantEntries = [];
+  const stem = sourcePath.replace(/\.[^.]+$/, "");
+
+  for (const width of widths) {
+    const variantPath = `${stem}-${width}.jpg`;
+    await generateCoverVariant(sourcePath, variantPath, width);
+    variantEntries.push({
+      width,
+      filePath: variantPath,
+    });
+  }
+
+  return variantEntries;
+};
+
+const transcodeDeliveryVideo = async (sourcePath, outputPath) => {
+  const ffmpegCommand = await resolveFfmpegCommand();
+
+  await runCommand(ffmpegCommand, [
+    "-loglevel",
+    "error",
+    "-y",
+    "-i",
+    sourcePath,
+    "-nostdin",
+    "-map_metadata",
+    "-1",
+    "-movflags",
+    "+faststart",
+    "-vf",
+    `scale='min(${deliveryVideoMaxWidth},iw)':-2:flags=lanczos`,
+    "-c:v",
+    "libx264",
+    "-preset",
+    "slow",
+    "-crf",
+    "23",
+    "-maxrate",
+    "5500k",
+    "-bufsize",
+    "11000k",
+    "-pix_fmt",
+    "yuv420p",
+    "-c:a",
+    "aac",
+    "-b:a",
+    "128k",
+    outputPath,
+  ]);
+};
+
+const generatePreviewClip = async (sourcePath, outputPath, hoverPreview) => {
+  const ffmpegCommand = await resolveFfmpegCommand();
+  const startTime = hoverPreview?.startTime ?? 0;
+  const duration = hoverPreview?.endTime
+    ? hoverPreview.endTime - startTime
+    : 10;
+
+  await runCommand(ffmpegCommand, [
+    "-loglevel",
+    "error",
+    "-y",
+    "-ss",
+    String(startTime),
+    "-t",
+    String(duration),
+    "-i",
+    sourcePath,
+    "-nostdin",
+    "-an",
+    "-map_metadata",
+    "-1",
+    "-movflags",
+    "+faststart",
+    "-vf",
+    `fps=24,scale='min(${previewWidth},iw)':-2:flags=lanczos`,
+    "-c:v",
+    "libx264",
+    "-preset",
+    "slow",
+    "-crf",
+    "28",
+    "-maxrate",
+    "1800k",
+    "-bufsize",
+    "3600k",
+    "-pix_fmt",
+    "yuv420p",
+    outputPath,
+  ]);
+};
+
 const contentTypeForFile = (filePath) => {
   switch (extname(filePath).toLowerCase()) {
     case ".jpg":
@@ -557,43 +782,6 @@ const uploadFileToR2 = async ({ filePath, objectKey, dryRun }) => {
   await runCommand(command, args, { stdio: "inherit" });
 };
 
-const syncProjectSectionLists = async (section, slug, { dryRun }) => {
-  const source = await readFile(sectionDataFile, "utf8");
-  let updatedSource = source;
-
-  for (const exportName of Object.values(sectionToExportName)) {
-    const pattern = new RegExp(`export const ${exportName} = \\[(.*?)\\] as const;`, "s");
-    const match = updatedSource.match(pattern);
-
-    if (!match) {
-      throw new Error(`Could not locate ${exportName} in ${sectionDataFile}`);
-    }
-
-    const currentValues = Array.from(match[1].matchAll(/"([^"]+)"/g), (entry) => entry[1]).filter(
-      (value) => value !== slug
-    );
-
-    const shouldInclude = section !== "selected-work" && exportName === sectionToExportName[section];
-    const nextValues = shouldInclude ? [...currentValues, slug] : currentValues;
-    const replacement = `export const ${exportName} = [\n${nextValues
-      .map((value) => `  "${value}",`)
-      .join("\n")}\n] as const;`;
-
-    updatedSource = updatedSource.replace(pattern, replacement);
-  }
-
-  if (updatedSource === source) {
-    return;
-  }
-
-  if (dryRun) {
-    console.log(`[dry-run] Would update ${relative(workspaceRoot, sectionDataFile)} for ${slug}`);
-    return;
-  }
-
-  await writeFile(sectionDataFile, updatedSource);
-};
-
 const uniquePaths = (paths) => Array.from(new Set(paths));
 
 const isInsideWorkspace = (filePath) => {
@@ -634,11 +822,11 @@ const writeProjectContent = async (project, { dryRun }) => {
     ...formatYamlStringList("detailImages", project.detailImages),
     ...formatYamlStringList("metadata", project.metadata),
     ...formatYamlObjectList("credits", project.credits),
-    `order: ${project.order}`,
     `layoutPattern: ${yamlString(project.layoutPattern)}`,
     `visualWeight: ${yamlString(project.visualWeight)}`,
     `orientation: ${yamlString(project.orientation)}`,
     `cropFocus: ${yamlString(project.cropFocus)}`,
+    ...formatYamlEditorial(project.editorial),
     `status: ${yamlString(project.status)}`,
     "---",
     "",
@@ -686,17 +874,17 @@ const writePostContent = async (post, { dryRun }) => {
 };
 
 const stageProjectAssets = async (project, stageRoot) => {
-  const objectBasePath =
-    project.section === "mixed-media"
-      ? `projects/mixed-media/${project.slug}`
-      : `projects/${project.slug}`;
-  const storageBasePath =
-    project.section === "mixed-media"
-      ? join(stageRoot, "projects", "mixed-media", project.slug)
-      : join(stageRoot, "projects", project.slug);
+  const isMixedMediaProject = project.sections.includes("mixed-media");
+  const objectBasePath = isMixedMediaProject
+    ? `projects/mixed-media/${project.slug}`
+    : `projects/${project.slug}`;
+  const publicBasePath = `/${objectBasePath}`;
+  const storageBasePath = join(stageRoot, objectBasePath);
   const photosDir = join(storageBasePath, "photos");
+  const videosDir = join(storageBasePath, "videos");
 
   await mkdir(photosDir, { recursive: true });
+  await mkdir(videosDir, { recursive: true });
 
   const uploadEntries = [];
   const detailImages = [];
@@ -711,43 +899,56 @@ const stageProjectAssets = async (project, stageRoot) => {
       filePath: destination,
       objectKey: `${objectBasePath}/photos/${filename}`,
     });
+    const variantEntries = await generateImageVariants(destination, coverWidths);
+
+    for (const variantEntry of variantEntries) {
+      uploadEntries.push({
+        filePath: variantEntry.filePath,
+        objectKey: `${objectBasePath}/photos/${filename.replace(/\.jpg$/i, `-${variantEntry.width}.jpg`)}`,
+      });
+    }
 
     if (index > 0) {
-      detailImages.push(`/projects/${project.slug}/photos/${filename}`);
+      detailImages.push(`${publicBasePath}/photos/${filename}`);
     }
-  }
-
-  const coverSource = join(photosDir, "cover.jpg");
-
-  for (const width of coverWidths) {
-    const variantPath = join(photosDir, `cover-${width}.jpg`);
-    await generateCoverVariant(coverSource, variantPath, width);
-    uploadEntries.push({
-      filePath: variantPath,
-      objectKey: `${objectBasePath}/photos/cover-${width}.jpg`,
-    });
   }
 
   const detailVideos = [];
   let heroVideo;
+  let hoverPreview;
 
   for (let index = 0; index < project.videos.length; index += 1) {
     const sourceVideo = project.videos[index];
-    const extension = extname(sourceVideo).toLowerCase();
-    const filename = index === 0 ? `feature${extension}` : `detail-${String(index).padStart(2, "0")}${extension}`;
-    const publicSrc = `/projects/${project.slug}/videos/${filename}`;
+    const filename = index === 0 ? "feature.mp4" : `detail-${String(index).padStart(2, "0")}.mp4`;
+    const stagedVideoPath = join(videosDir, filename);
+    const publicSrc = `${publicBasePath}/videos/${filename}`;
+
+    await transcodeDeliveryVideo(sourceVideo, stagedVideoPath);
     uploadEntries.push({
-      filePath: sourceVideo,
+      filePath: stagedVideoPath,
       objectKey: `${objectBasePath}/videos/${filename}`,
     });
     const videoEntry = {
       src: publicSrc,
-      poster: `/projects/${project.slug}/photos/cover.jpg`,
+      poster: `${publicBasePath}/photos/cover.jpg`,
       controls: true,
     };
 
     if (index === 0) {
       heroVideo = videoEntry;
+      if (project.hoverPreview) {
+        const previewPath = join(videosDir, "preview.mp4");
+        await generatePreviewClip(sourceVideo, previewPath, project.hoverPreview);
+        uploadEntries.push({
+          filePath: previewPath,
+          objectKey: `${objectBasePath}/videos/preview.mp4`,
+        });
+        hoverPreview = {
+          ...project.hoverPreview,
+          src: `${publicBasePath}/videos/preview.mp4`,
+          poster: `${publicBasePath}/photos/cover.jpg`,
+        };
+      }
     } else {
       detailVideos.push(videoEntry);
     }
@@ -755,10 +956,11 @@ const stageProjectAssets = async (project, stageRoot) => {
 
   return {
     uploadEntries,
-    image: `/projects/${project.slug}/photos/cover.jpg`,
+    image: `${publicBasePath}/photos/cover.jpg`,
     detailImages,
     video: heroVideo,
     detailVideos,
+    hoverPreview,
   };
 };
 
@@ -781,13 +983,12 @@ const stagePostAssets = async (post, stageRoot) => {
     filePath: coverPath,
     objectKey: `blog/${post.slug}/cover.jpg`,
   });
+  const coverVariants = await generateImageVariants(coverPath, coverWidths);
 
-  for (const width of coverWidths) {
-    const variantPath = join(storageBasePath, `cover-${width}.jpg`);
-    await generateCoverVariant(coverPath, variantPath, width);
+  for (const variantEntry of coverVariants) {
     uploadEntries.push({
-      filePath: variantPath,
-      objectKey: `blog/${post.slug}/cover-${width}.jpg`,
+      filePath: variantEntry.filePath,
+      objectKey: `blog/${post.slug}/cover-${variantEntry.width}.jpg`,
     });
   }
 
@@ -802,6 +1003,14 @@ const stagePostAssets = async (post, stageRoot) => {
       filePath: destination,
       objectKey: `blog/${post.slug}/${filename}`,
     });
+    const variantEntries = await generateImageVariants(destination, coverWidths);
+
+    for (const variantEntry of variantEntries) {
+      uploadEntries.push({
+        filePath: variantEntry.filePath,
+        objectKey: `blog/${post.slug}/${filename.replace(/\.jpg$/i, `-${variantEntry.width}.jpg`)}`,
+      });
+    }
     galleryImages.push(`/blog/${post.slug}/${filename}`);
   }
 
@@ -829,10 +1038,25 @@ const validateProjectManifest = async (manifest, manifestDir) => {
     throw new Error("Project manifest must include a descriptor.");
   }
 
-  if (typeof manifest.section !== "string" || !supportedProjectSections.has(manifest.section)) {
+  const sections = Array.isArray(manifest.sections)
+    ? manifest.sections
+    : typeof manifest.section === "string"
+      ? [manifest.section]
+      : [];
+
+  if (
+    sections.length === 0 ||
+    sections.some((sectionId) => typeof sectionId !== "string" || !supportedProjectSections.has(sectionId))
+  ) {
     throw new Error(
-      `Project section must be one of: ${Array.from(supportedProjectSections).join(", ")}`
+      `Project sections must be drawn from: ${Array.from(supportedProjectSections).join(", ")}`
     );
+  }
+
+  const normalizedSections = Array.from(new Set(sections));
+
+  if (normalizedSections.includes("mixed-media") && normalizedSections.length > 1) {
+    throw new Error('mixed-media projects should only publish to the "mixed-media" section.');
   }
 
   const slug = manifest.slug?.trim() ? slugify(manifest.slug) : slugify(manifest.title);
@@ -864,13 +1088,22 @@ const validateProjectManifest = async (manifest, manifestDir) => {
   const dimensions = await getImageDimensions(images[0]);
   const orientation = manifest.orientation ?? inferOrientation(dimensions);
   const normalizedOrientation = typeof orientation === "string" ? orientation : "landscape";
-  const order =
-    typeof manifest.order === "number"
-      ? manifest.order
-      : (await readExistingOrder(slug)) ?? (await readNextProjectOrder());
+  const existingEditorial = await readExistingEditorial(slug);
+  const existingStatus = await readExistingProjectStatus(slug);
+  const normalizedSectionOrder = {};
+  const providedSectionOrder =
+    manifest.sectionOrder && typeof manifest.sectionOrder === "object" ? manifest.sectionOrder : {};
 
-  if (!Number.isInteger(order) || order <= 0) {
-    throw new Error("order must be a positive integer.");
+  for (const sectionId of normalizedSections) {
+    const nextOrderCandidate = providedSectionOrder[sectionId]
+      ?? existingEditorial?.sectionOrder?.[sectionId]
+      ?? await readNextSectionOrder(sectionId);
+
+    if (!Number.isInteger(nextOrderCandidate) || nextOrderCandidate <= 0) {
+      throw new Error(`sectionOrder.${sectionId} must be a positive integer.`);
+    }
+
+    normalizedSectionOrder[sectionId] = nextOrderCandidate;
   }
 
   if (manifest.layoutPattern && !layoutPatterns.has(manifest.layoutPattern)) {
@@ -889,11 +1122,48 @@ const validateProjectManifest = async (manifest, manifestDir) => {
     throw new Error(`cropFocus must be one of: ${Array.from(cropFocusValues).join(", ")}`);
   }
 
+  const homepageCandidate =
+    manifest.homepage === false ? undefined : manifest.homepage ?? existingEditorial?.homepage;
+  let homepage;
+
+  if (homepageCandidate !== undefined) {
+    if (!normalizedSections.includes("selected-work")) {
+      throw new Error("homepage placement is only valid for selected-work projects.");
+    }
+
+    if (
+      !homepageCandidate ||
+      typeof homepageCandidate !== "object" ||
+      !Number.isInteger(homepageCandidate.order) ||
+      !homepageTemplates.has(homepageCandidate.template) ||
+      !Number.isInteger(homepageCandidate.slot)
+    ) {
+      throw new Error(
+        `homepage must be an object with integer order/slot and template in: ${Array.from(homepageTemplates).join(", ")}`
+      );
+    }
+
+    homepage = {
+      order: homepageCandidate.order,
+      template: homepageCandidate.template,
+      slot: homepageCandidate.slot,
+    };
+  }
+
+  const visibility =
+    manifest.visibility === "draft"
+      ? "draft"
+      : manifest.visibility === "published"
+        ? "published"
+        : existingEditorial?.visibility === "draft"
+          ? "draft"
+          : "published";
+
   return {
     type: "project",
     title: manifest.title.trim(),
     slug,
-    section: manifest.section,
+    sections: normalizedSections,
     descriptor: manifest.descriptor.trim(),
     body: typeof manifest.body === "string" ? manifest.body : "",
     metadata: normalizeStringList(manifest.metadata, "metadata"),
@@ -903,11 +1173,21 @@ const validateProjectManifest = async (manifest, manifestDir) => {
     visualWeight: manifest.visualWeight ?? "dominant",
     orientation: normalizedOrientation,
     cropFocus: manifest.cropFocus ?? "center",
-    order,
+    editorial: {
+      visibility,
+      sections: normalizedSections,
+      sectionOrder: normalizedSectionOrder,
+      homepage,
+    },
     images,
     videos,
     deleteSourceAfterUpload: manifest.deleteSourceAfterUpload === true,
-    status: manifest.section === "mixed-media" ? "mixed-media" : "published",
+    status:
+      manifest.status === "placeholder"
+        ? "placeholder"
+        : manifest.status === "published"
+          ? "published"
+          : existingStatus ?? "published",
   };
 };
 
@@ -1000,17 +1280,8 @@ const run = async () => {
         ...staged,
       };
 
-      if (contentPayload.video && project.hoverPreview) {
-        contentPayload.hoverPreview = {
-          ...project.hoverPreview,
-          src: contentPayload.video.src,
-          poster: contentPayload.video.poster,
-        };
-      }
-
       await uploadStagedFiles(staged.uploadEntries, options);
       await writeProjectContent(contentPayload, options);
-      await syncProjectSectionLists(project.section, project.slug, options);
 
       if (!options.skipUpload && project.deleteSourceAfterUpload) {
         await removeSourceFiles([...project.images, ...project.videos], options);

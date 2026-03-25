@@ -417,6 +417,7 @@ const imageClass = [
     const playbackEnd = endTime ?? Number.POSITIVE_INFINITY;
     let isHovered = false;
     let isFocusedWithin = false;
+    let isVisibleInViewport = false;
     let hasAutoplayStarted = false;
     let hasCompletedPlayback = false;
     let pendingPlay = false;
@@ -425,7 +426,10 @@ const imageClass = [
     const shouldPlayPreview = () =>
       card.dataset.previewDisabled !== "true" &&
       !document.hidden &&
-      (isInteractionActive() || (canAutoplayInView && hasAutoplayStarted && !hasCompletedPlayback));
+      (
+        isInteractionActive() ||
+        (canAutoplayInView && isVisibleInViewport && hasAutoplayStarted && !hasCompletedPlayback)
+      );
 
     const primePreview = () => {
       if (card.dataset.previewPrimed === "true" || card.dataset.previewDisabled === "true") return;
@@ -576,37 +580,41 @@ const imageClass = [
     card.addEventListener("focusin", handleFocusIn);
     card.addEventListener("focusout", handleFocusOut);
 
-    // Load preview assets early so cards are ready when they enter view.
-    primePreview();
+    if ("IntersectionObserver" in window) {
+      const visibilityObserver = new IntersectionObserver(
+        (entries, observer) => {
+          entries.forEach((entry) => {
+            if (entry.target !== card) return;
 
-    if (canAutoplayInView) {
-      if ("IntersectionObserver" in window) {
-        const visibilityObserver = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.target !== card) return;
+            if (entry.isIntersecting && !prefersReducedData) {
+              primePreview();
+            }
 
-              if (
-                !hasAutoplayStarted &&
-                entry.isIntersecting &&
-                entry.intersectionRatio >= 0.35
-              ) {
-                hasAutoplayStarted = true;
-                syncPreviewState({ restart: true, resetTimeOnStop: false });
-              }
-            });
-          },
-          {
-            threshold: [0, 0.2, 0.35, 0.6],
-            rootMargin: "0px 0px -8% 0px",
-          }
-        );
+            isVisibleInViewport = entry.isIntersecting && entry.intersectionRatio >= 0.35;
 
-        visibilityObserver.observe(card);
-      } else {
-        hasAutoplayStarted = true;
-        syncPreviewState({ restart: true, resetTimeOnStop: false });
-      }
+            if (canAutoplayInView && isVisibleInViewport && !hasAutoplayStarted) {
+              hasAutoplayStarted = true;
+            }
+
+            syncPreviewState({ restart: isVisibleInViewport, resetTimeOnStop: false });
+
+            if (!canAutoplayInView && card.dataset.previewPrimed === "true") {
+              observer.unobserve(card);
+            }
+          });
+        },
+        {
+          threshold: [0, 0.01, 0.2, 0.35, 0.6],
+          rootMargin: "20% 0px 20% 0px",
+        }
+      );
+
+      visibilityObserver.observe(card);
+    } else if (canAutoplayInView) {
+      primePreview();
+      isVisibleInViewport = true;
+      hasAutoplayStarted = true;
+      syncPreviewState({ restart: true, resetTimeOnStop: false });
     }
 
     document.addEventListener("visibilitychange", () => {

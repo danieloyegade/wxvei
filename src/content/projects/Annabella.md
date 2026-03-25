@@ -4,7 +4,7 @@ slug: "annabella"
 image: "/projects/annabella/photos/cover.jpg"
 descriptor: "Manchester, 2025."
 video:
-  src: "/projects/annabella/videos/AnnabellaFINAL.mp4"
+  src: "/projects/annabella/videos/feature.mp4"
   poster: "/projects/annabella/photos/cover.jpg"
   controls: false
   loop: true
@@ -24,12 +24,21 @@ detailImages:
 metadata:
   - "Manchester"
   - "2025"
-order: 5
 layoutPattern: "lead-right"
 visualWeight: "hero"
 orientation: "portrait"
 selectedWorkAspectRatio: "16 / 9"
 cropFocus: "upper-third"
+editorial:
+  visibility: "published"
+  sections:
+    - "selected-work"
+  sectionOrder:
+    selected-work: 5
+  homepage:
+    order: 3
+    template: "balanced"
+    slot: 2
 status: "placeholder"
 ---
 

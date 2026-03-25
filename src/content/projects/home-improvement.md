@@ -1,14 +1,19 @@
 ---
 title: "Home Improvement"
 slug: "home-improvement"
-image: "/projects/home-improvement/photos/cover.jpg"
+image: "/projects/mixed-media/home-improvement/photos/cover.jpg"
 descriptor: "Domestic space, rendered with restraint."
-order: 3
 layoutPattern: "support-left"
 visualWeight: "standard"
 orientation: "portrait"
 cropFocus: "center"
-status: "mixed-media"
+editorial:
+  visibility: "published"
+  sections:
+    - "mixed-media"
+  sectionOrder:
+    mixed-media: 3
+status: "published"
 ---
 
 Mixed media study for Home Improvement.

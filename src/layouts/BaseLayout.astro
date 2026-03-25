@@ -1,18 +1,25 @@
 ---
 import "../styles/global.css";
 import HeaderMenu from "../components/HeaderMenu.astro";
-import { projectSectionConfigs } from "../data/projectSections";
-import { resolvePublishedAssetSrc } from "../lib/media";
+import { projectSectionConfigs } from "../data/editorial";
+import { resolveProjectImageSrc, resolvePublishedAssetSrc } from "../lib/media";
+import { getResponsiveImageFallbackSrc } from "../lib/responsiveImages";
 import { withBase, withoutBase } from "../lib/site";
 
 interface Props {
   title: string;
   description?: string;
+  preloadImage?: string;
+  socialImage?: string;
+  socialType?: "website" | "article";
 }
 
 const {
   title,
   description = "Daniel Oyegade is a minimal editorial portfolio built with Astro.",
+  preloadImage,
+  socialImage = preloadImage,
+  socialType = "website",
 } = Astro.props;
 const satoshiRegularFontUrl = withBase(
   resolvePublishedAssetSrc("/fonts/satoshi-regular.woff2") ?? "/fonts/satoshi-regular.woff2"
@@ -87,6 +94,30 @@ const canonicalPath = Astro.url.pathname.endsWith("/")
   ? Astro.url.pathname
   : `${Astro.url.pathname}/`;
 const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
+const canonicalHref = canonicalUrl.toString();
+const resolveMetaImageSrc = (src?: string) => {
+  if (!src) {
+    return undefined;
+  }
+
+  const responsiveSrc = getResponsiveImageFallbackSrc(src);
+
+  return resolveProjectImageSrc(responsiveSrc) ?? resolvePublishedAssetSrc(responsiveSrc) ?? responsiveSrc;
+};
+const preloadImageHref = (() => {
+  const resolvedImageSrc = resolveMetaImageSrc(preloadImage);
+
+  return resolvedImageSrc ? withBase(resolvedImageSrc) : undefined;
+})();
+const socialImageHref = (() => {
+  const resolvedImageSrc = resolveMetaImageSrc(socialImage);
+
+  return resolvedImageSrc ? withBase(resolvedImageSrc) : undefined;
+})();
+const socialImageUrl = socialImageHref
+  ? new URL(socialImageHref, Astro.site ?? Astro.url).toString()
+  : undefined;
+const twitterCard = socialImageUrl ? "summary_large_image" : "summary";
 ---
 
 <!doctype html>
@@ -96,7 +127,18 @@ const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#ffffff" />
-    <link rel="canonical" href={canonicalUrl} />
+    <link rel="canonical" href={canonicalHref} />
+    {preloadImageHref && <link rel="preload" as="image" href={preloadImageHref} />}
+    <meta property="og:site_name" content="Daniel Oyegade" />
+    <meta property="og:type" content={socialType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalHref} />
+    {socialImageUrl && <meta property="og:image" content={socialImageUrl} />}
+    <meta name="twitter:card" content={twitterCard} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {socialImageUrl && <meta name="twitter:image" content={socialImageUrl} />}
     <link rel="shortcut icon" href={faviconIcoHref} sizes="any" type="image/x-icon" />
     <link
       rel="icon"

@@ -10,11 +10,22 @@ credits:
     name: "Feya Lanice"
   - role: "Styled"
     name: "Chaniel Abwola"
-order: 2
 layoutPattern: "support-right"
 visualWeight: "support"
 orientation: "portrait"
 cropFocus: "top"
+editorial:
+  visibility: "published"
+  sections:
+    - "selected-work"
+    - "portraiture"
+  sectionOrder:
+    selected-work: 2
+    portraiture: 1
+  homepage:
+    order: 1
+    template: "opening"
+    slot: 2
 status: "placeholder"
 ---
 

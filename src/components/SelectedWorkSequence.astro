@@ -1,6 +1,10 @@
 ---
 import ProjectCard from "./ProjectCard.astro";
-import type { ProjectHoverPreview, ProjectVideoAsset } from "../lib/projects";
+import type {
+  ProjectHomepagePlacement,
+  ProjectHoverPreview,
+  ProjectVideoAsset,
+} from "../lib/projects";
 import { projectFrameClasses } from "../lib/projectLayout";
 import type {
   ProjectCropFocus,
@@ -15,11 +19,11 @@ interface SelectedWorkProject {
   descriptor: string;
   video?: ProjectVideoAsset;
   hoverPreview?: ProjectHoverPreview;
-  order: number;
   visualWeight?: ProjectVisualWeight;
   orientation?: ProjectOrientation;
   selectedWorkAspectRatio?: string;
   cropFocus?: ProjectCropFocus;
+  homepage?: ProjectHomepagePlacement;
 }
 
 interface Props {
@@ -27,17 +31,6 @@ interface Props {
 }
 
 const { projects } = Astro.props as Props;
-const projectMap = new Map(projects.map((project) => [project.slug, project]));
-
-const getProject = (slug: string) => {
-  const project = projectMap.get(slug);
-
-  if (!project) {
-    throw new Error(`Selected Works sequence could not find project "${slug}".`);
-  }
-
-  return project;
-};
 
 const beatTemplates = {
   opening: {
@@ -81,69 +74,64 @@ const beatTemplates = {
   },
 } as const;
 
-const beats = [
+const beatGroups = new Map<
+  number,
   {
-    template: "opening",
-    items: [
-      { slug: "jamine" },
-      { slug: "reny" },
-    ],
-  },
-  {
-    template: "reverse",
-    items: [
-      { slug: "moving-images-in-g-sharp-minor" },
-      { slug: "someplace-else" },
-    ],
-  },
-  {
-    template: "balanced",
-    items: [
-      { slug: "mia" },
-      { slug: "annabella" },
-    ],
-  },
-  {
-    template: "split",
-    items: [
-      { slug: "abiola" },
-      { slug: "these-northern-lights" },
-    ],
-  },
-  {
-    template: "solo",
-    items: [{ slug: "saucony" }],
-  },
-  {
-    template: "solo",
-    items: [{ slug: "lola" }],
-  },
-  {
-    template: "closing",
-    items: [
-      { slug: "dj-paullette-for-seen-mag" },
-      { slug: "isaac" },
-    ],
-  },
-  {
-    template: "solo",
-    items: [{ slug: "of-the-sublime-and-beautiful" }],
-  },
-] as const;
+    order: number;
+    template: ProjectHomepagePlacement["template"];
+    items: SelectedWorkProject[];
+  }
+>();
 
-const resolvedBeats = beats.map((beat) => ({
-  ...beat,
-  className: beatTemplates[beat.template].className,
-  items: beat.items.map((item, index) => {
-    const project = getProject(item.slug);
-    const layoutClass = beatTemplates[beat.template].layoutClasses[index] ?? beatTemplates[beat.template].layoutClasses[0];
+for (const project of projects) {
+  const homepagePlacement = project.homepage;
+
+  if (!homepagePlacement) {
+    continue;
+  }
+
+  const existingBeat = beatGroups.get(homepagePlacement.order);
+
+  if (existingBeat) {
+    if (existingBeat.template !== homepagePlacement.template) {
+      throw new Error(
+        `Homepage beat ${homepagePlacement.order} has conflicting templates: ${existingBeat.template} and ${homepagePlacement.template}.`
+      );
+    }
+
+    existingBeat.items.push(project);
+    continue;
+  }
+
+  beatGroups.set(homepagePlacement.order, {
+    order: homepagePlacement.order,
+    template: homepagePlacement.template,
+    items: [project],
+  });
+}
+
+const resolvedBeats = Array.from(beatGroups.values())
+  .sort((left, right) => left.order - right.order)
+  .map((beat) => {
+    const template = beatTemplates[beat.template];
+    const items = [...beat.items]
+      .sort(
+        (left, right) =>
+          (left.homepage?.slot ?? Number.MAX_SAFE_INTEGER) -
+          (right.homepage?.slot ?? Number.MAX_SAFE_INTEGER)
+      )
+      .map((project, index) => ({
+        ...project,
+        layoutClass:
+          template.layoutClasses[index] ?? template.layoutClasses[template.layoutClasses.length - 1],
+      }));
 
     return {
-      ...project,
-      layoutClass,
+      ...beat,
+      className: template.className,
+      items,
     };
-  }),
-}));
+  });
 ---
 
 <section id="selected-work" class="selected-work-sequence" aria-label="Selected Works">
@@ -225,24 +213,13 @@ const resolvedBeats = beats.map((beat) => ({
 
   .selected-work-sequence__stack {
     display: grid;
-    gap: clamp(3rem, 6vw, 6.75rem);
+    gap: 2.75rem;
   }
 
   .selected-work-sequence__beat {
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    gap: 1.5rem;
-    align-items: start;
-  }
-
-  .selected-work-sequence__beat--opening,
-  .selected-work-sequence__beat--reverse,
-  .selected-work-sequence__beat--closing {
-    align-items: end;
-  }
-
-  .selected-work-sequence__beat--solo {
-    justify-items: center;
+    gap: 1.25rem;
   }
 
   @media (min-width: 40rem) {
@@ -251,11 +228,12 @@ const resolvedBeats = beats.map((beat) => ({
     }
 
     .selected-work-sequence__stack {
-      gap: clamp(3.5rem, 6vw, 7rem);
+      gap: 5.5rem;
     }
 
     .selected-work-sequence__beat {
-      gap: 2rem;
+      column-gap: 2rem;
+      row-gap: 1.8rem;
     }
   }
 
@@ -264,12 +242,16 @@ const resolvedBeats = beats.map((beat) => ({
       padding-inline: 3.5rem;
     }
 
+    .selected-work-sequence__frame {
+      max-width: 92rem;
+    }
+
     .selected-work-sequence__stack {
-      gap: clamp(4rem, 6.5vw, 8rem);
+      gap: clamp(6.5rem, 7vw, 8rem);
     }
 
     .selected-work-sequence__beat {
-      gap: 3rem;
+      column-gap: 3rem;
     }
   }
 </style>

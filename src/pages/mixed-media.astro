@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import ProjectGrid from "../components/ProjectGrid.astro";
+import { projectSectionConfigs } from "../data/editorial";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import {
   getProjectsBySection,
@@ -12,7 +13,7 @@ const projects = getProjectsBySection(await getCollection("projects"), "mixed-me
 
 <BaseLayout
   title="Mixed Media | Daniel Oyegade"
-  description="A cross-disciplinary edit spanning image, moving image, and looser studies in texture, atmosphere, and form."
+  description={projectSectionConfigs["mixed-media"].description}
 >
   <ProjectGrid
     sectionId="mixed-media"

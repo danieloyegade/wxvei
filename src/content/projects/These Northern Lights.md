@@ -12,11 +12,20 @@ detailImages:
 metadata:
   - "Circa 2020"
   - "Origin unknown"
-order: 7
 layoutPattern: "paired-right"
 visualWeight: "standard"
 orientation: "landscape"
 cropFocus: "center"
+editorial:
+  visibility: "published"
+  sections:
+    - "selected-work"
+  sectionOrder:
+    selected-work: 7
+  homepage:
+    order: 4
+    template: "split"
+    slot: 2
 status: "placeholder"
 ---
 
