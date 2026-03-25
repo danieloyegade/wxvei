@@ -1,5 +1,5 @@
 ---
-import { withBase } from "../lib/site";
+import ResponsiveImage from "./ResponsiveImage.astro";
 
 const floorLabels = [
   {
@@ -28,7 +28,7 @@ const floorLabels = [
       "bottom: var(--brand-marker-bottom); --label-delay: 5460ms; --label-duration: 2360ms; --code-shift-x: 0.02em; --code-shift-y: 0.004em;",
   },
 ];
-const introImageSrc = withBase("/images/intro-image.jpg");
+const introImageSrc = "/projects/jamine/photos/cover.jpg";
 ---
 
 <div
@@ -38,10 +38,11 @@ const introImageSrc = withBase("/images/intro-image.jpg");
   aria-hidden="true"
 >
   <div class="intro-overlay__image-wrap">
-    <img
+    <ResponsiveImage
       src={introImageSrc}
       alt=""
       class="intro-overlay__image"
+      sizes="100vw"
       loading="eager"
       decoding="async"
       fetchpriority="high"

@@ -1,8 +1,19 @@
 ---
 title: "Annabella"
 slug: "annabella"
-image: "/images/project-5.jpg"
+image: "/projects/annabella/photos/cover.jpg"
 descriptor: "Manchester, 2025."
+video:
+  src: "/projects/annabella/videos/AnnabellaFINAL.mov"
+  poster: "/projects/annabella/photos/cover.jpg"
+  controls: false
+  loop: true
+detailImages:
+  - "/projects/annabella/photos/a12a2.jpg"
+  - "/projects/annabella/photos/DSC_3439.jpg"
+  - "/projects/annabella/photos/DSC_3569.jpg"
+  - "/projects/annabella/photos/DSC_3580.jpg"
+  - "/projects/annabella/photos/DSC_3654.jpg"
 metadata:
   - "Manchester"
   - "2025"

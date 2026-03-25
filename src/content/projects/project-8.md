@@ -1,7 +1,7 @@
 ---
 title: "Lola"
 slug: "lola"
-image: "/images/project-8.jpg"
+image: "/projects/lola/photos/cover.jpg"
 descriptor: "Photographed by Daniel Oyegade, Styled by Mia Chung."
 credits:
   - role: "Photographed"

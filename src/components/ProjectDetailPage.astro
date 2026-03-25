@@ -1,4 +1,7 @@
 ---
+import ResponsiveImage from "./ResponsiveImage.astro";
+import { getResponsiveImageFallbackSrc } from "../lib/responsiveImages";
+import type { ProjectVideoAsset } from "../lib/projects";
 import { withBase } from "../lib/site";
 
 interface SequenceLink {
@@ -9,6 +12,7 @@ interface SequenceLink {
 interface Props {
   title: string;
   image: string;
+  heroVideo?: ProjectVideoAsset;
   infoLines?: string[];
   detailImages?: string[];
   showBody?: boolean;
@@ -21,6 +25,7 @@ interface Props {
 const {
   title,
   image,
+  heroVideo,
   infoLines = [],
   detailImages = [],
   showBody = false,
@@ -30,9 +35,14 @@ const {
   backLinkLabel = "Selected Works",
 } = Astro.props;
 
+const hasHeroVideo = Boolean(heroVideo?.src);
 const hasGallery = detailImages.length > 0;
 const hasInfoLines = infoLines.length > 0;
 const hasSupplementalContent = showBody || hasGallery;
+const heroImageSizes = "(min-width: 96rem) 92rem, 100vw";
+const heroVideoControls = heroVideo?.controls ?? true;
+const heroVideoLoop = heroVideo?.loop ?? false;
+const heroVideoPreload = heroVideoControls ? "metadata" : "auto";
 ---
 
 <article class="project-detail">
@@ -58,14 +68,32 @@ const hasSupplementalContent = showBody || hasGallery;
       )}
     </header>
 
-    <figure class="project-detail__hero">
-      <img
-        src={encodeURI(withBase(image))}
-        alt={title}
-        class="project-detail__hero-image"
-        loading="eager"
-        decoding="async"
-      />
+    <figure class:list={["project-detail__hero", hasHeroVideo && "project-detail__hero--video"]}>
+      {hasHeroVideo ? (
+        <video
+          class="project-detail__hero-media"
+          controls={heroVideoControls}
+          autoplay
+          loop={heroVideoLoop}
+          muted
+          playsinline
+          preload={heroVideoPreload}
+          poster={encodeURI(withBase(getResponsiveImageFallbackSrc(heroVideo?.poster ?? image)))}
+          data-project-detail-video
+        >
+          <source src={encodeURI(withBase(heroVideo!.src))} />
+        </video>
+      ) : (
+        <ResponsiveImage
+          src={image}
+          alt={title}
+          class="project-detail__hero-media"
+          sizes={heroImageSizes}
+          loading="eager"
+          decoding="async"
+          fetchpriority="high"
+        />
+      )}
     </figure>
 
     {hasSupplementalContent && (
@@ -79,13 +107,15 @@ const hasSupplementalContent = showBody || hasGallery;
         {hasGallery && (
           <div class="project-detail__gallery" aria-label={`${title} additional images`}>
             {detailImages.map((detailImage, index) => (
-              <figure class="project-detail__detail-figure">
-                <img
-                  src={encodeURI(withBase(detailImage))}
+              <figure class="project-detail__detail-figure" data-project-detail-figure>
+                <ResponsiveImage
+                  src={detailImage}
                   alt={`${title} detail ${index + 1}`}
                   class="project-detail__detail-image"
+                  sizes={heroImageSizes}
                   loading="lazy"
                   decoding="async"
+                  data-project-detail-image
                 />
               </figure>
             ))}
@@ -114,6 +144,20 @@ const hasSupplementalContent = showBody || hasGallery;
 </article>
 
 <script is:inline>
+  const projectDetailVideo = document.querySelector("[data-project-detail-video]");
+
+  if (projectDetailVideo instanceof HTMLVideoElement) {
+    const playbackPromise = projectDetailVideo.play();
+
+    if (typeof playbackPromise?.catch === "function") {
+      playbackPromise.catch(() => {
+        if (!projectDetailVideo.hasAttribute("controls")) {
+          projectDetailVideo.setAttribute("controls", "");
+        }
+      });
+    }
+  }
+
   const projectSequenceNav = document.querySelector("[data-project-sequence-nav]");
 
   if (projectSequenceNav instanceof HTMLElement) {
@@ -178,6 +222,33 @@ const hasSupplementalContent = showBody || hasGallery;
     window.addEventListener("keydown", handleKeydown);
     window.addEventListener("touchstart", handleTouchStart, { passive: true });
     window.addEventListener("touchend", handleTouchEnd, { passive: true });
+  }
+
+  const detailGallery = document.querySelector(".project-detail__gallery");
+
+  if (detailGallery instanceof HTMLElement) {
+    const detailImages = Array.from(
+      detailGallery.querySelectorAll("[data-project-detail-image]")
+    );
+
+    const syncGalleryVisibility = () => {
+      const visibleFigures = detailGallery.querySelectorAll(
+        "[data-project-detail-figure]:not([hidden])"
+      );
+
+      detailGallery.toggleAttribute("hidden", visibleFigures.length === 0);
+    };
+
+    detailImages.forEach((image) => {
+      if (!(image instanceof HTMLImageElement)) return;
+
+      image.addEventListener("error", () => {
+        image.closest("[data-project-detail-figure]")?.setAttribute("hidden", "");
+        syncGalleryVisibility();
+      });
+    });
+
+    syncGalleryVisibility();
   }
 </script>
 
@@ -295,12 +366,25 @@ const hasSupplementalContent = showBody || hasGallery;
     background: rgba(20, 18, 16, 0.04);
   }
 
-  .project-detail__hero-image,
+  .project-detail__hero--video {
+    display: grid;
+    justify-items: center;
+    overflow: visible;
+    background: transparent;
+  }
+
+  .project-detail__hero-media,
   .project-detail__detail-image {
     display: block;
     width: 100%;
     height: auto;
-    object-fit: cover;
+  }
+
+  .project-detail__hero--video .project-detail__hero-media {
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    background: #000;
   }
 
   .project-detail__supplemental {
@@ -328,10 +412,12 @@ const hasSupplementalContent = showBody || hasGallery;
   .project-detail__gallery {
     display: grid;
     gap: 1.5rem;
+    align-items: start;
   }
 
   .project-detail__detail-figure {
     margin: 0;
+    align-self: start;
     overflow: clip;
     background: rgba(20, 18, 16, 0.04);
   }

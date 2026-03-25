@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 import type { CollectionEntry } from "astro:content";
 import { withBase } from "./site";
 
@@ -7,6 +9,28 @@ export interface ProjectSequenceLink {
   slug: string;
   title: string;
   href: string;
+}
+
+export interface ProjectVideoAsset {
+  src: string;
+  poster?: string;
+  controls?: boolean;
+  loop?: boolean;
+  playInView?: boolean;
+}
+
+export interface ProjectHoverPreview {
+  src?: string;
+  poster?: string;
+  startTime: number;
+  endTime?: number;
+}
+
+interface ResolvedProjectMedia {
+  image: string;
+  video?: ProjectVideoAsset;
+  hoverPreview?: ProjectHoverPreview;
+  detailImages?: string[];
 }
 
 export const mixedMediaProjectSlugs = [
@@ -29,10 +53,17 @@ export const portraitureProjectSlugs = [
 export const shortFilmProjectSlugs = [
   "moving-images-in-g-sharp-minor",
   "someplace-else",
+  "of-the-sublime-and-beautiful",
 ] as const;
 
 export const sortProjectsByOrder = (projects: ProjectEntry[]) =>
   [...projects].sort((a, b) => a.data.order - b.data.order);
+
+const protocolPattern = /^[a-z][a-z\d+\-.]*:/i;
+const protocolRelativePattern = /^\/\//;
+const remoteProjectVideoBaseUrl = import.meta.env.PUBLIC_PROJECT_VIDEO_BASE_URL
+  ?.trim()
+  .replace(/\/+$/, "");
 
 const normalizeBasePath = (basePath: string) => {
   const normalizedPath = basePath.startsWith("/") ? basePath : `/${basePath}`;
@@ -53,18 +84,85 @@ export const getProjectsBySlugs = (projects: ProjectEntry[], slugs: readonly str
   });
 };
 
-export const mapProjectForGrid = (project: ProjectEntry) => ({
+const publicRoot = resolve(process.cwd(), "public");
+
+const publicAssetExists = (src: string) =>
+  existsSync(resolve(publicRoot, src.replace(/^\/+/, "")));
+
+const resolveProjectVideoSrc = (src?: string) => {
+  if (!src || !remoteProjectVideoBaseUrl) {
+    return src;
+  }
+
+  if (
+    protocolPattern.test(src) ||
+    protocolRelativePattern.test(src) ||
+    !src.startsWith("/projects/")
+  ) {
+    return src;
+  }
+
+  return `${remoteProjectVideoBaseUrl}${src}`;
+};
+
+const resolveMixedMediaAssetPath = (project: ProjectEntry, src?: string) => {
+  if (!src || project.data.status !== "mixed-media") {
+    return src;
+  }
+
+  if (!src.startsWith("/projects/") || src.startsWith("/projects/mixed-media/")) {
+    return src;
+  }
+
+  const mixedMediaSrc = src.replace(
+    `/projects/${project.slug}/`,
+    `/projects/mixed-media/${project.slug}/`
+  );
+
+  return publicAssetExists(mixedMediaSrc) ? mixedMediaSrc : src;
+};
+
+export const getResolvedProjectMedia = (project: ProjectEntry): ResolvedProjectMedia => ({
+  image: resolveMixedMediaAssetPath(project, project.data.image) ?? project.data.image,
+  video: project.data.video
+    ? {
+        ...project.data.video,
+        src:
+          resolveProjectVideoSrc(resolveMixedMediaAssetPath(project, project.data.video.src)) ??
+          project.data.video.src,
+        poster: resolveMixedMediaAssetPath(project, project.data.video.poster),
+      }
+    : undefined,
+  hoverPreview: project.data.hoverPreview
+    ? {
+        ...project.data.hoverPreview,
+        src: resolveProjectVideoSrc(resolveMixedMediaAssetPath(project, project.data.hoverPreview.src)),
+        poster: resolveMixedMediaAssetPath(project, project.data.hoverPreview.poster),
+      }
+    : undefined,
+  detailImages: project.data.detailImages?.map(
+    (detailImage) => resolveMixedMediaAssetPath(project, detailImage) ?? detailImage
+  ),
+});
+
+export const mapProjectForGrid = (project: ProjectEntry) => {
+  const media = getResolvedProjectMedia(project);
+
+  return {
   slug: project.slug,
   title: project.data.title,
-  image: project.data.image,
+  image: media.image,
   descriptor: project.data.descriptor,
   order: project.data.order,
   layoutPattern: project.data.layoutPattern,
   visualWeight: project.data.visualWeight,
   orientation: project.data.orientation,
   cropFocus: project.data.cropFocus,
-  detailImages: project.data.detailImages,
-});
+  video: media.video,
+  hoverPreview: media.hoverPreview,
+  detailImages: media.detailImages,
+  };
+};
 
 const cleanInfoLine = (value: string) => value.trim().replace(/\.$/, "");
 

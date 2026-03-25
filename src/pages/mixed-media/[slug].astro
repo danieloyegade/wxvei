@@ -5,6 +5,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import type { ProjectEntry, ProjectSequenceLink } from "../../lib/projects";
 import {
   getProjectInfoLines,
+  getResolvedProjectMedia,
   getProjectSequenceFromSlugs,
   getProjectsBySlugs,
   mixedMediaProjectSlugs,
@@ -38,18 +39,19 @@ const { project, previousProject, nextProject } = Astro.props;
 const { Content } = await project.render();
 const hasProjectBody = project.data.status !== "placeholder" && project.body.trim().length > 0;
 const infoLines = getProjectInfoLines(project);
+const media = getResolvedProjectMedia(project);
 ---
 
 <BaseLayout
   title={`${project.data.title} | Daniel Oyegade`}
   description={project.data.descriptor}
-  preloadImage={project.data.image}
+  preloadImage={media.image}
 >
   <ProjectDetailPage
     title={project.data.title}
-    image={project.data.image}
+    image={media.image}
     infoLines={infoLines}
-    detailImages={project.data.detailImages}
+    detailImages={media.detailImages}
     showBody={hasProjectBody}
     previousProject={previousProject}
     nextProject={nextProject}

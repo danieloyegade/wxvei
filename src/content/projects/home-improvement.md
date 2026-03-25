@@ -1,7 +1,7 @@
 ---
 title: "Home Improvement"
 slug: "home-improvement"
-image: "/images/Home Improvement.jpg"
+image: "/projects/home-improvement/photos/cover.jpg"
 descriptor: "Domestic space, rendered with restraint."
 order: 3
 layoutPattern: "support-left"

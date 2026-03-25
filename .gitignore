@@ -2,3 +2,15 @@ node_modules/
 dist/
 .astro/
 .tools/
+.wrangler/
+.env
+.env.local
+.env.*.local
+.dev.vars
+.DS_Store
+public/projects/**/videos/*.mp4
+public/projects/**/videos/*.mov
+public/projects/**/videos/*.m4v
+public/projects/**/videos/*.webm
+public/projects/**/videos/*.MP4
+public/projects/**/videos/*.MOV

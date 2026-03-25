@@ -1,5 +1,6 @@
 ---
 import ProjectCard from "./ProjectCard.astro";
+import type { ProjectHoverPreview, ProjectVideoAsset } from "../lib/projects";
 import { projectFrameClasses } from "../lib/projectLayout";
 import type {
   ProjectCropFocus,
@@ -12,6 +13,8 @@ interface SelectedWorkProject {
   title: string;
   image: string;
   descriptor: string;
+  video?: ProjectVideoAsset;
+  hoverPreview?: ProjectHoverPreview;
   order: number;
   visualWeight?: ProjectVisualWeight;
   orientation?: ProjectOrientation;
@@ -81,7 +84,7 @@ const beats = [
   {
     template: "opening",
     items: [
-      { slug: "jamime" },
+      { slug: "jamine" },
       { slug: "reny" },
     ],
   },
@@ -103,8 +106,12 @@ const beats = [
     template: "split",
     items: [
       { slug: "abiola" },
-      { slug: "zealots" },
+      { slug: "these-northern-lights" },
     ],
+  },
+  {
+    template: "solo",
+    items: [{ slug: "saucony" }],
   },
   {
     template: "solo",
@@ -116,6 +123,10 @@ const beats = [
       { slug: "dj-paullette-for-seen-mag" },
       { slug: "isaac" },
     ],
+  },
+  {
+    template: "solo",
+    items: [{ slug: "of-the-sublime-and-beautiful" }],
   },
 ] as const;
 
@@ -146,6 +157,8 @@ const resolvedBeats = beats.map((beat) => ({
                 title={project.title}
                 image={project.image}
                 descriptor={project.descriptor}
+                video={project.video}
+                hoverPreview={project.hoverPreview}
                 visualWeight={project.visualWeight}
                 layoutClass={project.layoutClass}
                 frameClass={projectFrameClasses[project.orientation ?? "landscape"]}

@@ -1,8 +1,14 @@
 ---
 title: "Someplace Else"
 slug: "someplace-else"
-image: "/images/project-3.jpg"
+image: "/projects/someplace-else/photos/cover.jpg"
 descriptor: "Directed By Daniel Oyegade"
+video:
+  src: "/projects/someplace-else/videos/feature.mp4"
+  poster: "/projects/someplace-else/photos/cover.jpg"
+hoverPreview:
+  startTime: 12
+  endTime: 22
 credits:
   - role: "Directed"
     name: "Daniel Oyegade"

@@ -1,7 +1,7 @@
 ---
 title: "Isaac"
 slug: "isaac"
-image: "/images/project-10.jpg"
+image: "/projects/isaac/photos/cover.jpg"
 descriptor: "Manchester, 2025."
 metadata:
   - "Manchester"

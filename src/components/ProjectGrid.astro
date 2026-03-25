@@ -1,5 +1,6 @@
 ---
 import ProjectCard from "./ProjectCard.astro";
+import type { ProjectHoverPreview, ProjectVideoAsset } from "../lib/projects";
 import { projectPath } from "../lib/projects";
 import type {
   ProjectCropFocus,
@@ -14,6 +15,8 @@ interface ProjectEntry {
   title: string;
   image: string;
   descriptor: string;
+  video?: ProjectVideoAsset;
+  hoverPreview?: ProjectHoverPreview;
   order: number;
   layoutPattern?: ProjectLayoutPattern;
   visualWeight?: ProjectVisualWeight;
@@ -93,6 +96,8 @@ const normalizedProjects = projects.map((project, index) => {
             title={project.title}
             image={project.image}
             descriptor={project.descriptor}
+            video={project.video}
+            hoverPreview={project.hoverPreview}
             href={projectPath(project.slug, detailBasePath)}
             visualWeight={project.visualWeight}
             layoutClass={projectLayoutClasses[project.layoutPattern]}

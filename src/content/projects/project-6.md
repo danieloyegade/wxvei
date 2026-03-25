@@ -1,7 +1,7 @@
 ---
 title: "Abiola"
 slug: "abiola"
-image: "/images/project-6.jpg"
+image: "/projects/abiola/photos/cover.jpg"
 descriptor: "London, 2023."
 metadata:
   - "London"

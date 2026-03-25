@@ -3,7 +3,12 @@ import { getCollection } from "astro:content";
 import ProjectDetailPage from "../../components/ProjectDetailPage.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import type { ProjectEntry, ProjectSequenceLink } from "../../lib/projects";
-import { getProjectInfoLines, getProjectSequence, sortProjectsByOrder } from "../../lib/projects";
+import {
+  getProjectInfoLines,
+  getProjectSequence,
+  getResolvedProjectMedia,
+  sortProjectsByOrder,
+} from "../../lib/projects";
 
 export async function getStaticPaths() {
   const projects = sortProjectsByOrder(await getCollection("projects"));
@@ -29,18 +34,20 @@ const backLinkLabel = project.data.status === "mixed-media" ? "Mixed Media" : "S
 const { Content } = await project.render();
 const hasProjectBody = project.data.status !== "placeholder" && project.body.trim().length > 0;
 const infoLines = getProjectInfoLines(project);
+const media = getResolvedProjectMedia(project);
 ---
 
 <BaseLayout
   title={`${project.data.title} | Daniel Oyegade`}
   description={project.data.descriptor}
-  preloadImage={project.data.image}
+  preloadImage={media.video?.poster ?? media.image}
 >
   <ProjectDetailPage
     title={project.data.title}
-    image={project.data.image}
+    image={media.image}
+    heroVideo={media.video}
     infoLines={infoLines}
-    detailImages={project.data.detailImages}
+    detailImages={media.detailImages}
     showBody={hasProjectBody}
     previousProject={previousProject}
     nextProject={nextProject}

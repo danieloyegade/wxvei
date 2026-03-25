@@ -1,7 +1,7 @@
 ---
 title: "Rectangle with Embellishments"
 slug: "rectangle-with-embellishments"
-image: "/images/Rectangle with Embellishments.jpg"
+image: "/projects/rectangle-with-embellishments/photos/cover.jpg"
 descriptor: "Surface, shape, and embellishment."
 order: 1
 layoutPattern: "lead-left"

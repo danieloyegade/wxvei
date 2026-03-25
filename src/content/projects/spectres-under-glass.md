@@ -1,7 +1,7 @@
 ---
 title: "Spectres under glass"
 slug: "spectres-under-glass"
-image: "/images/Spectres under glass.JPG"
+image: "/projects/spectres-under-glass/photos/cover.jpg"
 descriptor: "Reflections and shadow inside glass."
 order: 4
 layoutPattern: "support-right"

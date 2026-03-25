@@ -1,0 +1,54 @@
+---
+import { withBase } from "../lib/site";
+import { getResponsiveImageSet } from "../lib/responsiveImages";
+
+interface Props extends astroHTML.JSX.ImgHTMLAttributes {
+  src: string;
+  sizes?: string;
+  fill?: boolean;
+}
+
+const { src, sizes = "100vw", fill = false, ...imgProps } = Astro.props as Props;
+
+const responsiveImage = getResponsiveImageSet(src);
+
+const toSrcSet = (variants: Array<{ src: string; width: number }>) =>
+  variants
+    .map((variant) => `${encodeURI(withBase(variant.src))} ${variant.width}w`)
+    .join(", ");
+
+const fallbackSrc = encodeURI(withBase(responsiveImage?.fallbackSrc ?? src));
+const jpegSrcSet = responsiveImage ? toSrcSet(responsiveImage.jpeg) : undefined;
+---
+
+{
+  responsiveImage ? (
+    <picture class:list={["responsive-image", fill && "responsive-image--fill"]}>
+      <source type="image/jpeg" srcset={jpegSrcSet} sizes={sizes} />
+      <img src={fallbackSrc} srcset={jpegSrcSet} sizes={sizes} {...imgProps} />
+    </picture>
+  ) : (
+    <img src={fallbackSrc} {...imgProps} />
+  )
+}
+
+<style>
+  .responsive-image {
+    display: block;
+    width: 100%;
+  }
+
+  .responsive-image :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .responsive-image--fill {
+    height: 100%;
+  }
+
+  .responsive-image--fill :global(img) {
+    height: 100%;
+  }
+</style>

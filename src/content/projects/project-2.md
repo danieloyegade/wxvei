@@ -1,7 +1,7 @@
 ---
 title: "Reny"
 slug: "reny"
-image: "/images/project-2.jpg"
+image: "/projects/reny/photos/cover.jpg"
 descriptor: "Photographed by Daniel Oyegade, Creative Direction by Feya Lanice. Styled by Chaniel Abwola"
 credits:
   - role: "Photographed"

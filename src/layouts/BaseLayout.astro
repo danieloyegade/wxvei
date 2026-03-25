@@ -6,13 +6,11 @@ import { withBase, withoutBase } from "../lib/site";
 interface Props {
   title: string;
   description?: string;
-  preloadImage?: string;
 }
 
 const {
   title,
   description = "Daniel Oyegade is a minimal editorial portfolio built with Astro.",
-  preloadImage,
 } = Astro.props;
 const satoshiRegularFontUrl = withBase("/fonts/satoshi-regular.woff2");
 const satoshiMediumFontUrl = withBase("/fonts/satoshi-medium.woff2");
@@ -44,11 +42,10 @@ const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
     <meta name="description" content={description} />
     <meta name="theme-color" content="#ffffff" />
     <link rel="canonical" href={canonicalUrl} />
-    <link rel="icon" href={withBase("/daniel-oyegade-favicon.svg")} type="image/svg+xml" />
+    <link rel="icon" href={withBase("/favicon.svg")} type="image/svg+xml" />
     <link rel="icon" href={withBase("/favicon-32x32.png")} sizes="32x32" type="image/png" />
     <link rel="icon" href={withBase("/favicon-16x16.png")} sizes="16x16" type="image/png" />
     <link rel="apple-touch-icon" href={withBase("/apple-touch-icon.png")} sizes="180x180" />
-    {preloadImage && <link rel="preload" as="image" href={encodeURI(withBase(preloadImage))} />}
     <title>{title}</title>
   </head>
   <body class="bg-[var(--page-background)] text-[var(--page-foreground)] antialiased">

@@ -1,5 +1,8 @@
 ---
+import ResponsiveImage from "./ResponsiveImage.astro";
+import type { ProjectHoverPreview, ProjectVideoAsset } from "../lib/projects";
 import { projectPath } from "../lib/projects";
+import { getResponsiveImageFallbackSrc } from "../lib/responsiveImages";
 import { withBase } from "../lib/site";
 
 interface Props {
@@ -7,6 +10,8 @@ interface Props {
   title: string;
   image: string;
   descriptor: string;
+  video?: ProjectVideoAsset;
+  hoverPreview?: ProjectHoverPreview;
   href?: string;
   indexLabel?: string;
   layoutClass: string;
@@ -20,6 +25,8 @@ const {
   title,
   image,
   descriptor,
+  video,
+  hoverPreview,
   href = projectPath(slug),
   indexLabel,
   layoutClass,
@@ -33,24 +40,62 @@ const objectPositionMap = {
   top: "center top",
   "upper-third": "center 28%",
 } as const;
+
+const previewVideoSrc = hoverPreview?.src ?? video?.src;
+const previewVideoType = previewVideoSrc?.toLowerCase().endsWith(".mp4")
+  ? "video/mp4"
+  : previewVideoSrc?.toLowerCase().endsWith(".mov")
+    ? "video/quicktime"
+    : undefined;
+const playsPreviewInView = video?.playInView ?? false;
+const previewPoster = getResponsiveImageFallbackSrc(hoverPreview?.poster ?? video?.poster ?? image);
+const hasPreview = Boolean(previewVideoSrc && (hoverPreview || playsPreviewInView));
+const imageSizes = "(min-width: 80rem) 50vw, (min-width: 48rem) 50vw, 100vw";
+const imageClass = [
+  "project-card__image",
+  hasPreview ? "project-card__image--has-preview" : "",
+].filter(Boolean).join(" ");
 ---
 
 <article
   class:list={["project-card", layoutClass]}
+  data-project-card
   data-project-slug={slug}
+  data-preview-in-view={playsPreviewInView ? "true" : undefined}
   data-visual-weight={visualWeight}
 >
   <a class="project-card__link" href={href} aria-label={`View ${title}`}>
     <div class:list={["project-card__image-wrap", frameClass]} data-project-reveal data-reveal-state="pending">
-      <div class="project-card__overlay"></div>
-      <img
-        src={encodeURI(withBase(image))}
+      <ResponsiveImage
+        src={image}
         alt={title}
-        class="project-card__image"
+        class={imageClass}
+        fill={true}
         style={`object-position: ${objectPositionMap[cropFocus]}; object-fit: cover;`}
+        sizes={imageSizes}
         loading="lazy"
         decoding="async"
       />
+      {hasPreview && (
+        <video
+          class="project-card__preview"
+          muted
+          playsinline
+          webkit-playsinline="true"
+          disablepictureinpicture
+          disableremoteplayback
+          preload="auto"
+          poster={encodeURI(withBase(previewPoster))}
+          aria-hidden="true"
+          data-project-preview
+          data-preview-start={hoverPreview?.startTime}
+          data-preview-end={hoverPreview?.endTime}
+          loop={hoverPreview?.endTime === undefined}
+        >
+          <source src={encodeURI(withBase(previewVideoSrc!))} type={previewVideoType} />
+        </video>
+      )}
+      <div class="project-card__overlay"></div>
       <div class="project-card__hover-copy">
         <h2 class="project-card__hover-title">{title}</h2>
         <p class="project-card__hover-descriptor">{descriptor}</p>
@@ -97,11 +142,36 @@ const objectPositionMap = {
   }
 
   .project-card__image {
+    display: block;
     width: 100%;
     height: 100%;
+    object-fit: cover;
     transition:
       transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
-      filter 420ms ease-out;
+      filter 420ms ease-out,
+      opacity 220ms ease-out;
+  }
+
+  .project-card__preview {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 420ms ease-out,
+      opacity 220ms ease-out;
+  }
+
+  .project-card[data-preview-active="true"] .project-card__preview {
+    opacity: 1;
+  }
+
+  .project-card[data-preview-active="true"] .project-card__image--has-preview {
+    opacity: 0;
   }
 
   .project-card__overlay {
@@ -177,7 +247,9 @@ const objectPositionMap = {
   }
 
   .project-card:hover .project-card__image,
-  .project-card:focus-within .project-card__image {
+  .project-card:hover .project-card__preview,
+  .project-card:focus-within .project-card__image,
+  .project-card:focus-within .project-card__preview {
     filter: brightness(0.95);
     transform: scale(1.006);
   }
@@ -227,5 +299,214 @@ const objectPositionMap = {
       transform: none;
       transition: none;
     }
+
+    .project-card__image,
+    .project-card__preview {
+      transition: none;
+    }
   }
 </style>
+
+<script>
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  const setPreviewTime = (preview, startTime) => {
+    if (!Number.isFinite(startTime) || preview.readyState < 1) return;
+
+    try {
+      preview.currentTime = startTime;
+    } catch {
+      // Ignore timing updates until the browser allows seeking.
+    }
+  };
+
+  const handlePlaybackPromise = (playbackPromise, onError) => {
+    if (typeof playbackPromise?.catch === "function") {
+      playbackPromise.catch(onError);
+    }
+  };
+
+  document.querySelectorAll("[data-project-card]").forEach((card) => {
+    if (!(card instanceof HTMLElement) || card.dataset.previewBound === "true") return;
+
+    const preview = card.querySelector("[data-project-preview]");
+
+    if (!(preview instanceof HTMLVideoElement)) return;
+
+    card.dataset.previewBound = "true";
+
+    const startTime = Number(preview.dataset.previewStart ?? "0");
+    const playsInView = card.dataset.previewInView === "true";
+    const previewEnd = preview.dataset.previewEnd;
+    const endTime =
+      previewEnd !== undefined && previewEnd !== ""
+        ? Number(previewEnd)
+        : null;
+    let isHovered = false;
+    let isFocusedWithin = false;
+    let isInView = false;
+    let pendingPlay = false;
+
+    const isInteractionActive = () => isHovered || isFocusedWithin;
+    const shouldPlayPreview = () =>
+      card.dataset.previewDisabled !== "true" &&
+      (isInteractionActive() || (playsInView && isInView && !prefersReducedMotion.matches));
+
+    const primePreview = () => {
+      if (card.dataset.previewPrimed === "true" || card.dataset.previewDisabled === "true") return;
+
+      card.dataset.previewPrimed = "true";
+      preview.muted = true;
+      preview.defaultMuted = true;
+      preview.playsInline = true;
+      preview.preload = "auto";
+      preview.load();
+    };
+
+    const stopPreview = () => {
+      pendingPlay = false;
+      card.dataset.previewActive = "false";
+      preview.pause();
+      setPreviewTime(preview, startTime);
+    };
+
+    const playPreview = () => {
+      preview.muted = true;
+      preview.defaultMuted = true;
+      preview.playsInline = true;
+      const playbackPromise = preview.play();
+
+      handlePlaybackPromise(playbackPromise, () => {
+        card.dataset.previewActive = "false";
+      });
+    };
+
+    const startPreview = ({ restart = false } = {}) => {
+      if (card.dataset.previewDisabled === "true") return;
+
+      pendingPlay = true;
+      primePreview();
+
+      if (preview.readyState < 2) {
+        return;
+      }
+
+      if (
+        restart ||
+        preview.currentTime < startTime ||
+        (endTime !== null && preview.currentTime >= endTime)
+      ) {
+        setPreviewTime(preview, startTime);
+      }
+
+      playPreview();
+    };
+
+    const syncPreviewState = ({ restart = false } = {}) => {
+      if (shouldPlayPreview()) {
+        startPreview({ restart });
+        return;
+      }
+
+      stopPreview();
+    };
+
+    const handleCanPlay = () => {
+      if (!pendingPlay || !shouldPlayPreview()) return;
+
+      setPreviewTime(preview, startTime);
+      playPreview();
+    };
+
+    const handleMouseEnter = () => {
+      isHovered = true;
+      syncPreviewState({ restart: true });
+    };
+
+    const handleMouseLeave = () => {
+      isHovered = false;
+      syncPreviewState();
+    };
+
+    const handleFocusIn = () => {
+      isFocusedWithin = true;
+      syncPreviewState({ restart: true });
+    };
+
+    const handleFocusOut = (event) => {
+      const nextTarget = event.relatedTarget;
+
+      if (nextTarget instanceof Node && card.contains(nextTarget)) return;
+
+      isFocusedWithin = false;
+      syncPreviewState();
+    };
+
+    preview.addEventListener("canplay", handleCanPlay);
+
+    preview.addEventListener("loadedmetadata", () => {
+      setPreviewTime(preview, startTime);
+    });
+
+    preview.addEventListener("playing", () => {
+      if (!shouldPlayPreview()) return;
+
+      card.dataset.previewActive = "true";
+    });
+
+    preview.addEventListener("waiting", () => {
+      if (!pendingPlay) return;
+
+      card.dataset.previewActive = "false";
+    });
+
+    preview.addEventListener("timeupdate", () => {
+      if (endTime === null || preview.paused || preview.currentTime < endTime) return;
+
+      preview.pause();
+      pendingPlay = false;
+
+      try {
+        preview.currentTime = endTime;
+      } catch {
+        // Ignore timing updates until the browser allows seeking.
+      }
+    });
+
+    preview.addEventListener("error", () => {
+      card.dataset.previewDisabled = "true";
+      stopPreview();
+    });
+
+    card.addEventListener("mouseenter", handleMouseEnter);
+    card.addEventListener("mouseleave", handleMouseLeave);
+    card.addEventListener("focusin", handleFocusIn);
+    card.addEventListener("focusout", handleFocusOut);
+
+    primePreview();
+
+    if (playsInView) {
+      if ("IntersectionObserver" in window) {
+        const visibilityObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.target !== card) return;
+
+              isInView = entry.isIntersecting && entry.intersectionRatio >= 0.35;
+              syncPreviewState();
+            });
+          },
+          {
+            threshold: [0, 0.35, 0.7],
+            rootMargin: "0px 0px -6% 0px",
+          }
+        );
+
+        visibilityObserver.observe(card);
+      } else {
+        isInView = true;
+        syncPreviewState();
+      }
+    }
+  });
+</script>

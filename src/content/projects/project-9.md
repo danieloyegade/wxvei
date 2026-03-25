@@ -1,7 +1,7 @@
 ---
 title: "DJ Paullette for SEEN MAG"
 slug: "dj-paullette-for-seen-mag"
-image: "/images/project-9.jpg"
+image: "/projects/dj-paullette-for-seen-mag/photos/cover.jpg"
 descriptor: "Photographed by Daniel Oyegade."
 credits:
   - role: "Photographed"

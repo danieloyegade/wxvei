@@ -1,14 +1,12 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { withBase } from "../lib/site";
-
-const portraitImage = encodeURI(withBase("/images/Daniel Oyegade.jpg"));
+import ResponsiveImage from "../components/ResponsiveImage.astro";
 ---
 
 <BaseLayout
   title="Information | Daniel Oyegade"
   description="Information about Daniel Oyegade and the editorial portfolio."
-  preloadImage="/images/Daniel Oyegade.jpg"
+  preloadImage="/site/photos/daniel-oyegade.jpg"
 >
   <section class="information-page">
     <div class="information-page__frame">
@@ -18,10 +16,11 @@ const portraitImage = encodeURI(withBase("/images/Daniel Oyegade.jpg"));
 
       <div class="information-page__grid">
         <figure class="information-page__portrait">
-          <img
-            src={portraitImage}
+          <ResponsiveImage
+            src="/site/photos/daniel-oyegade.jpg"
             alt="Daniel Oyegade"
             class="information-page__portrait-image"
+            sizes="(min-width: 64rem) 50vw, 100vw"
             width="1284"
             height="1060"
             loading="eager"

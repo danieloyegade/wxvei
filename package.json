@@ -7,7 +7,9 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "videos:manifest": "./scripts/video-manifest.sh",
+    "videos:upload:r2": "./scripts/upload-videos-to-r2.sh"
   },
   "description": "Daniel Oyegade site built with Astro, TypeScript, and Tailwind CSS.",
   "devDependencies": {
