@@ -1,6 +1,5 @@
 ---
 import { getCollection } from "astro:content";
-import MixedMediaIntro from "../components/MixedMediaIntro.astro";
 import ProjectGrid from "../components/ProjectGrid.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import {
@@ -15,11 +14,6 @@ const projects = getProjectsBySection(await getCollection("projects"), "mixed-me
   title="Mixed Media | Daniel Oyegade"
   description="A cross-disciplinary edit spanning image, moving image, and looser studies in texture, atmosphere, and form."
 >
-  <MixedMediaIntro
-    eyebrow="Section"
-    title="Mixed Media"
-    summary="A cross-disciplinary edit spanning image, moving image, and looser studies in texture, atmosphere, and form."
-  />
   <ProjectGrid
     sectionId="mixed-media"
     detailBasePath="/mixed-media/"

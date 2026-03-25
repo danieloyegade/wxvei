@@ -3,13 +3,14 @@ interface Props {
   eyebrow: string;
   title: string;
   summary: string;
+  showDivider?: boolean;
 }
 
-const { eyebrow, title, summary } = Astro.props;
+const { eyebrow, title, summary, showDivider = true } = Astro.props;
 ---
 
 <section class="editorial-page-intro">
-  <div class="editorial-page-intro__frame">
+  <div class:list={["editorial-page-intro__frame", !showDivider && "editorial-page-intro__frame--plain"]}>
     <div class="editorial-page-intro__copy">
       <p class="editorial-page-intro__eyebrow">{eyebrow}</p>
       <h1 class="editorial-page-intro__title">{title}</h1>
@@ -28,6 +29,11 @@ const { eyebrow, title, summary } = Astro.props;
     margin: 0 auto;
     padding-top: 1rem;
     border-top: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .editorial-page-intro__frame--plain {
+    padding-top: 0;
+    border-top: 0;
   }
 
   .editorial-page-intro__copy {
@@ -75,6 +81,10 @@ const { eyebrow, title, summary } = Astro.props;
 
     .editorial-page-intro__frame {
       padding-top: 1.28rem;
+    }
+
+    .editorial-page-intro__frame--plain {
+      padding-top: 0;
     }
   }
 

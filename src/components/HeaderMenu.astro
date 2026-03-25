@@ -8,6 +8,7 @@ interface Props {
 const { pathname } = Astro.props;
 
 const menuItems = [
+  { label: "Selected Works", href: "/selected-work/" },
   { label: "Mixed Media", href: "/mixed-media/" },
   { label: "Portraiture", href: "/portraiture/" },
   { label: "Short Films", href: "/short-films/" },
@@ -15,6 +16,10 @@ const menuItems = [
 ];
 
 const matchesMenuPath = (currentPath: string, itemHref: string) => {
+  if (itemHref === "/selected-work/") {
+    return currentPath === "/" || currentPath === "/selected-work" || currentPath.startsWith("/selected-work/");
+  }
+
   const normalizedHref = itemHref.endsWith("/") ? itemHref.slice(0, -1) : itemHref;
 
   return currentPath === normalizedHref || currentPath.startsWith(`${normalizedHref}/`);

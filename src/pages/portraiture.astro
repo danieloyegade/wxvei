@@ -1,6 +1,5 @@
 ---
 import { getCollection } from "astro:content";
-import EditorialPageIntro from "../components/EditorialPageIntro.astro";
 import ProjectGrid from "../components/ProjectGrid.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import {
@@ -15,11 +14,6 @@ const projects = getProjectsBySection(await getCollection("projects"), "portrait
   title="Portraiture | Daniel Oyegade"
   description=""
 >
-  <EditorialPageIntro
-    eyebrow="Section"
-    title="Portraiture"
-    summary=""
-  />
   <ProjectGrid
     sectionId="portraiture"
     detailBasePath="/portraiture/"

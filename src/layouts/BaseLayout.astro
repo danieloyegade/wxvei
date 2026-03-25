@@ -62,15 +62,26 @@ const headerSections = [
   { id: "portraiture", ...projectSectionConfigs.portraiture },
   { id: "mixed-media", ...projectSectionConfigs["mixed-media"] },
   { id: "short-films", ...projectSectionConfigs["short-films"] },
+  { id: "blog", label: "Blog", path: "/blog/" },
 ] as const;
 const activeHeaderSection =
   headerSections.find((section) =>
     section.id === "selected-work"
       ? pathname === "/" || isSectionPath(section.path)
+      : section.id === "blog"
+        ? pathname === "/blog" || pathname.startsWith("/blog/")
       : isSectionPath(section.path)
   ) ?? null;
 const headerSectionLink = activeHeaderSection ?? headerSections[0];
+const headerSectionOptions = headerSections.map((section) => ({
+  id: section.id,
+  label: section.label,
+  path: withBase(section.path),
+}));
+const currentHeaderSectionId = activeHeaderSection?.id ?? "";
 const isInformationPage = pathname.startsWith("/information");
+const isBlogPage = pathname === "/blog" || pathname.startsWith("/blog/");
+const headerSectionMemoryKey = "do:last-header-section";
 
 const canonicalPath = Astro.url.pathname.endsWith("/")
   ? Astro.url.pathname
@@ -117,12 +128,13 @@ const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
       <header class="site-header">
         <nav class="site-header__nav" aria-label="Primary">
           <div class="site-header__zone site-header__zone--left">
-            <span
+            <a
+              href={withBase("/")}
               class="site-header__link site-header__link--brand"
               aria-label="Daniel Oyegade"
             >
               Daniel Oyegade
-            </span>
+            </a>
           </div>
           <div class="site-header__zone site-header__zone--center">
             <a
@@ -131,6 +143,7 @@ const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
                 "site-header__link site-header__link--work",
                 activeHeaderSection && "is-active",
               ]}
+              data-header-section-link
             >
               {headerSectionLink.label}
             </a>
@@ -153,6 +166,43 @@ const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
         <slot />
       </main>
     </div>
+
+    <script
+      is:inline
+      define:vars={{
+        currentHeaderSectionId,
+        headerSectionMemoryKey,
+        headerSectionOptions,
+        isBlogPage,
+        isInformationPage,
+      }}
+    >
+      const headerSectionLink = document.querySelector("[data-header-section-link]");
+
+      if (headerSectionLink instanceof HTMLAnchorElement) {
+        const headerSectionById = new Map(
+          headerSectionOptions.map((section) => [section.id, section])
+        );
+
+        try {
+          if (currentHeaderSectionId) {
+            sessionStorage.setItem(headerSectionMemoryKey, currentHeaderSectionId);
+          } else if (isInformationPage) {
+            const rememberedSectionId = sessionStorage.getItem(headerSectionMemoryKey);
+            const rememberedSection = rememberedSectionId
+              ? headerSectionById.get(rememberedSectionId)
+              : null;
+
+            if (rememberedSection) {
+              headerSectionLink.textContent = rememberedSection.label;
+              headerSectionLink.href = rememberedSection.path;
+            }
+          }
+        } catch {
+          // Ignore storage access issues and keep the server-rendered fallback label.
+        }
+      }
+    </script>
   </body>
 </html>
 
