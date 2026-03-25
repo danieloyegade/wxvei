@@ -16,6 +16,7 @@ interface Props {
   indexLabel?: string;
   layoutClass: string;
   frameClass: string;
+  frameStyle?: string;
   cropFocus?: "center" | "top" | "upper-third";
   visualWeight?: "support" | "standard" | "dominant" | "hero";
   cardClassName?: string;
@@ -32,6 +33,7 @@ const {
   indexLabel,
   layoutClass,
   frameClass,
+  frameStyle,
   cropFocus = "center",
   visualWeight = "standard",
   cardClassName,
@@ -50,8 +52,10 @@ const previewVideoType = previewVideoSrc?.toLowerCase().endsWith(".mp4")
     ? "video/quicktime"
     : undefined;
 const playsPreviewInView = video?.playInView ?? false;
+const isVideoFirst = video?.videoFirst ?? false;
 const previewPoster = getResponsiveImageFallbackSrc(hoverPreview?.poster ?? video?.poster ?? image);
-const hasPreview = Boolean(previewVideoSrc && (hoverPreview || playsPreviewInView));
+const hasPreview = Boolean(previewVideoSrc && (hoverPreview || playsPreviewInView || isVideoFirst));
+const rendersImage = Boolean(image);
 const imageSizes = "(min-width: 80rem) 50vw, (min-width: 48rem) 50vw, 100vw";
 const imageClass = [
   "project-card__image",
@@ -64,20 +68,28 @@ const imageClass = [
   data-project-card
   data-project-slug={slug}
   data-preview-in-view={playsPreviewInView ? "true" : undefined}
+  data-card-media={isVideoFirst ? "video-first" : "image-first"}
   data-visual-weight={visualWeight}
 >
   <a class="project-card__link" href={href} aria-label={`View ${title}`}>
-    <div class:list={["project-card__image-wrap", frameClass]} data-project-reveal data-reveal-state="pending">
-      <ResponsiveImage
-        src={image}
-        alt={title}
-        class={imageClass}
-        fill={true}
-        style={`object-position: ${objectPositionMap[cropFocus]}; object-fit: cover;`}
-        sizes={imageSizes}
-        loading="lazy"
-        decoding="async"
-      />
+    <div
+      class:list={["project-card__image-wrap", frameClass]}
+      style={frameStyle}
+      data-project-reveal
+      data-reveal-state="pending"
+    >
+      {rendersImage && (
+        <ResponsiveImage
+          src={image}
+          alt={title}
+          class={imageClass}
+          fill={true}
+          style={`object-position: ${objectPositionMap[cropFocus]}; object-fit: cover;`}
+          sizes={imageSizes}
+          loading="lazy"
+          decoding="async"
+        />
+      )}
       {hasPreview && (
         <video
           class="project-card__preview"
@@ -86,13 +98,12 @@ const imageClass = [
           webkit-playsinline="true"
           disablepictureinpicture
           disableremoteplayback
-          preload="auto"
+          preload="none"
           poster={encodeURI(withBase(previewPoster))}
           aria-hidden="true"
           data-project-preview
           data-preview-start={hoverPreview?.startTime}
           data-preview-end={hoverPreview?.endTime}
-          loop={hoverPreview?.endTime === undefined}
         >
           <source src={encodeURI(withBase(previewVideoSrc!))} type={previewVideoType} />
         </video>
@@ -172,8 +183,24 @@ const imageClass = [
     opacity: 1;
   }
 
+  .project-card[data-card-media="video-first"][data-preview-ready="true"] .project-card__preview {
+    opacity: 1;
+  }
+
   .project-card[data-preview-active="true"] .project-card__image--has-preview {
     opacity: 0;
+  }
+
+  .project-card[data-card-media="video-first"][data-preview-ready="true"] .project-card__image--has-preview {
+    opacity: 0;
+  }
+
+  .project-card[data-preview-disabled="true"] .project-card__preview {
+    opacity: 0;
+  }
+
+  .project-card[data-preview-disabled="true"] .project-card__image--has-preview {
+    opacity: 1;
   }
 
   .project-card__overlay {
@@ -352,6 +379,7 @@ const imageClass = [
 
 <script>
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const prefersReducedData = Boolean(navigator.connection?.saveData);
 
   const setPreviewTime = (preview, startTime) => {
     if (!Number.isFinite(startTime) || preview.readyState < 1) return;
@@ -380,20 +408,24 @@ const imageClass = [
 
     const startTime = Number(preview.dataset.previewStart ?? "0");
     const playsInView = card.dataset.previewInView === "true";
+    const canAutoplayInView = playsInView && !prefersReducedMotion.matches && !prefersReducedData;
     const previewEnd = preview.dataset.previewEnd;
     const endTime =
       previewEnd !== undefined && previewEnd !== ""
         ? Number(previewEnd)
         : null;
+    const playbackEnd = endTime ?? Number.POSITIVE_INFINITY;
     let isHovered = false;
     let isFocusedWithin = false;
-    let isInView = false;
+    let hasAutoplayStarted = false;
+    let hasCompletedPlayback = false;
     let pendingPlay = false;
 
     const isInteractionActive = () => isHovered || isFocusedWithin;
     const shouldPlayPreview = () =>
       card.dataset.previewDisabled !== "true" &&
-      (isInteractionActive() || (playsInView && isInView && !prefersReducedMotion.matches));
+      !document.hidden &&
+      (isInteractionActive() || (canAutoplayInView && hasAutoplayStarted && !hasCompletedPlayback));
 
     const primePreview = () => {
       if (card.dataset.previewPrimed === "true" || card.dataset.previewDisabled === "true") return;
@@ -402,7 +434,7 @@ const imageClass = [
       preview.muted = true;
       preview.defaultMuted = true;
       preview.playsInline = true;
-      preview.preload = "auto";
+      preview.preload = playsInView ? "auto" : "metadata";
       preview.load();
     };
 
@@ -410,7 +442,18 @@ const imageClass = [
       pendingPlay = false;
       card.dataset.previewActive = "false";
       preview.pause();
+    };
+
+    const resetPreview = () => {
       setPreviewTime(preview, startTime);
+      hasCompletedPlayback = false;
+    };
+
+    const finishPreviewPlayback = () => {
+      pendingPlay = false;
+      hasCompletedPlayback = true;
+      card.dataset.previewActive = "false";
+      preview.pause();
     };
 
     const playPreview = () => {
@@ -437,27 +480,34 @@ const imageClass = [
       if (
         restart ||
         preview.currentTime < startTime ||
-        (endTime !== null && preview.currentTime >= endTime)
+        preview.currentTime >= playbackEnd
       ) {
-        setPreviewTime(preview, startTime);
+        resetPreview();
       }
 
       playPreview();
     };
 
-    const syncPreviewState = ({ restart = false } = {}) => {
+    const syncPreviewState = ({ restart = false, resetTimeOnStop = true } = {}) => {
       if (shouldPlayPreview()) {
         startPreview({ restart });
         return;
       }
 
       stopPreview();
+
+      if (resetTimeOnStop) {
+        resetPreview();
+      }
     };
 
     const handleCanPlay = () => {
       if (!pendingPlay || !shouldPlayPreview()) return;
 
-      setPreviewTime(preview, startTime);
+      if (preview.currentTime < startTime || preview.currentTime >= playbackEnd) {
+        resetPreview();
+      }
+
       playPreview();
     };
 
@@ -468,7 +518,7 @@ const imageClass = [
 
     const handleMouseLeave = () => {
       isHovered = false;
-      syncPreviewState();
+      syncPreviewState({ resetTimeOnStop: !hasAutoplayStarted });
     };
 
     const handleFocusIn = () => {
@@ -482,12 +532,13 @@ const imageClass = [
       if (nextTarget instanceof Node && card.contains(nextTarget)) return;
 
       isFocusedWithin = false;
-      syncPreviewState();
+      syncPreviewState({ resetTimeOnStop: !hasAutoplayStarted });
     };
 
     preview.addEventListener("canplay", handleCanPlay);
 
     preview.addEventListener("loadedmetadata", () => {
+      card.dataset.previewReady = "true";
       setPreviewTime(preview, startTime);
     });
 
@@ -506,19 +557,18 @@ const imageClass = [
     preview.addEventListener("timeupdate", () => {
       if (endTime === null || preview.paused || preview.currentTime < endTime) return;
 
-      preview.pause();
-      pendingPlay = false;
+      finishPreviewPlayback();
+    });
 
-      try {
-        preview.currentTime = endTime;
-      } catch {
-        // Ignore timing updates until the browser allows seeking.
-      }
+    preview.addEventListener("ended", () => {
+      finishPreviewPlayback();
     });
 
     preview.addEventListener("error", () => {
       card.dataset.previewDisabled = "true";
+      delete card.dataset.previewReady;
       stopPreview();
+      resetPreview();
     });
 
     card.addEventListener("mouseenter", handleMouseEnter);
@@ -526,30 +576,46 @@ const imageClass = [
     card.addEventListener("focusin", handleFocusIn);
     card.addEventListener("focusout", handleFocusOut);
 
+    // Load preview assets early so cards are ready when they enter view.
     primePreview();
 
-    if (playsInView) {
+    if (canAutoplayInView) {
       if ("IntersectionObserver" in window) {
         const visibilityObserver = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {
               if (entry.target !== card) return;
 
-              isInView = entry.isIntersecting && entry.intersectionRatio >= 0.35;
-              syncPreviewState();
+              if (
+                !hasAutoplayStarted &&
+                entry.isIntersecting &&
+                entry.intersectionRatio >= 0.35
+              ) {
+                hasAutoplayStarted = true;
+                syncPreviewState({ restart: true, resetTimeOnStop: false });
+              }
             });
           },
           {
-            threshold: [0, 0.35, 0.7],
-            rootMargin: "0px 0px -6% 0px",
+            threshold: [0, 0.2, 0.35, 0.6],
+            rootMargin: "0px 0px -8% 0px",
           }
         );
 
         visibilityObserver.observe(card);
       } else {
-        isInView = true;
-        syncPreviewState();
+        hasAutoplayStarted = true;
+        syncPreviewState({ restart: true, resetTimeOnStop: false });
       }
     }
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        stopPreview();
+        return;
+      }
+
+      syncPreviewState({ resetTimeOnStop: false });
+    });
   });
 </script>

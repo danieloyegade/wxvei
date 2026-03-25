@@ -6,9 +6,13 @@ descriptor: "Directed By Daniel Oyegade"
 video:
   src: "/projects/someplace-else/videos/feature.mp4"
   poster: "/projects/someplace-else/photos/cover.jpg"
+  playInView: true
+  videoFirst: true
+  unmutedVolume: 0.1
 hoverPreview:
-  startTime: 12
-  endTime: 22
+  src: "/projects/someplace-else/videos/preview.mp4"
+  startTime: 0
+  endTime: 10
 credits:
   - role: "Directed"
     name: "Daniel Oyegade"

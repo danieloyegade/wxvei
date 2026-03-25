@@ -6,9 +6,13 @@ descriptor: "Short film directed by Daniel Oyegade."
 video:
   src: "/projects/moving-images-in-g-sharp-minor/videos/feature.mp4"
   poster: "/projects/moving-images-in-g-sharp-minor/photos/cover.jpg"
+  playInView: true
+  videoFirst: true
+  unmutedVolume: 0.1
 hoverPreview:
-  startTime: 6
-  endTime: 16
+  src: "/projects/moving-images-in-g-sharp-minor/videos/preview.mp4"
+  startTime: 0
+  endTime: 10
 credits:
   - role: "Directed"
     name: "Daniel Oyegade"

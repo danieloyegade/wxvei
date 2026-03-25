@@ -18,6 +18,7 @@ interface SelectedWorkProject {
   order: number;
   visualWeight?: ProjectVisualWeight;
   orientation?: ProjectOrientation;
+  selectedWorkAspectRatio?: string;
   cropFocus?: ProjectCropFocus;
 }
 
@@ -162,6 +163,11 @@ const resolvedBeats = beats.map((beat) => ({
                 visualWeight={project.visualWeight}
                 layoutClass={project.layoutClass}
                 frameClass={projectFrameClasses[project.orientation ?? "landscape"]}
+                frameStyle={
+                  project.selectedWorkAspectRatio
+                    ? `aspect-ratio: ${project.selectedWorkAspectRatio};`
+                    : undefined
+                }
                 cropFocus={project.cropFocus}
               />
             ))}

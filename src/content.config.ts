@@ -12,6 +12,8 @@ const projectVideoSchema = z.object({
   controls: z.boolean().optional(),
   loop: z.boolean().optional(),
   playInView: z.boolean().optional(),
+  videoFirst: z.boolean().optional(),
+  unmutedVolume: z.number().min(0).max(1).optional(),
 });
 
 const projectHoverPreviewSchema = z
@@ -40,6 +42,7 @@ const projects = defineCollection({
     visualWeight: z.enum(projectVisualWeightValues).default("standard"),
     orientation: z.enum(projectOrientationValues),
     cropFocus: z.enum(projectCropFocusValues).default("center"),
+    selectedWorkAspectRatio: z.string().optional(),
     video: projectVideoSchema.optional(),
     detailVideos: z.array(projectVideoSchema).optional(),
     hoverPreview: projectHoverPreviewSchema.optional(),

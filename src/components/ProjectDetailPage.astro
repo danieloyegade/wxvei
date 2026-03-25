@@ -51,6 +51,8 @@ const heroImageSizes = "(min-width: 96rem) 92rem, 100vw";
 const heroVideoControls = heroVideo?.controls ?? true;
 const heroVideoLoop = heroVideo?.loop ?? false;
 const heroVideoPreload = heroVideoControls ? "metadata" : "auto";
+const heroVideoUnmutedVolume = Math.min(Math.max(heroVideo?.unmutedVolume ?? 0.1, 0), 1);
+const showsHeroAudioToggle = hasHeroVideo && heroVideo?.unmutedVolume !== undefined;
 ---
 
 <article class="project-detail">
@@ -67,7 +69,7 @@ const heroVideoPreload = heroVideoControls ? "metadata" : "auto";
       {hasMetaPanel && (
         <aside class="project-detail__info" aria-label="Project information">
           <div class="project-detail__meta-group">
-            <p class="project-detail__info-label">Information</p>
+            <p class="project-detail__info-label">Info</p>
             <ul class="project-detail__info-list">
               {infoLines.map((line) => (
                 <li class="project-detail__info-line">{line}</li>
@@ -80,19 +82,33 @@ const heroVideoPreload = heroVideoControls ? "metadata" : "auto";
 
     <figure class:list={["project-detail__hero", hasHeroVideo && "project-detail__hero--video"]}>
       {hasHeroVideo ? (
-        <video
-          class="project-detail__hero-media"
-          controls={heroVideoControls}
-          autoplay
-          loop={heroVideoLoop}
-          muted
-          playsinline
-          preload={heroVideoPreload}
-          poster={encodeURI(withBase(getResponsiveImageFallbackSrc(heroVideo?.poster ?? image)))}
-          data-project-detail-video
-        >
-          <source src={encodeURI(withBase(heroVideo!.src))} />
-        </video>
+        <div class="project-detail__hero-video-shell">
+          <video
+            class="project-detail__hero-media"
+            controls={heroVideoControls}
+            autoplay
+            loop={heroVideoLoop}
+            muted
+            playsinline
+            preload={heroVideoPreload}
+            poster={encodeURI(withBase(getResponsiveImageFallbackSrc(heroVideo?.poster ?? image)))}
+            data-project-detail-video
+            data-project-detail-unmuted-volume={heroVideoUnmutedVolume}
+          >
+            <source src={encodeURI(withBase(heroVideo!.src))} />
+          </video>
+          {showsHeroAudioToggle && (
+            <button
+              type="button"
+              class="project-detail__hero-audio-toggle"
+              data-project-detail-audio-toggle
+              aria-label="Enable project video sound"
+              aria-pressed="false"
+            >
+              Sound on
+            </button>
+          )}
+        </div>
       ) : (
         <ResponsiveImage
           src={image}
@@ -200,8 +216,35 @@ const heroVideoPreload = heroVideoControls ? "metadata" : "auto";
 
 <script is:inline>
   const projectDetailVideo = document.querySelector("[data-project-detail-video]");
+  const projectDetailAudioToggle = document.querySelector("[data-project-detail-audio-toggle]");
 
   if (projectDetailVideo instanceof HTMLVideoElement) {
+    const parsedUnmutedVolume = Number(
+      projectDetailVideo.dataset.projectDetailUnmutedVolume ?? "0.1"
+    );
+    const unmutedVolume = Number.isFinite(parsedUnmutedVolume)
+      ? Math.min(Math.max(parsedUnmutedVolume, 0), 1)
+      : 0.1;
+
+    projectDetailVideo.volume = unmutedVolume;
+
+    const syncAudioToggle = () => {
+      if (!(projectDetailAudioToggle instanceof HTMLButtonElement)) return;
+
+      const hasAudiblePlayback =
+        !projectDetailVideo.muted && projectDetailVideo.volume > 0;
+
+      projectDetailAudioToggle.textContent = hasAudiblePlayback ? "Mute" : "Sound on";
+      projectDetailAudioToggle.setAttribute(
+        "aria-label",
+        hasAudiblePlayback ? "Mute project video sound" : "Enable project video sound"
+      );
+      projectDetailAudioToggle.setAttribute(
+        "aria-pressed",
+        hasAudiblePlayback ? "true" : "false"
+      );
+    };
+
     const playbackPromise = projectDetailVideo.play();
 
     if (typeof playbackPromise?.catch === "function") {
@@ -210,6 +253,32 @@ const heroVideoPreload = heroVideoControls ? "metadata" : "auto";
           projectDetailVideo.setAttribute("controls", "");
         }
       });
+    }
+
+    if (projectDetailAudioToggle instanceof HTMLButtonElement) {
+      syncAudioToggle();
+
+      projectDetailAudioToggle.addEventListener("click", () => {
+        if (projectDetailVideo.muted || projectDetailVideo.volume === 0) {
+          projectDetailVideo.muted = false;
+          projectDetailVideo.volume = unmutedVolume;
+
+          const resumedPlayback = projectDetailVideo.play();
+
+          if (typeof resumedPlayback?.catch === "function") {
+            resumedPlayback.catch(() => {
+              projectDetailVideo.muted = true;
+              syncAudioToggle();
+            });
+          }
+        } else {
+          projectDetailVideo.muted = true;
+        }
+
+        syncAudioToggle();
+      });
+
+      projectDetailVideo.addEventListener("volumechange", syncAudioToggle);
     }
   }
 
@@ -483,6 +552,12 @@ const heroVideoPreload = heroVideoControls ? "metadata" : "auto";
     background: transparent;
   }
 
+  .project-detail__hero-video-shell {
+    position: relative;
+    display: inline-grid;
+    max-width: 100%;
+  }
+
   .project-detail__hero-media,
   .project-detail__detail-image {
     display: block;
@@ -495,6 +570,52 @@ const heroVideoPreload = heroVideoControls ? "metadata" : "auto";
     max-width: 100%;
     object-fit: contain;
     background: #000;
+  }
+
+  .project-detail__hero-audio-toggle {
+    position: absolute;
+    top: clamp(0.85rem, 1.3vw, 1.15rem);
+    right: clamp(0.85rem, 1.3vw, 1.15rem);
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2rem;
+    padding: 0.42rem 0.76rem;
+    border: 1px solid rgba(247, 243, 235, 0.2);
+    border-radius: 999px;
+    background: rgba(16, 15, 13, 0.56);
+    color: rgba(247, 243, 235, 0.96);
+    font-family: var(--font-sans);
+    font-size: 0.64rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    text-transform: uppercase;
+    cursor: pointer;
+    backdrop-filter: blur(14px);
+    transition:
+      background-color 160ms ease-out,
+      border-color 160ms ease-out,
+      color 160ms ease-out,
+      transform 160ms ease-out;
+  }
+
+  .project-detail__hero-audio-toggle:hover,
+  .project-detail__hero-audio-toggle:focus-visible {
+    border-color: rgba(247, 243, 235, 0.34);
+    background: rgba(16, 15, 13, 0.72);
+    transform: translateY(-0.03rem);
+  }
+
+  .project-detail__hero-audio-toggle[aria-pressed="true"] {
+    background: rgba(247, 243, 235, 0.92);
+    border-color: rgba(247, 243, 235, 0.92);
+    color: rgba(16, 15, 13, 0.94);
+  }
+
+  .project-detail__hero-audio-toggle:focus-visible {
+    outline: none;
   }
 
   .project-detail__post-hero-meta {

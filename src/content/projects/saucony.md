@@ -5,7 +5,11 @@ descriptor: "Moving image for Saucony."
 video:
   src: "/projects/saucony/videos/feature.mp4"
   poster: "/projects/saucony/photos/cover.jpg"
+  playInView: true
+  videoFirst: true
+  unmutedVolume: 0.1
 hoverPreview:
+  src: "/projects/saucony/videos/preview.mp4"
   startTime: 0
   endTime: 10
 order: 13

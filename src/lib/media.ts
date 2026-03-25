@@ -46,6 +46,9 @@ const isProjectImagePath = (src: string) =>
 const isProjectVideoPath = (src: string) =>
   src.startsWith("/projects/") && src.includes("/videos/");
 
+const isProjectPreviewVideoPath = (src: string) =>
+  isProjectVideoPath(src) && /\/videos\/preview\.(mp4|m4v|webm)$/i.test(src);
+
 const publishedRootAssetPaths = new Set([
   "/apple-touch-icon.png",
   "/favicon.svg",
@@ -95,7 +98,13 @@ export const resolveProjectImageSrc = (src?: string) => {
 };
 
 export const resolveProjectVideoSrc = (src?: string) => {
-  if (!src || isRemoteUrl(src) || !isProjectVideoPath(src) || !usesRemoteProjectVideos()) {
+  if (
+    !src ||
+    isRemoteUrl(src) ||
+    !isProjectVideoPath(src) ||
+    isProjectPreviewVideoPath(src) ||
+    !usesRemoteProjectVideos()
+  ) {
     return src;
   }
 

@@ -17,7 +17,6 @@ export const selectedWorkProjectSlugs = [
 export const portraitureProjectSlugs = [
   "reny",
   "mia",
-  "annabella",
   "abiola",
   "lola",
   "dj-paullette-for-seen-mag",
@@ -84,4 +83,3 @@ const projectSectionSlugSets = Object.fromEntries(
 
 export const getProjectSectionIdsForSlug = (slug: string) =>
   projectSectionIds.filter((sectionId) => projectSectionSlugSets[sectionId].has(slug));
-

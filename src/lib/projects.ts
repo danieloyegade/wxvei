@@ -34,6 +34,8 @@ export interface ProjectVideoAsset {
   controls?: boolean;
   loop?: boolean;
   playInView?: boolean;
+  videoFirst?: boolean;
+  unmutedVolume?: number;
 }
 
 export interface ProjectHoverPreview {
@@ -165,6 +167,7 @@ export const mapProjectForGrid = (project: ProjectEntry) => {
     layoutPattern: project.data.layoutPattern,
     visualWeight: project.data.visualWeight,
     orientation: project.data.orientation,
+    selectedWorkAspectRatio: project.data.selectedWorkAspectRatio,
     cropFocus: project.data.cropFocus,
     video: media.video,
     hoverPreview: media.hoverPreview,

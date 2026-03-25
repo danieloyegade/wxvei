@@ -8,6 +8,13 @@ video:
   poster: "/projects/annabella/photos/cover.jpg"
   controls: false
   loop: true
+  playInView: true
+  videoFirst: true
+  unmutedVolume: 0.1
+hoverPreview:
+  src: "/projects/annabella/videos/preview.mp4"
+  startTime: 0
+  endTime: 12
 detailImages:
   - "/projects/annabella/photos/a12a2.jpg"
   - "/projects/annabella/photos/DSC_3439.jpg"
@@ -21,6 +28,7 @@ order: 5
 layoutPattern: "lead-right"
 visualWeight: "hero"
 orientation: "portrait"
+selectedWorkAspectRatio: "16 / 9"
 cropFocus: "upper-third"
 status: "placeholder"
 ---

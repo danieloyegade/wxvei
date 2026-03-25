@@ -5,9 +5,13 @@ descriptor: "Short film directed by Daniel Oyegade."
 video:
   src: "/projects/of-the-sublime-and-beautiful/videos/feature.mp4"
   poster: "/projects/of-the-sublime-and-beautiful/photos/cover.jpg"
+  playInView: true
+  videoFirst: true
+  unmutedVolume: 0.1
 hoverPreview:
-  startTime: 8
-  endTime: 18
+  src: "/projects/of-the-sublime-and-beautiful/videos/preview.mp4"
+  startTime: 0
+  endTime: 10
 credits:
   - role: "Directed"
     name: "Daniel Oyegade"
