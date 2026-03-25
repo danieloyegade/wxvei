@@ -13,6 +13,7 @@ interface Props {
   title: string;
   image: string;
   heroVideo?: ProjectVideoAsset;
+  detailVideos?: ProjectVideoAsset[];
   infoLines?: string[];
   detailImages?: string[];
   showBody?: boolean;
@@ -26,6 +27,7 @@ const {
   title,
   image,
   heroVideo,
+  detailVideos = [],
   infoLines = [],
   detailImages = [],
   showBody = false,
@@ -36,9 +38,10 @@ const {
 } = Astro.props;
 
 const hasHeroVideo = Boolean(heroVideo?.src);
+const hasDetailVideos = detailVideos.length > 0;
 const hasGallery = detailImages.length > 0;
 const hasInfoLines = infoLines.length > 0;
-const hasSupplementalContent = showBody || hasGallery;
+const hasSupplementalContent = showBody || hasDetailVideos || hasGallery;
 const heroImageSizes = "(min-width: 96rem) 92rem, 100vw";
 const heroVideoControls = heroVideo?.controls ?? true;
 const heroVideoLoop = heroVideo?.loop ?? false;
@@ -101,6 +104,30 @@ const heroVideoPreload = heroVideoControls ? "metadata" : "auto";
         {showBody && (
           <div class="project-detail__body">
             <slot />
+          </div>
+        )}
+
+        {hasDetailVideos && (
+          <div class="project-detail__video-gallery" aria-label={`${title} additional videos`}>
+            {detailVideos.map((detailVideo) => (
+              <figure class="project-detail__detail-figure project-detail__detail-figure--video">
+                <video
+                  class="project-detail__hero-media"
+                  controls={detailVideo.controls ?? true}
+                  loop={detailVideo.loop ?? false}
+                  muted
+                  playsinline
+                  preload="metadata"
+                  poster={
+                    detailVideo.poster
+                      ? encodeURI(withBase(getResponsiveImageFallbackSrc(detailVideo.poster)))
+                      : undefined
+                  }
+                >
+                  <source src={encodeURI(withBase(detailVideo.src))} />
+                </video>
+              </figure>
+            ))}
           </div>
         )}
 
@@ -415,11 +442,21 @@ const heroVideoPreload = heroVideoControls ? "metadata" : "auto";
     align-items: start;
   }
 
+  .project-detail__video-gallery {
+    display: grid;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
   .project-detail__detail-figure {
     margin: 0;
     align-self: start;
     overflow: clip;
     background: rgba(20, 18, 16, 0.04);
+  }
+
+  .project-detail__detail-figure--video {
+    background: #000;
   }
 
   .project-detail__sequence-nav {
@@ -499,6 +536,10 @@ const heroVideoPreload = heroVideoControls ? "metadata" : "auto";
 
     .project-detail__gallery {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2rem;
+    }
+
+    .project-detail__video-gallery {
       gap: 2rem;
     }
   }

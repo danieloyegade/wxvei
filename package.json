@@ -8,6 +8,7 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "content:publish": "node ./scripts/publish-content.mjs",
     "media:upload:r2": "./scripts/upload-media-to-r2.sh",
     "videos:manifest": "./scripts/video-manifest.sh",
     "videos:upload:r2": "./scripts/upload-videos-to-r2.sh"

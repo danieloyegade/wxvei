@@ -25,7 +25,7 @@ export const isRemoteUrl = (src: string) =>
   protocolPattern.test(src) || protocolRelativePattern.test(src);
 
 const isProjectImagePath = (src: string) =>
-  src.startsWith("/projects/") || src.startsWith("/site/photos/");
+  src.startsWith("/projects/") || src.startsWith("/site/photos/") || src.startsWith("/blog/");
 
 const isProjectVideoPath = (src: string) =>
   src.startsWith("/projects/") && src.includes("/videos/");
@@ -41,6 +41,7 @@ const publishedRootAssetPaths = new Set([
 const isPublishedAssetPath = (src: string) =>
   src.startsWith("/projects/") ||
   src.startsWith("/site/") ||
+  src.startsWith("/blog/") ||
   src.startsWith("/fonts/") ||
   publishedRootAssetPaths.has(src);
 

@@ -41,6 +41,7 @@ const projects = defineCollection({
     orientation: z.enum(projectOrientationValues),
     cropFocus: z.enum(projectCropFocusValues).default("center"),
     video: projectVideoSchema.optional(),
+    detailVideos: z.array(projectVideoSchema).optional(),
     hoverPreview: projectHoverPreviewSchema.optional(),
     detailImages: z.array(z.string()).optional(),
     metadata: z.array(z.string()).optional(),
@@ -56,6 +57,20 @@ const projects = defineCollection({
   }),
 });
 
+const posts = defineCollection({
+  type: "content",
+  schema: z.object({
+    title: z.string(),
+    excerpt: z.string(),
+    publishedAt: z.coerce.date(),
+    coverImage: z.string().optional(),
+    coverAlt: z.string().optional(),
+    galleryImages: z.array(z.string()).optional(),
+    status: z.enum(["draft", "published"]).default("published"),
+  }),
+});
+
 export const collections = {
   projects,
+  posts,
 };

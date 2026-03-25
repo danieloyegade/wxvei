@@ -29,6 +29,7 @@ const portraitImageConfig: ResponsiveImageConfig = {
 
 const responsiveImageConfigs: Array<[prefix: string, config: ResponsiveImageConfig]> = [
   ["/projects/", coverImageConfig],
+  ["/blog/", coverImageConfig],
   ["/site/photos/", portraitImageConfig],
 ];
 

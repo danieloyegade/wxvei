@@ -1,76 +1,180 @@
 ---
+import { getCollection } from "astro:content";
+import ResponsiveImage from "../components/ResponsiveImage.astro";
 import EditorialPageIntro from "../components/EditorialPageIntro.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { withBase } from "../lib/site";
+
+const posts = (await getCollection("posts"))
+  .filter((post) => post.data.status === "published")
+  .sort((left, right) => right.data.publishedAt.getTime() - left.data.publishedAt.getTime());
+
+const dateFormatter = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
 ---
 
 <BaseLayout
   title="Blog | Daniel Oyegade"
-  description="Notes, references, and short-form writing will live here in time, kept in the same restrained register as the work itself."
+  description="Notes, references, and short-form writing gathered in the same restrained register as the work itself."
 >
   <EditorialPageIntro
     eyebrow="Mythologies"
     title="Blog"
-    summary="Notes, references, and short-form writing will live here in time, kept in the same restrained register as the work itself."
+    summary="Notes, references, and short-form writing gathered in the same restrained register as the work itself."
   />
 
-  <section class="blog-note">
-    <div class="blog-note__frame">
-      <div class="blog-note__copy">
-        <p class="blog-note__label">Soon</p>
-        <p class="blog-note__text">
-          Essays, references, and in-progress thoughts will gather here gradually. The pace is
-          intended to stay measured.
-        </p>
-      </div>
+  <section class="blog-list">
+    <div class="blog-list__frame">
+      {posts.length > 0 ? (
+        <div class="blog-list__stack">
+          {posts.map((post) => (
+            <article class="blog-list__item">
+              <a class="blog-list__link" href={withBase(`/blog/${post.slug}/`)}>
+                {post.data.coverImage && (
+                  <figure class="blog-list__image-wrap">
+                    <ResponsiveImage
+                      src={post.data.coverImage}
+                      alt={post.data.coverAlt ?? post.data.title}
+                      class="blog-list__image"
+                      sizes="(min-width: 80rem) 32rem, 100vw"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </figure>
+                )}
+
+                <div class="blog-list__copy">
+                  <p class="blog-list__meta">{dateFormatter.format(post.data.publishedAt)}</p>
+                  <h2 class="blog-list__title">{post.data.title}</h2>
+                  <p class="blog-list__excerpt">{post.data.excerpt}</p>
+                </div>
+              </a>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div class="blog-list__empty">
+          <p class="blog-list__empty-label">Soon</p>
+          <p class="blog-list__empty-copy">
+            Essays, references, and in-progress thoughts will gather here gradually. The pace is
+            intended to stay measured.
+          </p>
+        </div>
+      )}
     </div>
   </section>
 </BaseLayout>
 
 <style>
-  .blog-note {
+  .blog-list {
     padding: 0 1.5rem 8rem;
   }
 
-  .blog-note__frame {
+  .blog-list__frame {
     max-width: 96rem;
     margin: 0 auto;
   }
 
-  .blog-note__copy {
+  .blog-list__stack {
     display: grid;
-    gap: 0.48rem;
-    max-width: 26rem;
+    gap: 2.5rem;
   }
 
-  .blog-note__label {
+  .blog-list__item {
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid rgba(18, 16, 14, 0.08);
+  }
+
+  .blog-list__link {
+    display: grid;
+    gap: 1rem;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .blog-list__image-wrap {
+    margin: 0;
+    overflow: clip;
+    background: rgba(20, 18, 16, 0.04);
+  }
+
+  .blog-list__image {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .blog-list__copy {
+    display: grid;
+    gap: 0.42rem;
+    max-width: 36rem;
+  }
+
+  .blog-list__meta,
+  .blog-list__empty-label {
     margin: 0;
     font-family: var(--font-sans);
-    font-size: 0.66rem;
+    font-size: 0.7rem;
     font-weight: 500;
-    letter-spacing: 0.22em;
+    letter-spacing: 0.18em;
     line-height: 1;
     text-transform: uppercase;
     color: rgba(117, 109, 102, 0.86);
   }
 
-  .blog-note__text {
+  .blog-list__title {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(1.6rem, 1.25rem + 1vw, 2.45rem);
+    font-weight: 500;
+    letter-spacing: -0.032em;
+    line-height: 0.94;
+    color: rgba(20, 18, 16, 0.94);
+    text-wrap: balance;
+  }
+
+  .blog-list__excerpt,
+  .blog-list__empty-copy {
     margin: 0;
     font-family: var(--font-sans);
-    font-size: clamp(0.92rem, 0.86rem + 0.12vw, 1rem);
-    line-height: 1.78;
-    color: rgba(64, 58, 52, 0.92);
+    font-size: clamp(0.95rem, 0.9rem + 0.16vw, 1.02rem);
+    line-height: 1.76;
+    color: rgba(64, 58, 52, 0.88);
     text-wrap: pretty;
   }
 
+  .blog-list__empty {
+    display: grid;
+    gap: 0.5rem;
+    max-width: 28rem;
+  }
+
   @media (min-width: 40rem) {
-    .blog-note {
+    .blog-list {
       padding: 0 2.5rem 10rem;
+    }
+
+    .blog-list__link {
+      grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+      align-items: start;
+      gap: 1.75rem;
     }
   }
 
   @media (min-width: 80rem) {
-    .blog-note {
+    .blog-list {
       padding-inline: 3.5rem;
+    }
+
+    .blog-list__stack {
+      gap: 3rem;
+    }
+
+    .blog-list__item {
+      padding-bottom: 3rem;
     }
   }
 </style>

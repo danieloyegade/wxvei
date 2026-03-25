@@ -1,0 +1,221 @@
+---
+import { getCollection } from "astro:content";
+import ResponsiveImage from "../../components/ResponsiveImage.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { withBase } from "../../lib/site";
+
+export async function getStaticPaths() {
+  const posts = (await getCollection("posts")).filter((post) => post.data.status === "published");
+
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+const dateFormatter = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+---
+
+<BaseLayout
+  title={`${post.data.title} | Daniel Oyegade`}
+  description={post.data.excerpt}
+>
+  <article class="blog-post">
+    <div class="blog-post__frame">
+      <a class="blog-post__back-link" href={withBase("/blog/")}>Blog</a>
+
+      <header class="blog-post__header">
+        <p class="blog-post__meta">{dateFormatter.format(post.data.publishedAt)}</p>
+        <h1 class="blog-post__title">{post.data.title}</h1>
+        <p class="blog-post__excerpt">{post.data.excerpt}</p>
+      </header>
+
+      {post.data.coverImage && (
+        <figure class="blog-post__hero">
+          <ResponsiveImage
+            src={post.data.coverImage}
+            alt={post.data.coverAlt ?? post.data.title}
+            class="blog-post__hero-image"
+            sizes="(min-width: 96rem) 92rem, 100vw"
+            loading="eager"
+            decoding="async"
+          />
+        </figure>
+      )}
+
+      <div class="blog-post__body">
+        <Content />
+      </div>
+
+      {post.data.galleryImages && post.data.galleryImages.length > 0 && (
+        <div class="blog-post__gallery" aria-label={`${post.data.title} image gallery`}>
+          {post.data.galleryImages.map((image, index) => (
+            <figure class="blog-post__gallery-figure">
+              <ResponsiveImage
+                src={image}
+                alt={`${post.data.title} image ${index + 1}`}
+                class="blog-post__gallery-image"
+                sizes="(min-width: 96rem) 46rem, 100vw"
+                loading="lazy"
+                decoding="async"
+              />
+            </figure>
+          ))}
+        </div>
+      )}
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .blog-post {
+    padding: 1.75rem 1.5rem 6rem;
+  }
+
+  .blog-post__frame {
+    max-width: 96rem;
+    margin: 0 auto;
+  }
+
+  .blog-post__back-link {
+    display: inline-flex;
+    color: rgba(20, 18, 16, 0.62);
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    line-height: 1;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .blog-post__header {
+    display: grid;
+    gap: 0.8rem;
+    max-width: 42rem;
+    margin-top: 2.35rem;
+    margin-bottom: 2.4rem;
+  }
+
+  .blog-post__meta {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    line-height: 1;
+    text-transform: uppercase;
+    color: rgba(117, 109, 102, 0.86);
+  }
+
+  .blog-post__title {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(2.5rem, 1.8rem + 2.5vw, 4.9rem);
+    font-weight: 500;
+    letter-spacing: -0.045em;
+    line-height: 0.9;
+    color: rgba(20, 18, 16, 0.96);
+    text-wrap: balance;
+  }
+
+  .blog-post__excerpt {
+    margin: 0;
+    max-width: 32rem;
+    font-family: var(--font-sans);
+    font-size: clamp(0.98rem, 0.92rem + 0.16vw, 1.06rem);
+    line-height: 1.8;
+    color: rgba(64, 58, 52, 0.88);
+    text-wrap: pretty;
+  }
+
+  .blog-post__hero,
+  .blog-post__gallery-figure {
+    margin: 0;
+    overflow: clip;
+    background: rgba(20, 18, 16, 0.04);
+  }
+
+  .blog-post__hero-image,
+  .blog-post__gallery-image {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .blog-post__body {
+    max-width: 42rem;
+    margin-top: 2.5rem;
+    color: rgba(16, 15, 13, 0.8);
+    font-family: var(--font-sans);
+    font-size: 0.98rem;
+    line-height: 1.82;
+  }
+
+  .blog-post__body :global(p:first-child) {
+    margin-top: 0;
+  }
+
+  .blog-post__body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .blog-post__body :global(h2),
+  .blog-post__body :global(h3) {
+    margin-top: 2.2rem;
+    margin-bottom: 0.75rem;
+    font-family: var(--font-serif);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 0.96;
+    color: rgba(20, 18, 16, 0.94);
+  }
+
+  .blog-post__body :global(h2) {
+    font-size: clamp(1.7rem, 1.45rem + 0.8vw, 2.35rem);
+  }
+
+  .blog-post__body :global(h3) {
+    font-size: clamp(1.3rem, 1.15rem + 0.5vw, 1.7rem);
+  }
+
+  .blog-post__body :global(a) {
+    color: inherit;
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.16em;
+  }
+
+  .blog-post__gallery {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+  }
+
+  @media (min-width: 48rem) {
+    .blog-post {
+      padding: 2.25rem 2.5rem 8rem;
+    }
+
+    .blog-post__body,
+    .blog-post__gallery {
+      margin-top: 3rem;
+    }
+
+    .blog-post__gallery {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2rem;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .blog-post {
+      padding-inline: 3.5rem;
+    }
+  }
+</style>

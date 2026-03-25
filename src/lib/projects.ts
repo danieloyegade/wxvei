@@ -1,6 +1,11 @@
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import type { CollectionEntry } from "astro:content";
+import {
+  mixedMediaProjectSlugs,
+  portraitureProjectSlugs,
+  shortFilmProjectSlugs,
+} from "../data/projectSections";
 import { resolveProjectVideoSrc, usesRemoteProjectImages, usesRemoteProjectVideos } from "./media";
 import { withBase } from "./site";
 
@@ -27,35 +32,19 @@ export interface ProjectHoverPreview {
   endTime?: number;
 }
 
+export {
+  mixedMediaProjectSlugs,
+  portraitureProjectSlugs,
+  shortFilmProjectSlugs,
+} from "../data/projectSections";
+
 interface ResolvedProjectMedia {
   image: string;
   video?: ProjectVideoAsset;
+  detailVideos?: ProjectVideoAsset[];
   hoverPreview?: ProjectHoverPreview;
   detailImages?: string[];
 }
-
-export const mixedMediaProjectSlugs = [
-  "rectangle-with-embellishments",
-  "telfar-with-embelishments",
-  "home-improvement",
-  "spectres-under-glass",
-] as const;
-
-export const portraitureProjectSlugs = [
-  "reny",
-  "mia",
-  "annabella",
-  "abiola",
-  "lola",
-  "dj-paullette-for-seen-mag",
-  "isaac",
-] as const;
-
-export const shortFilmProjectSlugs = [
-  "moving-images-in-g-sharp-minor",
-  "someplace-else",
-  "of-the-sublime-and-beautiful",
-] as const;
 
 export const sortProjectsByOrder = (projects: ProjectEntry[]) =>
   [...projects].sort((a, b) => a.data.order - b.data.order);
@@ -116,6 +105,11 @@ export const getResolvedProjectMedia = (project: ProjectEntry): ResolvedProjectM
         poster: resolveMixedMediaAssetPath(project, project.data.video.poster),
       }
     : undefined,
+  detailVideos: project.data.detailVideos?.map((detailVideo) => ({
+    ...detailVideo,
+    src: resolveProjectVideoSrc(resolveMixedMediaAssetPath(project, detailVideo.src)) ?? detailVideo.src,
+    poster: resolveMixedMediaAssetPath(project, detailVideo.poster),
+  })),
   hoverPreview: project.data.hoverPreview
     ? {
         ...project.data.hoverPreview,
@@ -132,18 +126,18 @@ export const mapProjectForGrid = (project: ProjectEntry) => {
   const media = getResolvedProjectMedia(project);
 
   return {
-  slug: project.slug,
-  title: project.data.title,
-  image: media.image,
-  descriptor: project.data.descriptor,
-  order: project.data.order,
-  layoutPattern: project.data.layoutPattern,
-  visualWeight: project.data.visualWeight,
-  orientation: project.data.orientation,
-  cropFocus: project.data.cropFocus,
-  video: media.video,
-  hoverPreview: media.hoverPreview,
-  detailImages: media.detailImages,
+    slug: project.slug,
+    title: project.data.title,
+    image: media.image,
+    descriptor: project.data.descriptor,
+    order: project.data.order,
+    layoutPattern: project.data.layoutPattern,
+    visualWeight: project.data.visualWeight,
+    orientation: project.data.orientation,
+    cropFocus: project.data.cropFocus,
+    video: media.video,
+    hoverPreview: media.hoverPreview,
+    detailImages: media.detailImages,
   };
 };
 
