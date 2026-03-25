@@ -1,27 +1,23 @@
-# Cloudflare Pages + R2 Setup
+# GitHub Pages + Cloudflare R2 Setup
 
-This project is already compatible with Cloudflare Pages for the site and R2 for
-public media delivery.
+This repository currently deploys the site with GitHub Pages and uses Cloudflare
+R2 as the optional public media host for videos, images, fonts, and favicons.
 
 ## What This Repository Already Does
 
 - `npm run build` outputs the static site to `dist/`
+- GitHub Actions deploys `main` with `.github/workflows/deploy.yml`
 - project videos can load from `PUBLIC_PROJECT_VIDEO_BASE_URL`
 - project images and site photos can optionally load from `PUBLIC_MEDIA_BASE_URL`
 - favicons and fonts can optionally load from `PUBLIC_MEDIA_BASE_URL`
 - large local video files are ignored by Git
 
-## Cloudflare Pages Project
+## Important Behavior
 
-Use these values when creating the Pages project:
-
-- Framework preset: `Astro`
-- Production branch: `main`
-- Build command: `npm run build`
-- Build output directory: `dist`
-
-The site already uses `https://danieloye.com` as its canonical site URL in
-`astro.config.mjs`.
+Content files keep paths like `/projects/someplace-else/videos/feature.mp4`.
+Those paths only become `https://media.danieloye.com/...` during the build when
+the matching `PUBLIC_*` variables are set. Without those variables, production
+keeps the local-style `/projects/...` URLs.
 
 ## R2 Bucket Recommendation
 
@@ -37,29 +33,36 @@ Your deployed site will then request media like:
 - `https://media.danieloye.com/projects/someplace-else/videos/feature.mp4`
 - `https://media.danieloye.com/projects/jamine/photos/cover.jpg`
 
-## Required Dashboard Steps
+## Required Setup
 
-These steps require your Cloudflare account and cannot be completed from this
-repository alone:
+These account-level steps still need to be completed outside the repository:
 
-1. Create or finish the Cloudflare Pages project for this repo.
-2. Create an R2 bucket.
-3. Enable a public URL for the bucket.
-4. Preferably connect the bucket to a custom domain such as `media.danieloye.com`.
-5. In Pages project settings, add:
-   - `PUBLIC_ASSET_SOURCE=remote`
-   - `PUBLIC_MEDIA_BASE_URL=https://media.danieloye.com`
+1. Create or confirm the R2 bucket.
+2. Enable a public URL for the bucket.
+3. Preferably connect the bucket to a custom domain such as `media.danieloye.com`.
+4. In GitHub Actions repository variables or the `github-pages` environment, add:
    - `PUBLIC_VIDEO_SOURCE=remote`
    - `PUBLIC_PROJECT_VIDEO_BASE_URL=https://media.danieloye.com`
-6. Redeploy the Pages project after the environment variable is saved.
+5. If you also want images, fonts, and favicons from R2, add:
+   - `PUBLIC_ASSET_SOURCE=remote`
+   - `PUBLIC_MEDIA_BASE_URL=https://media.danieloye.com`
+6. For GitHub-triggered uploads, add:
+   - variable `R2_BUCKET_NAME=danieloye-media`
+   - variable `CLOUDFLARE_ACCOUNT_ID=<your-account-id>`
+   - secret `CLOUDFLARE_API_TOKEN=<token with R2 write access>`
+7. Redeploy GitHub Pages after the variables are saved.
 
-If you also want all published images to load from R2, add:
-- `PUBLIC_IMAGE_SOURCE=remote`
+If you intentionally move the whole site build to Cloudflare Pages later, use
+the same `PUBLIC_*` variable names there.
 
 ## Uploading Videos To R2
 
 This repository includes a helper script for uploading the local project videos
 to a bucket with Wrangler.
+
+You can now trigger uploads from GitHub Actions with
+`.github/workflows/upload-media-to-r2.yml`
+or run the local commands below.
 
 Preview the local video manifest:
 
@@ -102,10 +105,10 @@ At the time this guide was added, the project videos on disk are:
 
 ## Suggested Rollout
 
-1. Let Pages finish the first deploy.
-2. Create the R2 bucket and public media domain.
-3. Upload the current videos.
-4. Add the relevant media environment variables to Pages.
-5. Redeploy.
+1. Create the R2 bucket and public media domain.
+2. Upload the current videos.
+3. Add the relevant GitHub Actions variables and secret.
+4. Re-run `Deploy to GitHub Pages`.
+5. Confirm the generated video URLs point to `https://media.danieloye.com/...`.
 6. Once production is confirmed, remove any large local delivery copies you do
    not need on your laptop.

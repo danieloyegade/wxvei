@@ -1,0 +1,65 @@
+name: Upload Media to R2
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: Which published media set to upload
+        required: true
+        default: videos
+        type: choice
+        options:
+          - videos
+          - all
+      dry_run:
+        description: Preview upload commands without sending files
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    env:
+      R2_BUCKET_NAME: ${{ vars.R2_BUCKET_NAME }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Validate upload configuration
+        run: |
+          if [ -z "$R2_BUCKET_NAME" ]; then
+            echo "Missing R2_BUCKET_NAME GitHub Actions variable."
+            exit 1
+          fi
+
+          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "Missing CLOUDFLARE_ACCOUNT_ID GitHub Actions variable."
+            exit 1
+          fi
+
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "Missing CLOUDFLARE_API_TOKEN GitHub Actions secret."
+            exit 1
+          fi
+
+      - name: Upload project videos
+        if: ${{ inputs.scope == 'videos' }}
+        run: npm run videos:upload:r2
+
+      - name: Upload all published media
+        if: ${{ inputs.scope == 'all' }}
+        run: npm run media:upload:r2

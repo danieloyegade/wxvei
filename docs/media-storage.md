@@ -12,6 +12,11 @@ This repository is configured so that:
 - large local video files are ignored by Git
 - deployed environments can load the same paths from external storage
 
+Important:
+- content files continue to store repo-style paths like `/projects/.../videos/...`
+- those paths are only rewritten to a remote host during the build when the
+  relevant `PUBLIC_*` environment variables are present
+
 ## What To Push
 
 Push:
@@ -86,9 +91,11 @@ Resolved example:
 ## Suggested Workflow
 
 1. Upload published assets to storage.
-2. Set `PUBLIC_ASSET_SOURCE=remote` in local and production environments.
-3. Keep masters and archive files on your SSD.
-4. Keep local copies only when you need offline editing or re-export work.
+2. Set the `PUBLIC_*` media variables in the actual production build environment.
+3. In this repository today, that means GitHub Actions variables used by
+   `.github/workflows/deploy.yml`.
+4. Keep masters and archive files on your SSD.
+5. Keep local copies only when you need offline editing or re-export work.
 
 ## Uploading Published Media To R2
 

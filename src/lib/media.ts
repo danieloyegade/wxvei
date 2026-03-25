@@ -21,6 +21,22 @@ const publicVideoSource = normalizeSourceMode(
   import.meta.env.PUBLIC_VIDEO_SOURCE ?? import.meta.env.PUBLIC_ASSET_SOURCE
 );
 
+const mediaConfigurationErrors = [
+  publicAssetSource === "remote" && !publicMediaBaseUrl
+    ? "PUBLIC_ASSET_SOURCE=remote requires PUBLIC_MEDIA_BASE_URL."
+    : "",
+  publicImageSource === "remote" && !publicProjectImageBaseUrl
+    ? "PUBLIC_IMAGE_SOURCE=remote requires PUBLIC_MEDIA_BASE_URL."
+    : "",
+  publicVideoSource === "remote" && !publicProjectVideoBaseUrl
+    ? "PUBLIC_VIDEO_SOURCE=remote requires PUBLIC_PROJECT_VIDEO_BASE_URL or PUBLIC_MEDIA_BASE_URL."
+    : "",
+].filter(Boolean);
+
+if (mediaConfigurationErrors.length > 0) {
+  throw new Error(`Invalid public media configuration:\n- ${mediaConfigurationErrors.join("\n- ")}`);
+}
+
 export const isRemoteUrl = (src: string) =>
   protocolPattern.test(src) || protocolRelativePattern.test(src);
 
