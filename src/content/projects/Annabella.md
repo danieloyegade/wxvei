@@ -4,7 +4,7 @@ slug: "annabella"
 image: "/projects/annabella/photos/cover.jpg"
 descriptor: "Manchester, 2025."
 video:
-  src: "/projects/annabella/videos/AnnabellaFINAL.mov"
+  src: "/projects/annabella/videos/AnnabellaFINAL.mp4"
   poster: "/projects/annabella/photos/cover.jpg"
   controls: false
   loop: true

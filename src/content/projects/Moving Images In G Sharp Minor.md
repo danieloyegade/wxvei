@@ -4,7 +4,7 @@ slug: "moving-images-in-g-sharp-minor"
 image: "/projects/moving-images-in-g-sharp-minor/photos/cover.jpg"
 descriptor: "Short film directed by Daniel Oyegade."
 video:
-  src: "/projects/moving-images-in-g-sharp-minor/videos/feature.mov"
+  src: "/projects/moving-images-in-g-sharp-minor/videos/feature.mp4"
   poster: "/projects/moving-images-in-g-sharp-minor/photos/cover.jpg"
 hoverPreview:
   startTime: 6

@@ -15,7 +15,7 @@ R2 as the optional public media host for videos, images, fonts, and favicons.
 ## Important Behavior
 
 Content files keep paths like `/projects/someplace-else/videos/feature.mp4`.
-Those paths only become `https://media.danieloye.com/...` during the build when
+Those paths only become `https://pub-8f9c84a430fe4288a47ed8a11d8c12be.r2.dev/...` during the build when
 the matching `PUBLIC_*` variables are set. Without those variables, production
 keeps the local-style `/projects/...` URLs.
 
@@ -29,9 +29,12 @@ Suggested bucket name:
 Suggested public hostname:
 - `media.danieloye.com`
 
+Current working public hostname:
+- `pub-8f9c84a430fe4288a47ed8a11d8c12be.r2.dev`
+
 Your deployed site will then request media like:
-- `https://media.danieloye.com/projects/someplace-else/videos/feature.mp4`
-- `https://media.danieloye.com/projects/jamine/photos/cover.jpg`
+- `https://pub-8f9c84a430fe4288a47ed8a11d8c12be.r2.dev/projects/someplace-else/videos/feature.mp4`
+- `https://pub-8f9c84a430fe4288a47ed8a11d8c12be.r2.dev/projects/jamine/photos/cover.jpg`
 
 ## Required Setup
 
@@ -42,10 +45,10 @@ These account-level steps still need to be completed outside the repository:
 3. Preferably connect the bucket to a custom domain such as `media.danieloye.com`.
 4. In GitHub Actions repository variables or the `github-pages` environment, add:
    - `PUBLIC_VIDEO_SOURCE=remote`
-   - `PUBLIC_PROJECT_VIDEO_BASE_URL=https://media.danieloye.com`
+   - `PUBLIC_PROJECT_VIDEO_BASE_URL=https://pub-8f9c84a430fe4288a47ed8a11d8c12be.r2.dev`
 5. If you also want images, fonts, and favicons from R2, add:
    - `PUBLIC_ASSET_SOURCE=remote`
-   - `PUBLIC_MEDIA_BASE_URL=https://media.danieloye.com`
+   - `PUBLIC_MEDIA_BASE_URL=https://pub-8f9c84a430fe4288a47ed8a11d8c12be.r2.dev`
 6. For GitHub-triggered uploads, add:
    - variable `R2_BUCKET_NAME=danieloye-media`
    - variable `CLOUDFLARE_ACCOUNT_ID=<your-account-id>`
@@ -97,8 +100,8 @@ content files.
 
 At the time this guide was added, the project videos on disk are:
 
-- `public/projects/annabella/videos/AnnabellaFINAL.mov`
-- `public/projects/moving-images-in-g-sharp-minor/videos/feature.mov`
+- `public/projects/annabella/videos/AnnabellaFINAL.mp4`
+- `public/projects/moving-images-in-g-sharp-minor/videos/feature.mp4`
 - `public/projects/of-the-sublime-and-beautiful/videos/feature.mp4`
 - `public/projects/saucony/videos/feature.mp4`
 - `public/projects/someplace-else/videos/feature.mp4`
@@ -109,6 +112,6 @@ At the time this guide was added, the project videos on disk are:
 2. Upload the current videos.
 3. Add the relevant GitHub Actions variables and secret.
 4. Re-run `Deploy to GitHub Pages`.
-5. Confirm the generated video URLs point to `https://media.danieloye.com/...`.
+5. Confirm the generated video URLs point to `https://pub-8f9c84a430fe4288a47ed8a11d8c12be.r2.dev/...`.
 6. Once production is confirmed, remove any large local delivery copies you do
    not need on your laptop.

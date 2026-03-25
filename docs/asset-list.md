@@ -34,8 +34,11 @@ If you want a lighter hover clip later, add another file inside the same project
 
 ## Current Video Projects
 
+- `public/projects/annabella/photos/cover.jpg`
+- `public/projects/annabella/videos/AnnabellaFINAL.mp4`
+- `public/projects/annabella/photos/stills/`
 - `public/projects/moving-images-in-g-sharp-minor/photos/cover.jpg`
-- `public/projects/moving-images-in-g-sharp-minor/videos/feature.mov`
+- `public/projects/moving-images-in-g-sharp-minor/videos/feature.mp4`
 - `public/projects/moving-images-in-g-sharp-minor/photos/stills/`
 - `public/projects/someplace-else/photos/cover.jpg`
 - `public/projects/someplace-else/videos/feature.mp4`
