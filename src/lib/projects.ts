@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import type { CollectionEntry } from "astro:content";
+import { resolveProjectVideoSrc, usesRemoteProjectImages, usesRemoteProjectVideos } from "./media";
 import { withBase } from "./site";
 
 export type ProjectEntry = CollectionEntry<"projects">;
@@ -59,12 +60,6 @@ export const shortFilmProjectSlugs = [
 export const sortProjectsByOrder = (projects: ProjectEntry[]) =>
   [...projects].sort((a, b) => a.data.order - b.data.order);
 
-const protocolPattern = /^[a-z][a-z\d+\-.]*:/i;
-const protocolRelativePattern = /^\/\//;
-const remoteProjectVideoBaseUrl = import.meta.env.PUBLIC_PROJECT_VIDEO_BASE_URL
-  ?.trim()
-  .replace(/\/+$/, "");
-
 const normalizeBasePath = (basePath: string) => {
   const normalizedPath = basePath.startsWith("/") ? basePath : `/${basePath}`;
 
@@ -89,22 +84,6 @@ const publicRoot = resolve(process.cwd(), "public");
 const publicAssetExists = (src: string) =>
   existsSync(resolve(publicRoot, src.replace(/^\/+/, "")));
 
-const resolveProjectVideoSrc = (src?: string) => {
-  if (!src || !remoteProjectVideoBaseUrl) {
-    return src;
-  }
-
-  if (
-    protocolPattern.test(src) ||
-    protocolRelativePattern.test(src) ||
-    !src.startsWith("/projects/")
-  ) {
-    return src;
-  }
-
-  return `${remoteProjectVideoBaseUrl}${src}`;
-};
-
 const resolveMixedMediaAssetPath = (project: ProjectEntry, src?: string) => {
   if (!src || project.data.status !== "mixed-media") {
     return src;
@@ -118,6 +97,10 @@ const resolveMixedMediaAssetPath = (project: ProjectEntry, src?: string) => {
     `/projects/${project.slug}/`,
     `/projects/mixed-media/${project.slug}/`
   );
+
+  if (usesRemoteProjectImages() || usesRemoteProjectVideos()) {
+    return mixedMediaSrc;
+  }
 
   return publicAssetExists(mixedMediaSrc) ? mixedMediaSrc : src;
 };

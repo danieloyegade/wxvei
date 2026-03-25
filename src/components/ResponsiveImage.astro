@@ -1,6 +1,6 @@
 ---
 import { withBase } from "../lib/site";
-import { getResponsiveImageSet } from "../lib/responsiveImages";
+import { getResponsiveImageFallbackSrc, getResponsiveImageSet } from "../lib/responsiveImages";
 
 interface Props extends astroHTML.JSX.ImgHTMLAttributes {
   src: string;
@@ -17,7 +17,7 @@ const toSrcSet = (variants: Array<{ src: string; width: number }>) =>
     .map((variant) => `${encodeURI(withBase(variant.src))} ${variant.width}w`)
     .join(", ");
 
-const fallbackSrc = encodeURI(withBase(responsiveImage?.fallbackSrc ?? src));
+const fallbackSrc = encodeURI(withBase(getResponsiveImageFallbackSrc(src)));
 const jpegSrcSet = responsiveImage ? toSrcSet(responsiveImage.jpeg) : undefined;
 ---
 

@@ -1,5 +1,6 @@
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
+import { resolveProjectImageSrc, usesRemoteProjectImages } from "./media";
 
 interface ResponsiveVariant {
   src: string;
@@ -71,17 +72,22 @@ export const getResponsiveImageSet = (src: string): ResponsiveImageSet | null =>
     width,
   }));
 
-  const hasAllVariants = [fallbackSrc, ...jpeg.map((variant) => variant.src)].every(publicAssetExists);
+  const hasAllVariants =
+    usesRemoteProjectImages() ||
+    [fallbackSrc, ...jpeg.map((variant) => variant.src)].every(publicAssetExists);
 
   if (!hasAllVariants) {
     return null;
   }
 
   return {
-    fallbackSrc,
-    jpeg,
+    fallbackSrc: resolveProjectImageSrc(fallbackSrc) ?? fallbackSrc,
+    jpeg: jpeg.map((variant) => ({
+      ...variant,
+      src: resolveProjectImageSrc(variant.src) ?? variant.src,
+    })),
   };
 };
 
 export const getResponsiveImageFallbackSrc = (src: string) =>
-  getResponsiveImageSet(src)?.fallbackSrc ?? src;
+  getResponsiveImageSet(src)?.fallbackSrc ?? resolveProjectImageSrc(src) ?? src;
