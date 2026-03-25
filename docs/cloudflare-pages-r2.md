@@ -8,6 +8,7 @@ public media delivery.
 - `npm run build` outputs the static site to `dist/`
 - project videos can load from `PUBLIC_PROJECT_VIDEO_BASE_URL`
 - project images and site photos can optionally load from `PUBLIC_MEDIA_BASE_URL`
+- favicons and fonts can optionally load from `PUBLIC_MEDIA_BASE_URL`
 - large local video files are ignored by Git
 
 ## Cloudflare Pages Project
@@ -46,13 +47,14 @@ repository alone:
 3. Enable a public URL for the bucket.
 4. Preferably connect the bucket to a custom domain such as `media.danieloye.com`.
 5. In Pages project settings, add:
+   - `PUBLIC_ASSET_SOURCE=remote`
+   - `PUBLIC_MEDIA_BASE_URL=https://media.danieloye.com`
    - `PUBLIC_VIDEO_SOURCE=remote`
    - `PUBLIC_PROJECT_VIDEO_BASE_URL=https://media.danieloye.com`
 6. Redeploy the Pages project after the environment variable is saved.
 
 If you also want all published images to load from R2, add:
 - `PUBLIC_IMAGE_SOURCE=remote`
-- `PUBLIC_MEDIA_BASE_URL=https://media.danieloye.com`
 
 ## Uploading Videos To R2
 
@@ -77,7 +79,7 @@ Run the actual upload:
 R2_BUCKET_NAME=danieloye-media npm run videos:upload:r2
 ```
 
-If you want to upload the tracked published images as well:
+If you want to upload the tracked published assets as well:
 
 ```bash
 DRY_RUN=1 R2_BUCKET_NAME=danieloye-media npm run media:upload:r2

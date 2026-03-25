@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import HeaderMenu from "../components/HeaderMenu.astro";
+import { resolvePublishedAssetSrc } from "../lib/media";
 import { withBase, withoutBase } from "../lib/site";
 
 interface Props {
@@ -12,10 +13,20 @@ const {
   title,
   description = "Daniel Oyegade is a minimal editorial portfolio built with Astro.",
 } = Astro.props;
-const satoshiRegularFontUrl = withBase("/fonts/satoshi-regular.woff2");
-const satoshiMediumFontUrl = withBase("/fonts/satoshi-medium.woff2");
-const cormorantRegularFontUrl = withBase("/fonts/cormorant-garamond-regular.ttf");
-const cormorantMediumFontUrl = withBase("/fonts/cormorant-garamond-medium.ttf");
+const satoshiRegularFontUrl = withBase(
+  resolvePublishedAssetSrc("/fonts/satoshi-regular.woff2") ?? "/fonts/satoshi-regular.woff2"
+);
+const satoshiMediumFontUrl = withBase(
+  resolvePublishedAssetSrc("/fonts/satoshi-medium.woff2") ?? "/fonts/satoshi-medium.woff2"
+);
+const cormorantRegularFontUrl = withBase(
+  resolvePublishedAssetSrc("/fonts/cormorant-garamond-regular.ttf") ??
+    "/fonts/cormorant-garamond-regular.ttf"
+);
+const cormorantMediumFontUrl = withBase(
+  resolvePublishedAssetSrc("/fonts/cormorant-garamond-medium.ttf") ??
+    "/fonts/cormorant-garamond-medium.ttf"
+);
 const satoshiRegularFontSrc = `url("${satoshiRegularFontUrl}") format("woff2")`;
 const satoshiMediumFontSrc = `url("${satoshiMediumFontUrl}") format("woff2")`;
 const cormorantRegularFontSrc = `url("${cormorantRegularFontUrl}") format("truetype")`;
@@ -42,10 +53,28 @@ const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
     <meta name="description" content={description} />
     <meta name="theme-color" content="#ffffff" />
     <link rel="canonical" href={canonicalUrl} />
-    <link rel="icon" href={withBase("/favicon.svg")} type="image/svg+xml" />
-    <link rel="icon" href={withBase("/favicon-32x32.png")} sizes="32x32" type="image/png" />
-    <link rel="icon" href={withBase("/favicon-16x16.png")} sizes="16x16" type="image/png" />
-    <link rel="apple-touch-icon" href={withBase("/apple-touch-icon.png")} sizes="180x180" />
+    <link
+      rel="icon"
+      href={withBase(resolvePublishedAssetSrc("/favicon.svg") ?? "/favicon.svg")}
+      type="image/svg+xml"
+    />
+    <link
+      rel="icon"
+      href={withBase(resolvePublishedAssetSrc("/favicon-32x32.png") ?? "/favicon-32x32.png")}
+      sizes="32x32"
+      type="image/png"
+    />
+    <link
+      rel="icon"
+      href={withBase(resolvePublishedAssetSrc("/favicon-16x16.png") ?? "/favicon-16x16.png")}
+      sizes="16x16"
+      type="image/png"
+    />
+    <link
+      rel="apple-touch-icon"
+      href={withBase(resolvePublishedAssetSrc("/apple-touch-icon.png") ?? "/apple-touch-icon.png")}
+      sizes="180x180"
+    />
     <title>{title}</title>
   </head>
   <body class="bg-[var(--page-background)] text-[var(--page-foreground)] antialiased">

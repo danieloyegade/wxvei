@@ -8,7 +8,7 @@ Keep large project videos out of normal Git history. Store them in external obje
 storage or a CDN, then let the site load them from remote URLs.
 
 This repository is configured so that:
-- local and remote media can be switched independently for images and videos
+- local and remote media can be switched for all published assets
 - large local video files are ignored by Git
 - deployed environments can load the same paths from external storage
 
@@ -25,8 +25,8 @@ Do not push large source or delivery videos into normal Git history.
 ## What Can Live Where?
 
 Recommended split:
-- laptop: code, tracked site images, config
-- Cloudflare R2: published videos, and optionally published images
+- laptop: code and config
+- Cloudflare R2: published project media, site photos, fonts, favicons
 - SSD: masters, archive files, oversized local working copies
 
 ## Do The Videos Need To Stay On Your Laptop?
@@ -41,6 +41,7 @@ without the remote storage URL configured.
 
 Use these switches:
 
+- `PUBLIC_ASSET_SOURCE=local|remote`
 - `PUBLIC_IMAGE_SOURCE=local|remote`
 - `PUBLIC_VIDEO_SOURCE=local|remote`
 
@@ -54,9 +55,17 @@ Optional video-specific override:
 
 Examples:
 
+Remote everything:
+
+```bash
+PUBLIC_ASSET_SOURCE=remote
+PUBLIC_MEDIA_BASE_URL=https://your-media-domain.com
+```
+
 Remote videos, local images:
 
 ```bash
+PUBLIC_ASSET_SOURCE=local
 PUBLIC_IMAGE_SOURCE=local
 PUBLIC_VIDEO_SOURCE=remote
 PUBLIC_PROJECT_VIDEO_BASE_URL=https://your-media-domain.com
@@ -65,8 +74,7 @@ PUBLIC_PROJECT_VIDEO_BASE_URL=https://your-media-domain.com
 Remote images and remote videos:
 
 ```bash
-PUBLIC_IMAGE_SOURCE=remote
-PUBLIC_VIDEO_SOURCE=remote
+PUBLIC_ASSET_SOURCE=remote
 PUBLIC_MEDIA_BASE_URL=https://your-media-domain.com
 ```
 
@@ -77,16 +85,15 @@ Resolved example:
 
 ## Suggested Workflow
 
-1. Keep web-ready site images in the repo unless you deliberately switch to remote images.
-2. Upload delivery-ready videos to storage.
-3. Set `PUBLIC_VIDEO_SOURCE=remote` in local and production environments.
-4. Keep masters and archive files on your SSD.
-5. If you want the full site to run without local media files, upload the published images too and set `PUBLIC_IMAGE_SOURCE=remote`.
+1. Upload published assets to storage.
+2. Set `PUBLIC_ASSET_SOURCE=remote` in local and production environments.
+3. Keep masters and archive files on your SSD.
+4. Keep local copies only when you need offline editing or re-export work.
 
 ## Uploading Published Media To R2
 
-This repository includes a helper for uploading tracked published images plus
-any local project videos to R2:
+This repository includes a helper for uploading tracked published assets from
+`public/` plus any local project videos to R2:
 
 ```bash
 DRY_RUN=1 R2_BUCKET_NAME=danieloye-media npm run media:upload:r2
