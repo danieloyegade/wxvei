@@ -192,6 +192,9 @@ Projects:
 - additional videos become `/projects/<slug>/videos/detail-01.mp4`, etc.
 - hover previews become `/projects/<slug>/videos/preview.mp4`
 
+For mixed-media projects, those video and preview paths stay nested as
+`/projects/mixed-media/<slug>/videos/...`.
+
 Blog posts:
 
 - cover image becomes `/blog/<slug>/cover.jpg`

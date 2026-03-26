@@ -72,35 +72,99 @@ const projectEditorialSchema = z
         path: ["homepage"],
       });
     }
+
+    if (editorial.sections.includes("mixed-media") && editorial.sections.length > 1) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'mixed-media projects cannot belong to other sections.',
+        path: ["sections"],
+      });
+    }
   });
+
+const mixedMediaAssetPathPrefix = "/projects/mixed-media/";
+
+const collectProjectMediaPaths = (
+  project: {
+    image: string;
+    video?: z.infer<typeof projectVideoSchema>;
+    detailVideos?: z.infer<typeof projectVideoSchema>[];
+    hoverPreview?: z.infer<typeof projectHoverPreviewSchema>;
+    detailImages?: string[];
+  }
+) => [
+  { value: project.image, path: ["image"] },
+  { value: project.video?.src, path: ["video", "src"] },
+  { value: project.video?.poster, path: ["video", "poster"] },
+  ...(project.detailVideos?.flatMap((detailVideo, index) => [
+    { value: detailVideo.src, path: ["detailVideos", index, "src"] },
+    { value: detailVideo.poster, path: ["detailVideos", index, "poster"] },
+  ]) ?? []),
+  { value: project.hoverPreview?.src, path: ["hoverPreview", "src"] },
+  { value: project.hoverPreview?.poster, path: ["hoverPreview", "poster"] },
+  ...(project.detailImages?.map((detailImage, index) => ({
+    value: detailImage,
+    path: ["detailImages", index],
+  })) ?? []),
+];
 
 const projects = defineCollection({
   type: "content",
-  schema: z.object({
-    title: z.string(),
-    image: z.string(),
-    descriptor: z.string(),
-    layoutPattern: z.enum(projectLayoutPatternValues),
-    visualWeight: z.enum(projectVisualWeightValues).default("standard"),
-    orientation: z.enum(projectOrientationValues),
-    cropFocus: z.enum(projectCropFocusValues).default("center"),
-    selectedWorkAspectRatio: z.string().optional(),
-    video: projectVideoSchema.optional(),
-    detailVideos: z.array(projectVideoSchema).optional(),
-    hoverPreview: projectHoverPreviewSchema.optional(),
-    detailImages: z.array(z.string()).optional(),
-    metadata: z.array(z.string()).optional(),
-    credits: z
-      .array(
-        z.object({
-          role: z.string(),
-          name: z.string(),
-        })
-      )
-      .optional(),
-    editorial: projectEditorialSchema,
-    status: z.enum(["placeholder", "published"]).default("placeholder"),
-  }),
+  schema: z
+    .object({
+      title: z.string(),
+      image: z.string(),
+      descriptor: z.string(),
+      layoutPattern: z.enum(projectLayoutPatternValues),
+      visualWeight: z.enum(projectVisualWeightValues).default("standard"),
+      orientation: z.enum(projectOrientationValues),
+      cropFocus: z.enum(projectCropFocusValues).default("center"),
+      selectedWorkAspectRatio: z.string().optional(),
+      video: projectVideoSchema.optional(),
+      detailVideos: z.array(projectVideoSchema).optional(),
+      hoverPreview: projectHoverPreviewSchema.optional(),
+      detailImages: z.array(z.string()).optional(),
+      metadata: z.array(z.string()).optional(),
+      credits: z
+        .array(
+          z.object({
+            role: z.string(),
+            name: z.string(),
+          })
+        )
+        .optional(),
+      editorial: projectEditorialSchema,
+      status: z.enum(["placeholder", "published"]).default("placeholder"),
+    })
+    .superRefine((project, context) => {
+      const isMixedMediaProject = project.editorial.sections.includes("mixed-media");
+
+      for (const { value, path } of collectProjectMediaPaths(project)) {
+        if (!value || !value.startsWith("/projects/")) {
+          continue;
+        }
+
+        const usesMixedMediaAssetPath = value.startsWith(mixedMediaAssetPathPrefix);
+
+        if (isMixedMediaProject && !usesMixedMediaAssetPath) {
+          context.addIssue({
+            code: z.ZodIssueCode.custom,
+            message:
+              'mixed-media project assets must live under "/projects/mixed-media/".',
+            path,
+          });
+        }
+
+        if (!isMixedMediaProject && usesMixedMediaAssetPath) {
+          context.addIssue({
+            code: z.ZodIssueCode.custom,
+            message:
+              'only mixed-media projects can point at "/projects/mixed-media/".',
+            path,
+          });
+        }
+      }
+    }),
 });
 
 const posts = defineCollection({

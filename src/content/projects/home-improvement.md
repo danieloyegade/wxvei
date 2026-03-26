@@ -12,7 +12,7 @@ editorial:
   sections:
     - "mixed-media"
   sectionOrder:
-    mixed-media: 3
+    mixed-media: 4
 status: "published"
 ---
 
