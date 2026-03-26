@@ -1,7 +1,7 @@
 ---
 title: "Soft Machine"
 slug: "soft-machine"
-image: "/projects/mixed-media/soft-machine:/photos:/cover.jpg"
+image: "/projects/mixed-media/soft-machine/photos/cover.jpg"
 descriptor: "Diagrammatic marks and skeletal form in monochrome."
 layoutPattern: "wide-band"
 visualWeight: "dominant"
