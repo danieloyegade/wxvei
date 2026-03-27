@@ -2,7 +2,7 @@
 title: "Spectres under glass"
 slug: "spectres-under-glass"
 image: "/projects/mixed-media/spectres-under-glass/photos/cover.jpg"
-descriptor: "Reflections and shadow under glass."
+descriptor: "Reflective surface. Shadow forms. Enclosure implied."
 layoutPattern: "support-right"
 visualWeight: "standard"
 orientation: "wide"
@@ -16,4 +16,33 @@ editorial:
 status: "published"
 ---
 
-Mixed media study for Spectres under glass.
+**ENTRY**
+
+Multiple figures distributed across field. Forms elongated and irregular.
+
+Surface reflection produces duplication. Depth is collapsed.
+
+Figures lack grounding:
+- no fixed position
+- no consistent scale
+- no stable orientation
+
+Enclosure suggested through visual containment.
+
+**OBSERVATIONS**
+
+Figures appear without origin. Presence is sustained without substance.
+
+Reflection generates multiplicity. Identity remains unresolved.
+
+Containment does not stabilise form.
+
+**CLASSIFICATION**
+
+Category: Reflective apparition
+Condition: Dispersed
+Status: Persistent
+
+**FOOTNOTE**
+
+Figures remain visible without becoming fixed. Surface governs their existence.
