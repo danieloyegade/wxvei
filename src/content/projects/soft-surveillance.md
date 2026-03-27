@@ -2,7 +2,7 @@
 title: "Soft Surveillance"
 slug: "soft-surveillance"
 image: "/projects/mixed-media/soft-surveillance/photos/soft-surveillance.jpg"
-descriptor: "Printed image on woven support. Two seated figures. Surface grid dominant."
+descriptor: "Observed figures. Distance imposed. Mediated view."
 layoutPattern: "paired-right"
 visualWeight: "standard"
 orientation: "portrait"
@@ -18,27 +18,18 @@ status: "published"
 
 **ENTRY**
 
-Image presented in close crop. Two seated figures are held against a diagonal edge. Resolution remains low. Contrast remains compressed.
-
-Surface interference is continuous:
-- woven grid across the full image field
-- soft bleed at figure edges
-- tonal loss in darker areas
-
-Subjects remain partially identifiable. The support competes with the image at all distances.
+Mixed media study for softened observation at a distance.
 
 **OBSERVATIONS**
 
-Recognition is delayed by the surface condition. Detail is not removed. It is withheld.
-
-The image behaves as record under interference. Surface advances as structure recedes.
+Observation persists without clarity. Presence is maintained under reduction.
 
 **CLASSIFICATION**
 
-Category: Screened image
-Condition: Attenuated visibility
-Status: Unresolved
+Category: Mediated observation
+Condition: Partial
+Status: Ongoing
 
 **FOOTNOTE**
 
-Recognition persists, though the surface refuses full disclosure.
+Distance does not diminish control.

@@ -18,22 +18,11 @@ status: "published"
 
 **ENTRY**
 
-Surface treated with repeated vertical strokes. Application uneven. Coverage incomplete.
-
-Marks vary in density:
-- saturation inconsistent
-- pressure visible
-- edges unresolved
-
-Domestic reference implied. No functional transformation observed.
+Mixed media study for the improvement of a domestic space.
 
 **OBSERVATIONS**
 
-Improvement is declared. Outcome remains ambiguous.
-
-Surface is altered but not repaired. Gesture substitutes for resolution.
-
-The domestic space is reduced to mark.
+Change is declared without confirmation. Surface replaces function.
 
 **CLASSIFICATION**
 
@@ -43,4 +32,4 @@ Status: Unresolved
 
 **FOOTNOTE**
 
-Action is recorded as change. Change does not confirm improvement.
+Improvement remains unverified.

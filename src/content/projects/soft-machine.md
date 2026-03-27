@@ -2,7 +2,7 @@
 title: "Soft Machine"
 slug: "soft-machine"
 image: "/projects/mixed-media/soft-machine/photos/cover.jpg"
-descriptor: "Monochrome composite surface. Skeletal profile retained. Diagrammatic notation repeated."
+descriptor: "Diagrammatic form. Skeletal structure. Monochrome field."
 layoutPattern: "wide-band"
 visualWeight: "dominant"
 orientation: "landscape"
@@ -18,28 +18,18 @@ status: "published"
 
 **ENTRY**
 
-Composite image presented horizontally. Monochrome field is broken by white ground, black blocks, and grey wash. A skeletal profile remains central but incomplete.
-
-Surface carries repeated technical markings:
-- figure labels and numerical notation
-- floral diagram clusters
-- black rectangular occlusions
-- sprayed and brushed white passages
-
-No stable hierarchy is established. Diagram and body remain in conflict. Background operates as active residue rather than passive support.
+Mixed media study for a soft machine.
 
 **OBSERVATIONS**
 
-Notation accumulates without system closure. The skeletal form is held in outline, not repair.
-
-Surface behaves as both mask and instrument. Structure appears provisional but does not collapse.
+Structure appears without resolution. Function remains unconfirmed.
 
 **CLASSIFICATION**
 
-Category: Annotated composite
-Condition: Active instability
-Status: Unresolved
+Category: Incomplete system
+Condition: Unstable
+Status: Indeterminate
 
 **FOOTNOTE**
 
-The record remains readable despite repeated interruption.
+The system persists without closure.

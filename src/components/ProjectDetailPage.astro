@@ -58,12 +58,12 @@ const showsHeroAudioToggle = hasHeroVideo && heroVideo?.unmutedVolume !== undefi
 <article class="project-detail">
   <div class="project-detail__frame">
     <a class="project-detail__back-link" href={withBase(backLinkHref)}>
-      {backLinkLabel}
+      <span class="project-detail__back-link-arrow" aria-hidden="true">&lt;</span>
+      <span>{backLinkLabel}</span>
     </a>
 
     <header class="project-detail__header">
       <div class="project-detail__copy">
-        <p class="project-detail__eyebrow">Project</p>
         <h1 class="project-detail__title">{title}</h1>
       </div>
       {hasMetaPanel && (
@@ -203,12 +203,12 @@ const showsHeroAudioToggle = hasHeroVideo && heroVideo?.unmutedVolume !== undefi
       data-project-next={nextProject.href}
     >
       <a class="project-detail__sequence-link project-detail__sequence-link--previous" href={previousProject.href}>
-        <span class="project-detail__sequence-label">&lt; Previous Project</span>
+        <span class="project-detail__sequence-arrow" aria-hidden="true">&lt;</span>
         <span class="project-detail__sequence-title">{previousProject.title}</span>
       </a>
       <a class="project-detail__sequence-link project-detail__sequence-link--next" href={nextProject.href}>
-        <span class="project-detail__sequence-label">Next Project &gt;</span>
         <span class="project-detail__sequence-title">{nextProject.title}</span>
+        <span class="project-detail__sequence-arrow" aria-hidden="true">&gt;</span>
       </a>
     </nav>
   </div>
@@ -389,6 +389,7 @@ const showsHeroAudioToggle = hasHeroVideo && heroVideo?.unmutedVolume !== undefi
   .project-detail__back-link {
     display: inline-flex;
     align-items: center;
+    gap: 0.45rem;
     color: rgba(16, 15, 13, 0.64);
     font-family: var(--font-sans);
     font-size: 0.72rem;
@@ -398,6 +399,11 @@ const showsHeroAudioToggle = hasHeroVideo && heroVideo?.unmutedVolume !== undefi
     text-decoration: none;
     text-transform: uppercase;
     transition: color 160ms ease-out, opacity 160ms ease-out;
+  }
+
+  .project-detail__back-link-arrow {
+    font-size: 0.92em;
+    line-height: 1;
   }
 
   .project-detail__back-link:hover,
@@ -419,18 +425,7 @@ const showsHeroAudioToggle = hasHeroVideo && heroVideo?.unmutedVolume !== undefi
 
   .project-detail__copy {
     display: grid;
-    gap: 0.6rem;
-  }
-
-  .project-detail__eyebrow {
-    margin: 0;
-    color: rgba(16, 15, 13, 0.48);
-    font-family: var(--font-sans);
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    line-height: 1;
-    text-transform: uppercase;
+    gap: 0.4rem;
   }
 
   .project-detail__title {
@@ -684,8 +679,9 @@ const showsHeroAudioToggle = hasHeroVideo && heroVideo?.unmutedVolume !== undefi
   }
 
   .project-detail__sequence-link {
-    display: grid;
-    gap: 0.36rem;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.65rem;
     color: rgba(16, 15, 13, 0.82);
     text-decoration: none;
     transition: opacity 160ms ease-out, transform 160ms ease-out;
@@ -702,18 +698,16 @@ const showsHeroAudioToggle = hasHeroVideo && heroVideo?.unmutedVolume !== undefi
   }
 
   .project-detail__sequence-link--next {
-    justify-items: end;
+    justify-self: end;
     text-align: right;
   }
 
-  .project-detail__sequence-label {
+  .project-detail__sequence-arrow {
     color: rgba(16, 15, 13, 0.46);
     font-family: var(--font-sans);
-    font-size: 0.68rem;
+    font-size: 0.82rem;
     font-weight: 600;
-    letter-spacing: 0.12em;
     line-height: 1;
-    text-transform: uppercase;
   }
 
   .project-detail__sequence-title {

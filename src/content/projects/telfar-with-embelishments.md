@@ -18,21 +18,17 @@ status: "published"
 
 **ENTRY**
 
-Object presented frontally. Handles extend beyond the upper frame. Lighting fixed and directional. Background neutralised.
-
-Surface bears added markings:
-- vertical white spray mark, left
-- handwritten notation, upper right
-- handwritten notation, lower left
-- short linear inscription, lower right
-
-Central emblem remains legible. Edge seams remain intact. No structural distortion observed. No functional change observed.
+Mixed media study for a commodity (reworked).
 
 **OBSERVATIONS**
 
-Intervention remains superficial. Surface is altered. Structure is not.
+Object presented frontally. Handles extend beyond upper frame. Lighting fixed and directional. Background neutralised.
 
-The commodity form persists beneath notation. The sign is carried without displacement.
+Central emblem intact. Edge seams intact.
+
+Intervention confined to surface. Structure remains unaffected.
+
+Commodity form persists beneath notation. 
 
 **CLASSIFICATION**
 
@@ -42,4 +38,4 @@ Status: Unresolved
 
 **FOOTNOTE**
 
-Legibility is reduced only locally; identity persists across the field.
+Reduction remains local. Identity persists across the field.
