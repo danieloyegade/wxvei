@@ -16,9 +16,7 @@ editorial:
 status: "published"
 ---
 
----
-
-ENTRY
+**ENTRY**
 
 Object presented frontally. Handles extend beyond the upper frame. Lighting fixed and directional. Background neutralised.
 
@@ -30,24 +28,18 @@ Surface bears added markings:
 
 Central emblem remains legible. Edge seams remain intact. No structural distortion observed. No functional change observed.
 
----
-
-OBSERVATIONS
+**OBSERVATIONS**
 
 Intervention remains superficial. Surface is altered. Structure is not.
 
 The commodity form persists beneath notation. The sign is carried without displacement.
 
----
-
-CLASSIFICATION
+**CLASSIFICATION**
 
 Category: Modified commodity
 Condition: Surface altered
 Status: Unresolved
 
----
-
-FOOTNOTE
+**FOOTNOTE**
 
 Legibility is reduced only locally; identity persists across the field.

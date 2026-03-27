@@ -16,9 +16,7 @@ editorial:
 status: "published"
 ---
 
----
-
-ENTRY
+**ENTRY**
 
 Image presented in close crop. Two seated figures are held against a diagonal edge. Resolution remains low. Contrast remains compressed.
 
@@ -29,24 +27,18 @@ Surface interference is continuous:
 
 Subjects remain partially identifiable. The support competes with the image at all distances.
 
----
-
-OBSERVATIONS
+**OBSERVATIONS**
 
 Recognition is delayed by the surface condition. Detail is not removed. It is withheld.
 
 The image behaves as record under interference. Surface advances as structure recedes.
 
----
-
-CLASSIFICATION
+**CLASSIFICATION**
 
 Category: Screened image
 Condition: Attenuated visibility
 Status: Unresolved
 
----
-
-FOOTNOTE
+**FOOTNOTE**
 
 Recognition persists, though the surface refuses full disclosure.

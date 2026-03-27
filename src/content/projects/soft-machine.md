@@ -16,9 +16,7 @@ editorial:
 status: "published"
 ---
 
----
-
-ENTRY
+**ENTRY**
 
 Composite image presented horizontally. Monochrome field is broken by white ground, black blocks, and grey wash. A skeletal profile remains central but incomplete.
 
@@ -30,24 +28,18 @@ Surface carries repeated technical markings:
 
 No stable hierarchy is established. Diagram and body remain in conflict. Background operates as active residue rather than passive support.
 
----
-
-OBSERVATIONS
+**OBSERVATIONS**
 
 Notation accumulates without system closure. The skeletal form is held in outline, not repair.
 
 Surface behaves as both mask and instrument. Structure appears provisional but does not collapse.
 
----
-
-CLASSIFICATION
+**CLASSIFICATION**
 
 Category: Annotated composite
 Condition: Active instability
 Status: Unresolved
 
----
-
-FOOTNOTE
+**FOOTNOTE**
 
 The record remains readable despite repeated interruption.
