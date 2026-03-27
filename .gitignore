@@ -17,3 +17,7 @@ public/projects/**/videos/*.webm
 public/projects/**/videos/*.MP4
 public/projects/**/videos/*.MOV
 !public/projects/**/videos/preview.mp4
+
+.dev.vars*
+!.dev.vars.example
+!.env.example
