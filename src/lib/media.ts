@@ -59,6 +59,7 @@ const publishedRootAssetPaths = new Set([
 
 const isPublishedAssetPath = (src: string) =>
   src.startsWith("/projects/") ||
+  src.startsWith("/images/") ||
   src.startsWith("/site/") ||
   src.startsWith("/blog/") ||
   src.startsWith("/fonts/") ||

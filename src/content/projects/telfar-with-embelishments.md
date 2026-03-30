@@ -1,6 +1,6 @@
 ---
 title: "Side Bag with Embellishments"
-slug: "telfar-with-embelishments"
+slug: "side-bag-with-embelishments"
 image: "/projects/mixed-media/telfar-with-embelishments/photos/cover.jpg"
 descriptor: "Black synthetic leather side bag. White surface notation. Embossed emblem retained."
 layoutPattern: "lead-right"

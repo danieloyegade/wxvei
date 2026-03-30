@@ -1,6 +1,11 @@
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
-import { resolveProjectImageSrc } from "./media";
+import {
+  resolveProjectImageSrc,
+  resolvePublishedAssetSrc,
+  usesRemoteProjectImages,
+  usesRemotePublishedAssets,
+} from "./media";
 
 interface ResponsiveVariant {
   src: string;
@@ -29,6 +34,7 @@ const portraitImageConfig: ResponsiveImageConfig = {
 
 const responsiveImageConfigs: Array<[prefix: string, config: ResponsiveImageConfig]> = [
   ["/projects/", coverImageConfig],
+  ["/images/", coverImageConfig],
   ["/blog/", coverImageConfig],
   ["/site/photos/", portraitImageConfig],
 ];
@@ -42,6 +48,29 @@ const buildVariantPath = (src: string, width: number, extension: "jpg" | "webp")
 
 const getResponsiveImageConfig = (src: string) =>
   responsiveImageConfigs.find(([prefix]) => src.startsWith(prefix))?.[1] ?? null;
+
+const resolveResponsiveImageSrc = (src: string) =>
+  resolveProjectImageSrc(src) ?? resolvePublishedAssetSrc(src) ?? src;
+
+const canAssumeRemoteResponsiveImages = (src: string) => {
+  if (!src.startsWith("/")) {
+    return false;
+  }
+
+  if (
+    src.startsWith("/projects/") ||
+    src.startsWith("/blog/") ||
+    src.startsWith("/site/photos/")
+  ) {
+    return usesRemoteProjectImages();
+  }
+
+  if (src.startsWith("/images/")) {
+    return usesRemotePublishedAssets();
+  }
+
+  return false;
+};
 
 const publicAssetExists = (src: string) => {
   const cachedResult = fileExistsCache.get(src);
@@ -75,18 +104,18 @@ export const getResponsiveImageSet = (src: string): ResponsiveImageSet | null =>
 
   const hasAllVariants = [fallbackSrc, ...jpeg.map((variant) => variant.src)].every(publicAssetExists);
 
-  if (!hasAllVariants) {
+  if (!hasAllVariants && !canAssumeRemoteResponsiveImages(src)) {
     return null;
   }
 
   return {
-    fallbackSrc: resolveProjectImageSrc(fallbackSrc) ?? fallbackSrc,
+    fallbackSrc: resolveResponsiveImageSrc(fallbackSrc),
     jpeg: jpeg.map((variant) => ({
       ...variant,
-      src: resolveProjectImageSrc(variant.src) ?? variant.src,
+      src: resolveResponsiveImageSrc(variant.src),
     })),
   };
 };
 
 export const getResponsiveImageFallbackSrc = (src: string) =>
-  getResponsiveImageSet(src)?.fallbackSrc ?? resolveProjectImageSrc(src) ?? src;
+  getResponsiveImageSet(src)?.fallbackSrc ?? resolveResponsiveImageSrc(src);

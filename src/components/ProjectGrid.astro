@@ -15,6 +15,7 @@ interface ProjectEntry {
   title: string;
   image: string;
   descriptor: string;
+  selectedWorkAspectRatio?: string;
   video?: ProjectVideoAsset;
   hoverPreview?: ProjectHoverPreview;
   layoutPattern?: ProjectLayoutPattern;
@@ -130,6 +131,11 @@ const normalizedProjects = projects.map((project, index) => {
             visualWeight={project.visualWeight}
             layoutClass={projectLayoutClasses[project.layoutPattern]}
             frameClass={projectFrameClasses[project.orientation]}
+            frameStyle={
+              project.selectedWorkAspectRatio
+                ? `aspect-ratio: ${project.selectedWorkAspectRatio};`
+                : undefined
+            }
             cropFocus={project.cropFocus}
             cardClassName={
               sectionMobileRhythm.length > 0

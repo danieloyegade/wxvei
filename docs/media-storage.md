@@ -2,20 +2,26 @@
 
 ## Recommended Setup
 
-Keep project photos, posters, and stills in the repository.
+Use canonical site paths in content such as `/projects/tolu/photos/cover.jpg`, then
+let production rewrite those paths to Cloudflare R2 during the build.
+
+Keep project photos, posters, and stills in `public/` while you are editing or
+generating responsive variants.
 
 Keep large project videos out of normal Git history. Store them in external object
 storage or a CDN, then let the site load them from remote URLs.
 
 This repository is configured so that:
-- local and remote media can be switched for all published assets
+- published assets can keep stable site paths like `/projects/...`
+- local and remote delivery can be switched for all published assets
 - source masters can live outside `public/`
 - deployed environments can load the same published paths from external storage
 
 Important:
-- content files continue to store repo-style paths like `/projects/.../videos/...`
-- those paths are only rewritten to a remote host during the build when the
+- content files should continue to store repo-style paths like `/projects/.../photos/...`
+- those paths are rewritten to the remote host during the build when the
   relevant `PUBLIC_*` environment variables are present
+- GitHub Pages now defaults to remote media delivery unless you explicitly override it
 
 ## What To Push
 
@@ -91,20 +97,32 @@ Resolved example:
 
 ## Suggested Workflow
 
-1. Keep source video masters in `media/masters/projects/<slug>/videos/`.
-2. Run `npm run videos:prepare` to generate web-delivery videos and preview clips into `public/`.
+1. Add published images to `public/projects/<slug>/photos/` or another published folder under `public/`.
+2. Keep content references canonical, for example `/projects/<slug>/photos/cover.jpg`.
 3. Run `npm run images:responsive` after adding or replacing JPEG assets.
-4. Upload published assets to storage.
-5. Set the `PUBLIC_*` media variables in the actual production build environment.
-6. In this repository today, that means GitHub Actions variables used by
-   `.github/workflows/deploy.yml`.
+4. Run `R2_BUCKET_NAME=danieloye-media npm run media:upload:r2` to upload all published assets currently under `public/`.
+5. Use `npm run r2:list -- projects/<slug>/photos/` when you want to confirm the object keys in R2.
+6. Use `npm run build:remote` when you want to verify a local build resolves published media to Cloudflare.
+7. In production, GitHub Pages will now default to remote asset, image, and video delivery.
 
 ## Uploading Published Media To R2
 
-This repository includes a helper for uploading tracked published assets from
-`public/` plus any local project videos to R2:
+This repository includes a helper for uploading published assets from `public/`
+plus any local project videos to R2:
 
 ```bash
 DRY_RUN=1 R2_BUCKET_NAME=danieloye-media npm run media:upload:r2
 R2_BUCKET_NAME=danieloye-media npm run media:upload:r2
 ```
+
+## Listing Published Media In R2
+
+When you already uploaded files and want to copy their canonical site paths into
+content, use:
+
+```bash
+npm run r2:list -- projects/tolu/photos/
+```
+
+This prints paths like `/projects/tolu/photos/DSC04460A.jpg`, which can be pasted
+directly into project frontmatter.

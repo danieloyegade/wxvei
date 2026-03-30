@@ -14,23 +14,16 @@ if [[ -z "$bucket_name" ]]; then
   exit 1
 fi
 
-tracked_files=("${(@f)$(git ls-files public)}")
-
 media_files=()
 
-for file in "${tracked_files[@]}"; do
-  [[ -f "$file" ]] || continue
-
-  case "${file:l}" in
-    *.jpg|*.jpeg|*.png|*.webp|*.avif|*.gif|*.svg|*.woff|*.woff2|*.ttf|*.otf|*.eot)
-      media_files+=("$file")
-      ;;
-  esac
-done
-
-if [[ -d "public/projects" ]]; then
-  video_files=("${(@f)$(find public/projects -type f \( -name '*.mp4' -o -name '*.mov' -o -name '*.m4v' -o -name '*.webm' \) | sort)}")
-  media_files+=("${video_files[@]}")
+if [[ -d "public" ]]; then
+  media_files=("${(@f)$(find public -type f \
+    \( \
+      -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o \
+      -iname '*.avif' -o -iname '*.gif' -o -iname '*.svg' -o -iname '*.woff' -o \
+      -iname '*.woff2' -o -iname '*.ttf' -o -iname '*.otf' -o -iname '*.eot' -o \
+      -iname '*.mp4' -o -iname '*.mov' -o -iname '*.m4v' -o -iname '*.webm' \
+    \) | sort)}")
 fi
 
 typeset -A seen_files

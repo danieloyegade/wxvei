@@ -21,7 +21,7 @@ editorial:
     - "portraiture"
   sectionOrder:
     selected-work: 2
-    portraiture: 1
+    portraiture: 2
   homepage:
     order: 1
     template: "opening"

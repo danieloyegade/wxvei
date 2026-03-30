@@ -1,23 +1,25 @@
 # GitHub Pages + Cloudflare R2 Setup
 
 This repository currently deploys the site with GitHub Pages and uses Cloudflare
-R2 as the optional public media host for videos, images, fonts, and favicons.
+R2 as the public media host for videos, images, fonts, favicons, and other
+published assets.
 
 ## What This Repository Already Does
 
 - `npm run build` outputs the static site to `dist/`
 - GitHub Actions deploys `main` with `.github/workflows/deploy.yml`
 - project videos can load from `PUBLIC_PROJECT_VIDEO_BASE_URL`
-- project images and site photos can optionally load from `PUBLIC_MEDIA_BASE_URL`
-- favicons and fonts can optionally load from `PUBLIC_MEDIA_BASE_URL`
+- project images and site photos can load from `PUBLIC_MEDIA_BASE_URL`
+- favicons, fonts, and other published assets can load from `PUBLIC_MEDIA_BASE_URL`
 - large local video files are ignored by Git
 
 ## Important Behavior
 
 Content files keep paths like `/projects/someplace-else/videos/feature.mp4`.
-Those paths only become `https://pub-8f9c84a430fe4288a47ed8a11d8c12be.r2.dev/...` during the build when
-the matching `PUBLIC_*` variables are set. Without those variables, production
-keeps the local-style `/projects/...` URLs.
+Those paths become `https://pub-8f9c84a430fe4288a47ed8a11d8c12be.r2.dev/...` during the build when
+the matching `PUBLIC_*` variables are set. This repository's GitHub Pages deploy
+now defaults those variables to remote values, so production serves published
+media from Cloudflare unless you intentionally override the defaults.
 
 ## R2 Bucket Recommendation
 
@@ -46,8 +48,9 @@ These account-level steps still need to be completed outside the repository:
 4. In GitHub Actions repository variables or the `github-pages` environment, add:
    - `PUBLIC_VIDEO_SOURCE=remote`
    - `PUBLIC_PROJECT_VIDEO_BASE_URL=https://pub-8f9c84a430fe4288a47ed8a11d8c12be.r2.dev`
-5. If you also want images, fonts, and favicons from R2, add:
+5. For images, fonts, favicons, and other published assets, add:
    - `PUBLIC_ASSET_SOURCE=remote`
+   - `PUBLIC_IMAGE_SOURCE=remote`
    - `PUBLIC_MEDIA_BASE_URL=https://pub-8f9c84a430fe4288a47ed8a11d8c12be.r2.dev`
 6. For GitHub-triggered uploads, add:
    - variable `R2_BUCKET_NAME=danieloye-media`
@@ -96,6 +99,16 @@ The uploader sends files from `public/projects/**/videos/*` to matching object
 keys inside the bucket, so the URL structure stays aligned with the existing
 content files.
 
+For published images and other assets, the uploader now scans `public/` directly,
+so newly added assets do not need to be committed before you upload them to R2.
+
+If you want to inspect an existing R2 prefix and copy canonical content paths
+back into frontmatter, use:
+
+```bash
+npm run r2:list -- projects/tolu/photos/
+```
+
 ## Current Local Video Inventory
 
 At the time this guide was added, the project videos on disk are:
@@ -109,9 +122,8 @@ At the time this guide was added, the project videos on disk are:
 ## Suggested Rollout
 
 1. Create the R2 bucket and public media domain.
-2. Upload the current videos.
+2. Upload the current published media.
 3. Add the relevant GitHub Actions variables and secret.
 4. Re-run `Deploy to GitHub Pages`.
-5. Confirm the generated video URLs point to `https://pub-8f9c84a430fe4288a47ed8a11d8c12be.r2.dev/...`.
-6. Once production is confirmed, remove any large local delivery copies you do
-   not need on your laptop.
+5. Confirm the generated media URLs point to `https://pub-8f9c84a430fe4288a47ed8a11d8c12be.r2.dev/...`.
+6. Once production is confirmed, keep content paths canonical and continue using `npm run media:upload:r2` for future published assets.

@@ -19,7 +19,7 @@ editorial:
     - "portraiture"
   sectionOrder:
     selected-work: 8
-    portraiture: 4
+    portraiture: 5
   homepage:
     order: 6
     template: "solo"

@@ -60,7 +60,7 @@ while IFS= read -r image_path; do
 done < <(
   existing_roots=()
 
-  for candidate_root in public/projects public/blog; do
+  for candidate_root in public/projects public/blog public/images; do
     if [[ -d "$candidate_root" ]]; then
       existing_roots+=("$candidate_root")
     fi
