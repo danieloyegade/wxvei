@@ -1,5 +1,5 @@
-#!/bin/zsh
+#!/usr/bin/env bash
 
 set -euo pipefail
 
-"$(dirname "$0")/with-remote-media.sh" astro build "$@"
+exec "$(dirname "$0")/with-remote-media.sh" astro build "$@"

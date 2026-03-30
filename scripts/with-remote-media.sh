@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -10,7 +10,7 @@ export PUBLIC_VIDEO_SOURCE="${PUBLIC_VIDEO_SOURCE:-remote}"
 export PUBLIC_MEDIA_BASE_URL="${PUBLIC_MEDIA_BASE_URL:-$default_media_base_url}"
 export PUBLIC_PROJECT_VIDEO_BASE_URL="${PUBLIC_PROJECT_VIDEO_BASE_URL:-${PUBLIC_MEDIA_BASE_URL}}"
 
-if (( $# == 0 )); then
+if [ "$#" -eq 0 ]; then
   echo "Usage: ./scripts/with-remote-media.sh <command> [args...]" >&2
   exit 1
 fi
