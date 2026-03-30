@@ -4,6 +4,10 @@ This repository currently deploys the site with GitHub Pages and uses Cloudflare
 R2 as the public media host for videos, images, fonts, favicons, and other
 published assets.
 
+Local development now follows the same default: `npm run dev`, `npm run build`,
+and `npm run preview` all resolve published media to Cloudflare unless you
+intentionally use the `:local` variants.
+
 ## What This Repository Already Does
 
 - `npm run build` outputs the static site to `dist/`

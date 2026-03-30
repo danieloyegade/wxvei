@@ -41,7 +41,7 @@ const cormorantRegularFontSrc = `url("${cormorantRegularFontUrl}") format("truet
 const cormorantMediumFontSrc = `url("${cormorantMediumFontUrl}") format("truetype")`;
 const faviconVersion = "do-20260325";
 const resolveFaviconHref = (src: string) => {
-  const resolvedSrc = import.meta.env.DEV ? src : resolvePublishedAssetSrc(src) ?? src;
+  const resolvedSrc = resolvePublishedAssetSrc(src) ?? src;
   const href = withBase(resolvedSrc);
   const separator = href.includes("?") ? "&" : "?";
 

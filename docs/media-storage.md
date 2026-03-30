@@ -21,7 +21,7 @@ Important:
 - content files should continue to store repo-style paths like `/projects/.../photos/...`
 - those paths are rewritten to the remote host during the build when the
   relevant `PUBLIC_*` environment variables are present
-- GitHub Pages now defaults to remote media delivery unless you explicitly override it
+- local dev, preview, and GitHub Pages now default to remote media delivery unless you explicitly override them
 
 ## What To Push
 
@@ -102,8 +102,9 @@ Resolved example:
 3. Run `npm run images:responsive` after adding or replacing JPEG assets.
 4. Run `R2_BUCKET_NAME=danieloye-media npm run media:upload:r2` to upload all published assets currently under `public/`.
 5. Use `npm run r2:list -- projects/<slug>/photos/` when you want to confirm the object keys in R2.
-6. Use `npm run build:remote` when you want to verify a local build resolves published media to Cloudflare.
-7. In production, GitHub Pages will now default to remote asset, image, and video delivery.
+6. Run `npm run dev` for localhost with Cloudflare-backed media.
+7. Run `npm run build` or `npm run preview` for Cloudflare-backed local verification.
+8. Use `npm run dev:local`, `npm run build:local`, or `npm run preview:local` only when you intentionally want the old local-media behavior.
 
 ## Uploading Published Media To R2
 
@@ -126,3 +127,21 @@ npm run r2:list -- projects/tolu/photos/
 
 This prints paths like `/projects/tolu/photos/DSC04460A.jpg`, which can be pasted
 directly into project frontmatter.
+
+## Localhost Behavior
+
+The default local scripts now use Cloudflare-hosted media:
+
+```bash
+npm run dev
+npm run build
+npm run preview
+```
+
+If you ever need to force local filesystem assets instead, use:
+
+```bash
+npm run dev:local
+npm run build:local
+npm run preview:local
+```
