@@ -2,11 +2,13 @@
 
 ## Purpose
 
-This file tracks the current public asset convention so project media stays grouped, predictable, and easy to replace.
+This file tracks the canonical published asset convention so project media stays
+grouped, predictable, and easy to replace whether it is staged locally or stored
+in Cloudflare R2.
 
-## Public Structure
+## Published Structure
 
-Project media now lives under:
+When staged locally, published assets continue to live under:
 - `public/projects/<slug>/photos/`
 - `public/projects/<slug>/videos/`
 - `public/projects/mixed-media/<slug>/photos/`
@@ -14,7 +16,16 @@ Project media now lives under:
 Non-project imagery lives under:
 - `public/site/photos/`
 
-Source masters now live outside the published tree:
+In R2, those same assets live without the `public/` prefix:
+- `projects/<slug>/photos/`
+- `projects/<slug>/videos/`
+- `projects/mixed-media/<slug>/photos/`
+- `site/photos/`
+
+Local pulls from R2 now default to:
+- `.media-cache/`
+
+Source masters still live outside the published tree:
 - `media/masters/projects/<slug>/videos/`
 
 ## Project Conventions
@@ -28,12 +39,16 @@ Use these canonical filenames when adding or replacing project assets:
 - `public/projects/<slug>/photos/stills/still-3.jpg`
 
 Source masters can keep their original names and extensions under `media/masters/`.
-Published web-delivery assets should stay canonical in `public/`.
+Published web-delivery assets should stay canonical in key shape even when R2 is
+the source of truth.
 
 Run:
 
 - `npm run videos:prepare` to generate delivery MP4s and preview clips
 - `npm run images:responsive` to generate responsive JPEG variants
+- `npm run media:push:r2 -- --source <folder> --prefix projects/<slug>/photos/` to push a local working folder into R2
+- `npm run media:pull:r2 -- --prefix projects/<slug>/photos/` to restore a project into a local cache
+- `npm run media:validate:r2 -- --prefix projects/<slug>/` to confirm the referenced objects exist remotely
 
 ## Current Site Assets
 
@@ -77,3 +92,4 @@ Run:
 - Keep folders slug-based.
 - Use lowercase, stable filenames like `cover`, `feature`, and `still-1`.
 - Keep all media for a project inside its own folder.
+- Keep canonical object keys stable even if the local working folder changes.

@@ -3,6 +3,7 @@ dist/
 .astro/
 .tools/
 .wrangler/
+.media-cache/
 .env
 .env.local
 .env.*.local

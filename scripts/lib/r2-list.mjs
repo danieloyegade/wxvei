@@ -1,11 +1,17 @@
-import { existsSync } from "node:fs";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { createServer } from "node:net";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { join } from "node:path";
+import {
+  defaultBucketName as defaultBucketNameValue,
+  normalizeObjectKey,
+  resolveWranglerCommand,
+  toSitePath,
+} from "./r2-cli.mjs";
 
-export const defaultBucketName = "danieloye-media";
+export const defaultBucketName = defaultBucketNameValue;
+
 const compatibilityDate = "2026-03-30";
 
 const sleep = (ms) => new Promise((resolveSleep) => setTimeout(resolveSleep, ms));
@@ -35,15 +41,7 @@ const getAvailablePort = async () =>
     server.on("error", reject);
   });
 
-const normalizedPrefix = (prefix) => prefix.replace(/^\/+/, "");
-
-const toSitePath = (key) => `/${key.replace(/^\/+/, "")}`;
-
-const localWranglerCliPath = resolve(process.cwd(), "node_modules/wrangler/bin/wrangler.js");
-const defaultWranglerExecutable = existsSync(localWranglerCliPath) ? process.execPath : "npx";
-const defaultWranglerArgs = existsSync(localWranglerCliPath)
-  ? [localWranglerCliPath]
-  : ["wrangler@latest"];
+const normalizedPrefix = (prefix = "") => normalizeObjectKey(prefix);
 
 const buildWorkerSource = () => `export default {
   async fetch(request, env) {
@@ -84,7 +82,7 @@ export const listR2Objects = async ({
   prefix,
   bucketName = process.env.R2_BUCKET_NAME?.trim() || defaultBucketName,
 }) => {
-  if (!prefix) {
+  if (prefix === undefined || prefix === null) {
     throw new Error("Missing required prefix.");
   }
 
@@ -97,8 +95,7 @@ export const listR2Objects = async ({
   const configPath = join(tempDir, "wrangler.toml");
   const port = await getAvailablePort();
   const requestUrl = `http://127.0.0.1:${port}/?prefix=${encodeURIComponent(normalizedPrefix(prefix))}`;
-  const wranglerExecutable = process.env.WRANGLER_CMD?.trim() || defaultWranglerExecutable;
-  const wranglerArgs = process.env.WRANGLER_CMD?.trim() ? [] : defaultWranglerArgs;
+  const { executable: wranglerExecutable, args: wranglerArgs } = resolveWranglerCommand();
 
   await writeFile(workerPath, buildWorkerSource(), "utf8");
   await writeFile(configPath, buildWranglerConfig(bucketName), "utf8");
@@ -141,27 +138,50 @@ export const listR2Objects = async ({
 
     const timeoutAt = Date.now() + 30000;
 
+    const fetchPage = async (cursor) => {
+      const url = new URL(requestUrl);
+
+      if (cursor) {
+        url.searchParams.set("cursor", cursor);
+      }
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`Temporary R2 listing worker returned ${response.status}.`);
+      }
+
+      return response.json();
+    };
+
     while (Date.now() < timeoutAt) {
       if (child.exitCode !== null) {
         throw new Error(stderr.trim() || `Wrangler exited early with code ${child.exitCode}.`);
       }
 
       try {
-        const response = await fetch(requestUrl);
+        const allObjects = [];
+        let payload = await fetchPage();
 
-        if (response.ok) {
-          const payload = await response.json();
-          const objects = Array.isArray(payload.objects) ? payload.objects : [];
+        while (true) {
+          const pageObjects = Array.isArray(payload.objects) ? payload.objects : [];
+          allObjects.push(...pageObjects);
 
-          return objects
-            .filter((object) => typeof object.key === "string" && object.key && Number(object.size) > 0)
-            .map((object) => ({
-              key: object.key,
-              path: toSitePath(object.key),
-              size: object.size,
-              uploaded: object.uploaded,
-            }));
+          if (!payload.truncated || !payload.cursor) {
+            break;
+          }
+
+          payload = await fetchPage(payload.cursor);
         }
+
+        return allObjects
+          .filter((object) => typeof object.key === "string" && object.key && Number(object.size) > 0)
+          .map((object) => ({
+            key: object.key,
+            path: toSitePath(object.key),
+            size: object.size,
+            uploaded: object.uploaded,
+          }));
       } catch {
         // Keep polling until Wrangler is ready or times out.
       }

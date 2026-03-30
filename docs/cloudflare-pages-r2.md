@@ -123,6 +123,17 @@ npm run project:new:r2 -- \
   --descriptor "Manchester 2026."
 ```
 
+For a Cloudflare-first authoring workflow, these commands are now available too:
+
+```bash
+npm run media:push:r2 -- --source ~/Exports/Tolu --prefix projects/tolu/photos/
+npm run media:pull:r2 -- --prefix projects/tolu/photos/
+npm run media:validate:r2 -- --prefix projects/tolu/
+```
+
+That lets you keep R2 as the source of truth for published media while using local
+folders only as temporary working copies or caches.
+
 ## Current Local Video Inventory
 
 At the time this guide was added, the project videos on disk are:
@@ -140,4 +151,4 @@ At the time this guide was added, the project videos on disk are:
 3. Add the relevant GitHub Actions variables and secret.
 4. Re-run `Deploy to GitHub Pages`.
 5. Confirm the generated media URLs point to `https://pub-8f9c84a430fe4288a47ed8a11d8c12be.r2.dev/...`.
-6. Once production is confirmed, keep content paths canonical and continue using `npm run media:upload:r2` for future published assets.
+6. Once production is confirmed, keep content paths canonical and use `media:push:r2`, `media:pull:r2`, and `media:validate:r2` for day-to-day Cloudflare-first project work.
