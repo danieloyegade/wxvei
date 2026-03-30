@@ -102,9 +102,10 @@ Resolved example:
 3. Run `npm run images:responsive` after adding or replacing JPEG assets.
 4. Run `R2_BUCKET_NAME=danieloye-media npm run media:upload:r2` to upload all published assets currently under `public/`.
 5. Use `npm run r2:list -- projects/<slug>/photos/` when you want to confirm the object keys in R2.
-6. Run `npm run dev` for localhost with Cloudflare-backed media.
-7. Run `npm run build` or `npm run preview` for Cloudflare-backed local verification.
-8. Use `npm run dev:local`, `npm run build:local`, or `npm run preview:local` only when you intentionally want the old local-media behavior.
+6. Use `npm run project:new:r2 -- ...` to scaffold a new project file directly from an R2 prefix.
+7. Run `npm run dev` for localhost with Cloudflare-backed media.
+8. Run `npm run build` or `npm run preview` for Cloudflare-backed local verification.
+9. Use `npm run dev:local`, `npm run build:local`, or `npm run preview:local` only when you intentionally want the old local-media behavior.
 
 ## Uploading Published Media To R2
 
@@ -127,6 +128,50 @@ npm run r2:list -- projects/tolu/photos/
 
 This prints paths like `/projects/tolu/photos/DSC04460A.jpg`, which can be pasted
 directly into project frontmatter.
+
+## Scaffolding A Project From R2
+
+When the images already live in R2, you can scaffold the project markdown in one
+command:
+
+```bash
+npm run project:new:r2 -- \
+  --title "Tolu" \
+  --slug tolu \
+  --prefix projects/tolu/photos/ \
+  --section portraiture:1 \
+  --descriptor "Manchester 2026." \
+  --metadata "Manchester 2026"
+```
+
+The helper will:
+- list the files in the R2 prefix
+- choose `cover.*` as the hero image when present, otherwise use the first image
+- write the remaining images into `detailImages`
+- create `src/content/projects/<slug>-project.md`
+
+You can preview the generated file without writing it:
+
+```bash
+npm run project:new:r2 -- \
+  --title "Tolu" \
+  --prefix projects/tolu/photos/ \
+  --section portraiture:1 \
+  --descriptor "Manchester 2026." \
+  --dry-run
+```
+
+For multi-section projects, repeat `--section` and optionally add homepage placement:
+
+```bash
+npm run project:new:r2 -- \
+  --title "Example" \
+  --prefix projects/example/photos/ \
+  --section selected-work:12 \
+  --section portraiture:7 \
+  --homepage 6:closing:2 \
+  --descriptor "Portrait study."
+```
 
 ## Localhost Behavior
 

@@ -113,6 +113,16 @@ back into frontmatter, use:
 npm run r2:list -- projects/tolu/photos/
 ```
 
+If you want to scaffold a new project file directly from an R2 prefix, use:
+
+```bash
+npm run project:new:r2 -- \
+  --title "Tolu" \
+  --prefix projects/tolu/photos/ \
+  --section portraiture:1 \
+  --descriptor "Manchester 2026."
+```
+
 ## Current Local Video Inventory
 
 At the time this guide was added, the project videos on disk are:

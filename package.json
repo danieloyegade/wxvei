@@ -14,6 +14,7 @@
     "build:remote": "./scripts/build-remote-media.sh",
     "content:publish": "node ./scripts/publish-content.mjs",
     "media:upload:r2": "./scripts/upload-media-to-r2.sh",
+    "project:new:r2": "node ./scripts/new-project-from-r2.mjs",
     "r2:list": "node ./scripts/list-r2-objects.mjs",
     "images:responsive": "./scripts/generate-responsive-images.sh",
     "videos:prepare": "./scripts/generate-video-previews.sh",
