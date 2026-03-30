@@ -15,7 +15,7 @@ orientation: "landscape"
 selectedWorkAspectRatio: "3 / 2"
 cropFocus: "center"
 editorial:
-  visibility: "draft"
+  visibility: "published"
   sections:
     - "portraiture"
   sectionOrder:
