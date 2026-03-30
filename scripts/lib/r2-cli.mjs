@@ -31,6 +31,68 @@ const contentTypeByExtension = new Map([
   [".webm", "video/webm"],
 ]);
 
+const splitShellWords = (value) => {
+  const words = [];
+  let current = "";
+  let quote = "";
+  let isEscaped = false;
+
+  for (const character of value) {
+    if (isEscaped) {
+      current += character;
+      isEscaped = false;
+      continue;
+    }
+
+    if (character === "\\") {
+      if (quote === "'") {
+        current += character;
+      } else {
+        isEscaped = true;
+      }
+      continue;
+    }
+
+    if (quote) {
+      if (character === quote) {
+        quote = "";
+      } else {
+        current += character;
+      }
+      continue;
+    }
+
+    if (character === "'" || character === '"') {
+      quote = character;
+      continue;
+    }
+
+    if (/\s/.test(character)) {
+      if (current) {
+        words.push(current);
+        current = "";
+      }
+      continue;
+    }
+
+    current += character;
+  }
+
+  if (isEscaped) {
+    current += "\\";
+  }
+
+  if (quote) {
+    throw new Error(`WRANGLER_CMD contains an unterminated ${quote} quote.`);
+  }
+
+  if (current) {
+    words.push(current);
+  }
+
+  return words;
+};
+
 export const normalizeObjectKey = (value = "") =>
   value.replace(/\\/g, "/").replace(/^\.\/+/, "").replace(/^\/+/, "").replace(/\/{2,}/g, "/");
 
@@ -76,9 +138,15 @@ export const resolveWranglerCommand = () => {
   const override = process.env.WRANGLER_CMD?.trim();
 
   if (override) {
+    const [executable, ...args] = splitShellWords(override);
+
+    if (!executable) {
+      throw new Error("WRANGLER_CMD did not contain an executable.");
+    }
+
     return {
-      executable: override,
-      args: [],
+      executable,
+      args,
     };
   }
 

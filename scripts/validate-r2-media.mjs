@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { readdir, readFile } from "node:fs/promises";
-import { extname, resolve } from "node:path";
+import { extname, resolve, sep } from "node:path";
 import { listR2Objects } from "./lib/r2-list.mjs";
 import { defaultBucketName, normalizeObjectKey, toSitePath } from "./lib/r2-cli.mjs";
 
@@ -114,6 +114,25 @@ const parseArgs = (argv) => {
   }
 
   return options;
+};
+
+const projectContentSegment = `${sep}src${sep}content${sep}projects${sep}`;
+const postContentSegment = `${sep}src${sep}content${sep}posts${sep}`;
+
+const getProjectVisibility = (contents) => contents.match(/^\s*visibility:\s*"?(published|draft)"?\s*$/m)?.[1];
+
+const getPostStatus = (contents) => contents.match(/^\s*status:\s*"?(draft|published)"?\s*$/m)?.[1];
+
+const shouldValidateSourceFile = (filePath, contents) => {
+  if (filePath.includes(projectContentSegment)) {
+    return (getProjectVisibility(contents) ?? "published") === "published";
+  }
+
+  if (filePath.includes(postContentSegment)) {
+    return (getPostStatus(contents) ?? "published") === "published";
+  }
+
+  return true;
 };
 
 const collectSourceFiles = async (rootPath) => {
@@ -239,6 +258,11 @@ const main = async () => {
 
   for (const filePath of sourceFiles) {
     const contents = await readFile(filePath, "utf8");
+
+    if (!shouldValidateSourceFile(filePath, contents)) {
+      continue;
+    }
+
     let match;
 
     while ((match = assetPathPattern.exec(contents)) !== null) {

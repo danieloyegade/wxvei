@@ -45,9 +45,9 @@ Optional:
   --crop-focus <value>           Default: center
   --selected-work-aspect-ratio <value>
   --homepage <order:template:slot>
-  --visibility <published|draft> Default: published
+  --visibility <published|draft> Default: draft
   --status <placeholder|published> Default: placeholder
-  --filename <name.md>           Default: <slug>-project.md
+  --filename <name.md>           Default: <slug>.md
   --body <text>
   --bucket <bucket-name>         Default: ${defaultBucketName}
   --dry-run                      Print the file instead of writing it
@@ -154,7 +154,7 @@ const parseArgs = (argv) => {
     cropFocus: "center",
     selectedWorkAspectRatio: "",
     homepage: null,
-    visibility: "published",
+    visibility: "draft",
     status: "placeholder",
     filename: "",
     body: "",
@@ -359,7 +359,7 @@ const parseArgs = (argv) => {
   }
 
   if (!options.filename) {
-    options.filename = `${options.slug}-project.md`;
+    options.filename = `${options.slug}.md`;
   }
 
   if (!options.filename.endsWith(".md")) {

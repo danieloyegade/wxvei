@@ -201,7 +201,7 @@ The helper will:
 - list the files in the R2 prefix
 - choose `cover.*` as the hero image when present, otherwise use the first image
 - write the remaining images into `detailImages`
-- create `src/content/projects/<slug>-project.md`
+- create `src/content/projects/<slug>.md`
 
 You can preview the generated file without writing it:
 
