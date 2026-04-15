@@ -42,6 +42,7 @@ const {
   sectionId = "selected-work",
   detailBasePath,
 } = Astro.props;
+const priorityProjectCount = 2;
 
 const mobileRhythmProfiles: Partial<Record<string, readonly string[]>> = {
   portraiture: [
@@ -137,6 +138,7 @@ const normalizedProjects = projects.map((project, index) => {
                 : undefined
             }
             cropFocus={project.cropFocus}
+            priority={index < priorityProjectCount}
             cardClassName={
               sectionMobileRhythm.length > 0
                 ? sectionMobileRhythm[index % sectionMobileRhythm.length]

@@ -3,8 +3,6 @@ import { resolve } from "node:path";
 import {
   resolveProjectImageSrc,
   resolvePublishedAssetSrc,
-  usesRemoteProjectImages,
-  usesRemotePublishedAssets,
 } from "./media";
 
 interface ResponsiveVariant {
@@ -52,26 +50,6 @@ const getResponsiveImageConfig = (src: string) =>
 const resolveResponsiveImageSrc = (src: string) =>
   resolveProjectImageSrc(src) ?? resolvePublishedAssetSrc(src) ?? src;
 
-const canAssumeRemoteResponsiveImages = (src: string) => {
-  if (!src.startsWith("/")) {
-    return false;
-  }
-
-  if (
-    src.startsWith("/projects/") ||
-    src.startsWith("/blog/") ||
-    src.startsWith("/site/photos/")
-  ) {
-    return usesRemoteProjectImages();
-  }
-
-  if (src.startsWith("/images/")) {
-    return usesRemotePublishedAssets();
-  }
-
-  return false;
-};
-
 const publicAssetExists = (src: string) => {
   const cachedResult = fileExistsCache.get(src);
 
@@ -104,7 +82,7 @@ export const getResponsiveImageSet = (src: string): ResponsiveImageSet | null =>
 
   const hasAllVariants = [fallbackSrc, ...jpeg.map((variant) => variant.src)].every(publicAssetExists);
 
-  if (!hasAllVariants && !canAssumeRemoteResponsiveImages(src)) {
+  if (!hasAllVariants) {
     return null;
   }
 

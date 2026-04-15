@@ -5,7 +5,7 @@ import {
   type ProjectSectionId,
   type HomepageBeatTemplate,
 } from "../data/editorial";
-import { resolveProjectImageSrc, resolveProjectVideoSrc } from "./media";
+import { resolveProjectVideoSrc } from "./media";
 import { withBase } from "./site";
 
 export type ProjectEntry = CollectionEntry<"projects">;
@@ -65,7 +65,6 @@ const compareNumbers = (left: number, right: number) => left - right;
 const compareTitles = (left: ProjectEntry, right: ProjectEntry) =>
   left.data.title.localeCompare(right.data.title, "en", { sensitivity: "base" });
 
-const resolveImagePath = (src?: string) => resolveProjectImageSrc(src) ?? src;
 const resolveVideoPath = (src?: string) => resolveProjectVideoSrc(src) ?? src;
 
 const isPublishedProject = (project: ProjectEntry) => project.data.editorial.visibility === "published";
@@ -125,29 +124,27 @@ export const getProjectSectionLinks = (
   }));
 
 export const getResolvedProjectMedia = (project: ProjectEntry): ResolvedProjectMedia => ({
-  image: resolveImagePath(project.data.image) ?? project.data.image,
+  image: project.data.image,
   video: project.data.video
     ? {
         ...project.data.video,
         src: resolveVideoPath(project.data.video.src) ?? project.data.video.src,
-        poster: resolveImagePath(project.data.video.poster),
+        poster: project.data.video.poster,
       }
     : undefined,
   detailVideos: project.data.detailVideos?.map((detailVideo) => ({
     ...detailVideo,
     src: resolveVideoPath(detailVideo.src) ?? detailVideo.src,
-    poster: resolveImagePath(detailVideo.poster),
+    poster: detailVideo.poster,
   })),
   hoverPreview: project.data.hoverPreview
     ? {
         ...project.data.hoverPreview,
         src: resolveVideoPath(project.data.hoverPreview.src),
-        poster: resolveImagePath(project.data.hoverPreview.poster),
+        poster: project.data.hoverPreview.poster,
       }
     : undefined,
-  detailImages: project.data.detailImages?.map(
-    (detailImage) => resolveImagePath(detailImage) ?? detailImage
-  ),
+  detailImages: project.data.detailImages,
 });
 
 export const mapProjectForGrid = (project: ProjectEntry) => {

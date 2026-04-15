@@ -20,6 +20,7 @@ interface Props {
   cropFocus?: "center" | "top" | "upper-third";
   visualWeight?: "support" | "standard" | "dominant" | "hero";
   cardClassName?: string;
+  priority?: boolean;
 }
 
 const {
@@ -37,6 +38,7 @@ const {
   cropFocus = "center",
   visualWeight = "standard",
   cardClassName,
+  priority = false,
 } = Astro.props;
 
 const objectPositionMap = {
@@ -57,6 +59,8 @@ const previewPoster = getResponsiveImageFallbackSrc(hoverPreview?.poster ?? vide
 const hasPreview = Boolean(previewVideoSrc && (hoverPreview || playsPreviewInView || isVideoFirst));
 const rendersImage = Boolean(image);
 const imageSizes = "(min-width: 80rem) 50vw, (min-width: 48rem) 50vw, 100vw";
+const imageLoading = priority ? "eager" : "lazy";
+const imageFetchPriority = priority ? "high" : undefined;
 const imageClass = [
   "project-card__image",
   hasPreview ? "project-card__image--has-preview" : "",
@@ -86,8 +90,9 @@ const imageClass = [
           fill={true}
           style={`object-position: ${objectPositionMap[cropFocus]}; object-fit: cover;`}
           sizes={imageSizes}
-          loading="lazy"
+          loading={imageLoading}
           decoding="async"
+          fetchpriority={imageFetchPriority}
         />
       )}
       {hasPreview && (
@@ -380,6 +385,7 @@ const imageClass = [
 <script>
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const prefersReducedData = Boolean(navigator.connection?.saveData);
+  const supportsHoverPlayback = window.matchMedia("(hover: hover) and (pointer: fine)");
 
   const setPreviewTime = (preview, startTime) => {
     if (!Number.isFinite(startTime) || preview.readyState < 1) return;
@@ -408,7 +414,11 @@ const imageClass = [
 
     const startTime = Number(preview.dataset.previewStart ?? "0");
     const playsInView = card.dataset.previewInView === "true";
-    const canAutoplayInView = playsInView && !prefersReducedMotion.matches && !prefersReducedData;
+    const canAutoplayInView =
+      playsInView &&
+      supportsHoverPlayback.matches &&
+      !prefersReducedMotion.matches &&
+      !prefersReducedData;
     const previewEnd = preview.dataset.previewEnd;
     const endTime =
       previewEnd !== undefined && previewEnd !== ""

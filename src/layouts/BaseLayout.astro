@@ -47,7 +47,6 @@ const resolveFaviconHref = (src: string) => {
 
   return `${href}${separator}v=${faviconVersion}`;
 };
-const faviconIcoHref = resolveFaviconHref("/favicon.ico");
 const faviconSvgHref = resolveFaviconHref("/favicon.svg");
 const favicon32Href = resolveFaviconHref("/favicon-32x32.png");
 const favicon16Href = resolveFaviconHref("/favicon-16x16.png");
@@ -95,6 +94,18 @@ const canonicalPath = Astro.url.pathname.endsWith("/")
   : `${Astro.url.pathname}/`;
 const canonicalUrl = new URL(canonicalPath, Astro.site ?? Astro.url);
 const canonicalHref = canonicalUrl.toString();
+const currentOrigin = canonicalUrl.origin;
+const getAssetOrigin = (src?: string) => {
+  if (!src) {
+    return null;
+  }
+
+  try {
+    return new URL(src, Astro.site ?? Astro.url).origin;
+  } catch {
+    return null;
+  }
+};
 const resolveMetaImageSrc = (src?: string) => {
   if (!src) {
     return undefined;
@@ -118,6 +129,20 @@ const socialImageUrl = socialImageHref
   ? new URL(socialImageHref, Astro.site ?? Astro.url).toString()
   : undefined;
 const twitterCard = socialImageUrl ? "summary_large_image" : "summary";
+const preconnectOrigins = Array.from(
+  new Set(
+    [
+      satoshiRegularFontUrl,
+      satoshiMediumFontUrl,
+      cormorantRegularFontUrl,
+      cormorantMediumFontUrl,
+      preloadImageHref,
+      socialImageHref,
+    ]
+      .map(getAssetOrigin)
+      .filter((origin): origin is string => Boolean(origin && origin !== currentOrigin))
+  )
+);
 ---
 
 <!doctype html>
@@ -128,6 +153,7 @@ const twitterCard = socialImageUrl ? "summary_large_image" : "summary";
     <meta name="description" content={description} />
     <meta name="theme-color" content="#ffffff" />
     <link rel="canonical" href={canonicalHref} />
+    {preconnectOrigins.map((origin) => <link rel="preconnect" href={origin} crossorigin />)}
     {preloadImageHref && <link rel="preload" as="image" href={preloadImageHref} />}
     <meta property="og:site_name" content="Daniel Oyegade" />
     <meta property="og:type" content={socialType} />
@@ -139,7 +165,6 @@ const twitterCard = socialImageUrl ? "summary_large_image" : "summary";
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     {socialImageUrl && <meta name="twitter:image" content={socialImageUrl} />}
-    <link rel="shortcut icon" href={faviconIcoHref} sizes="any" type="image/x-icon" />
     <link
       rel="icon"
       href={faviconSvgHref}
