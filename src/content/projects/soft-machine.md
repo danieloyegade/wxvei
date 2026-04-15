@@ -6,6 +6,7 @@ descriptor: "Diagrammatic form. Skeletal structure. Monochrome field."
 layoutPattern: "wide-band"
 visualWeight: "dominant"
 orientation: "landscape"
+selectedWorkAspectRatio: "2388 / 1668"
 cropFocus: "center"
 editorial:
   visibility: "published"
