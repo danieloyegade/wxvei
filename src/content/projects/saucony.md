@@ -1,7 +1,7 @@
 ---
 title: "Saucony"
 image: "/projects/saucony/photos/cover.jpg"
-descriptor: "Moving image for Saucony."
+descriptor: "Moving image for Saucony. Director: Anthony Namba, Director of Photography: Daniel Oyegade"
 video:
   src: "/projects/saucony/videos/feature.mp4"
   poster: "/projects/saucony/photos/cover.jpg"
