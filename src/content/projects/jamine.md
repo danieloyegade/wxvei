@@ -1,7 +1,7 @@
 ---
 title: "Jamine"
 image: "/projects/jamine/photos/cover.jpg"
-descriptor: "Photographed by Daniel Oyegade."
+descriptor: "Photographed by Daniel Oyegade, Styled by Mia Chung."
 credits:
   - role: "Photographed"
     name: "Daniel Oyegade"

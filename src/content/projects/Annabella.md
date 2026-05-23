@@ -1,6 +1,6 @@
 ---
-title: "Annabella"
-slug: "annabella"
+title: "Winter notes on summer impressions"
+slug: "Winter notes"
 image: "/projects/annabella/photos/cover.jpg"
 descriptor: "Manchester, 2025."
 video:
