@@ -2,7 +2,7 @@
 title: "Cheri"
 slug: "cheri"
 image: "/projects/cheri/photos/cover.jpg"
-descriptor: "London."
+descriptor: "London. Styled by Mia Chung."
 detailImages:
   - "/projects/cheri/photos/Cheri-06A.jpg"
   - "/projects/cheri/photos/Cheri-03.jpg"
