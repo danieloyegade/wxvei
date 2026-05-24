@@ -23,7 +23,10 @@ jobs:
     env:
       PUBLIC_ASSET_SOURCE: local
       PUBLIC_IMAGE_SOURCE: local
-      PUBLIC_VIDEO_SOURCE: local
+      # Feature videos are intentionally kept out of Git history, so production
+      # must resolve them from the published R2 bucket during the Pages build.
+      PUBLIC_VIDEO_SOURCE: remote
+      PUBLIC_PROJECT_VIDEO_BASE_URL: https://pub-8f9c84a430fe4288a47ed8a11d8c12be.r2.dev
     steps:
       - name: Checkout
         uses: actions/checkout@v5
