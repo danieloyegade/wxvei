@@ -18,10 +18,10 @@ editorial:
     - "selected-work"
     - "portraiture"
   sectionOrder:
-    selected-work: 8
-    portraiture: 5
+    selected-work: 14
+    portraiture: 6
   homepage:
-    order: 6
+    order: 9
     template: "solo"
     slot: 1
 status: "placeholder"

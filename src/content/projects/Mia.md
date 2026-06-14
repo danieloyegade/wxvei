@@ -25,7 +25,7 @@ editorial:
     - "portraiture"
   sectionOrder:
     selected-work: 4
-    portraiture: 3
+    portraiture: 4
   homepage:
     order: 3
     template: "balanced"

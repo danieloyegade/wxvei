@@ -17,7 +17,7 @@ editorial:
     - "portraiture"
   sectionOrder:
     selected-work: 6
-    portraiture: 4
+    portraiture: 5
   homepage:
     order: 4
     template: "split"

@@ -4,15 +4,17 @@ slug: "cheri"
 image: "/projects/cheri/photos/cover.jpg"
 descriptor: "London. Styled by Mia Chung."
 detailImages:
-  - "/projects/cheri/photos/Cheri-06A.jpg"
-  - "/projects/cheri/photos/Cheri-03.jpg"
-  - "/projects/cheri/photos/Cheri-04.jpg"
-  - "/projects/cheri/photos/Cheri-05.jpg"
+  - "/projects/cheri/photos/detail-01.jpg"
+  - "/projects/cheri/photos/detail-02.jpg"
+  - "/projects/cheri/photos/detail-03.jpg"
+  - "/projects/cheri/photos/detail-04.jpg"
+  - "/projects/cheri/photos/detail-05.jpg"
 metadata:
   - "London"
 layoutPattern: "offset-right"
 visualWeight: "standard"
-orientation: "landscape"
+orientation: "portrait"
+selectedWorkAspectRatio: "5288 / 6528"
 cropFocus: "upper-third"
 editorial:
   visibility: "published"
@@ -20,10 +22,10 @@ editorial:
     - "selected-work"
     - "portraiture"
   sectionOrder:
-    selected-work: 14
-    portraiture: 9
+    selected-work: 8
+    portraiture: 2
   homepage:
-    order: 9
+    order: 6
     template: "solo"
     slot: 1
 status: "placeholder"
