@@ -1,6 +1,6 @@
 ---
 import { getCollection } from "astro:content";
-import SelectedWorkSequence from "../../components/SelectedWorkSequence.astro";
+import SelectedWorkEditorialSequence from "../../components/SelectedWorkEditorialSequence.astro";
 import { projectSectionConfigs } from "../../data/editorial";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getHomepageProjects, mapProjectForGrid } from "../../lib/projects";
@@ -12,6 +12,7 @@ const selectedWorkProjects = projects.map(mapProjectForGrid);
 <BaseLayout
   title="Selected Works | Daniel Oyegade"
   description={projectSectionConfigs["selected-work"].description}
+  preloadImage={selectedWorkProjects[0]?.video?.poster ?? selectedWorkProjects[0]?.image}
 >
-  <SelectedWorkSequence projects={selectedWorkProjects} />
+  <SelectedWorkEditorialSequence projects={selectedWorkProjects} />
 </BaseLayout>
