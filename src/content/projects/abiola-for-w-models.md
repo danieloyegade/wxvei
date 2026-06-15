@@ -1,6 +1,6 @@
 ---
-title: "Abiola"
-slug: "abiola"
+title: "Abiola for W Models"
+slug: "abiola-for-w-models"
 image: "/projects/abiola/photos/cover.jpg"
 descriptor: "London, 2023."
 metadata:
@@ -25,4 +25,4 @@ editorial:
 status: "placeholder"
 ---
 
-Placeholder content for project 6.
+Placeholder content for Abiola for W Models.

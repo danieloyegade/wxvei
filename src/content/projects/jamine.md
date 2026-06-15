@@ -13,8 +13,10 @@ editorial:
   visibility: "published"
   sections:
     - "selected-work"
+    - "portraiture"
   sectionOrder:
     selected-work: 12
+    portraiture: 30
   homepage:
     order: 1
     template: "opening"

@@ -1,6 +1,6 @@
 ---
-title: "These Northern Lights"
-slug: "these-northern-lights"
+title: "Public Illumination Studies"
+slug: "public-illumination-studies"
 image: "/projects/these-northern-lights/photos/next-bus.jpg"
 descriptor: "Circa 2020."
 detailImages:
@@ -30,4 +30,4 @@ editorial:
 status: "placeholder"
 ---
 
-Placeholder content for These Northern Lights.
+Placeholder content for Public Illumination Studies.

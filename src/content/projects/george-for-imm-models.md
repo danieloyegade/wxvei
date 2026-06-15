@@ -17,9 +17,15 @@ cropFocus: "center"
 editorial:
   visibility: "published"
   sections:
+    - "selected-work"
     - "portraiture"
   sectionOrder:
+    selected-work: 22
     portraiture: 26
+  homepage:
+    order: 14
+    template: "closing"
+    slot: 2
 status: "placeholder"
 ---
 
