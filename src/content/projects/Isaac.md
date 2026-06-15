@@ -1,5 +1,5 @@
 ---
-title: "Isaac"
+title: "Isaac Neo Models"
 slug: "isaac"
 image: "/projects/isaac/photos/cover.jpg"
 descriptor: "Manchester, 2025."

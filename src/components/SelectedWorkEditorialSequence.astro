@@ -11,6 +11,12 @@ interface SelectedWorkProject {
   descriptor: string;
   orientation?: "portrait" | "landscape" | "wide";
   selectedWorkAspectRatio?: string;
+  hoverPreview?: {
+    src?: string;
+    poster?: string;
+    startTime: number;
+    endTime?: number;
+  };
   video?: {
     src: string;
     poster?: string;
@@ -30,38 +36,6 @@ interface Props {
 const { projects } = Astro.props as Props;
 
 const layoutVariants = ["lead", "left", "right", "center"] as const;
-
-const normalize = (value: string) => value.toLowerCase();
-
-const getCategory = (project: SelectedWorkProject) => {
-  const descriptor = normalize(project.descriptor);
-  const title = normalize(project.title);
-
-  if (project.video?.src) return "Moving Image";
-  if (
-    descriptor.includes("portrait") ||
-    descriptor.includes("photographed") ||
-    descriptor.includes("portraiture")
-  ) {
-    return "Photography";
-  }
-  if (descriptor.includes("commission") || descriptor.includes("styled by") || descriptor.includes("for ")) {
-    return "Commission";
-  }
-  if (
-    descriptor.includes("study") ||
-    descriptor.includes("studies") ||
-    title.includes("study") ||
-    title.includes("stud") ||
-    descriptor.includes("surface") ||
-    descriptor.includes("form") ||
-    descriptor.includes("field")
-  ) {
-    return "Study";
-  }
-
-  return "Photography";
-};
 
 const getLayout = (index: number) => layoutVariants[index % layoutVariants.length];
 
@@ -118,8 +92,10 @@ const getCaptionClass = (index: number, project: SelectedWorkProject) => {
     {
       projects.map((project, index) => {
         const isVideo = Boolean(project.video?.src);
-        const category = getCategory(project);
-        const posterSrc = project.video?.poster ?? project.image;
+        const previewVideoSrc = project.hoverPreview?.src ?? project.video?.src;
+        const posterSrc = project.hoverPreview?.poster ?? project.video?.poster ?? project.image;
+        const previewStartTime = project.hoverPreview?.startTime ?? 0;
+        const previewEndTime = project.hoverPreview?.endTime ?? null;
         const figureClass = getFigureClass(index, project);
         const captionClass = getCaptionClass(index, project);
         const sectionClass = getSectionClasses(index, project);
@@ -146,12 +122,15 @@ const getCaptionClass = (index: number, project: SelectedWorkProject) => {
                       playsinline
                       webkit-playsinline="true"
                       loop
-                      preload="metadata"
+                      preload="none"
                       poster={encodeURI(withBase(getResponsiveImageFallbackSrc(posterSrc)))}
                       aria-hidden="true"
                       data-selected-work-video
+                      data-preview-in-view="true"
+                      data-preview-start={previewStartTime}
+                      data-preview-end={previewEndTime ?? undefined}
                     >
-                      <source src={encodeURI(withBase(project.video!.src))} type="video/mp4" />
+                      <source src={encodeURI(withBase(previewVideoSrc!))} type="video/mp4" />
                     </video>
                   ) : (
                     <ResponsiveImage
@@ -167,10 +146,7 @@ const getCaptionClass = (index: number, project: SelectedWorkProject) => {
                 </div>
               </a>
               <figcaption class={captionClass}>
-                <div class="selected-work-editorial__caption-row">
-                  <h2 class="selected-work-editorial__title">{project.title}</h2>
-                  <p class="selected-work-editorial__category">{category}</p>
-                </div>
+                <h2 class="selected-work-editorial__title">{project.title}</h2>
               </figcaption>
             </figure>
           </section>
@@ -184,6 +160,17 @@ const getCaptionClass = (index: number, project: SelectedWorkProject) => {
   const motionTargets = Array.from(document.querySelectorAll("[data-work-reveal]"));
   const videoTargets = Array.from(document.querySelectorAll("[data-selected-work-video]"));
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const prefersReducedData = Boolean(navigator.connection?.saveData);
+
+  const setPreviewTime = (video, startTime) => {
+    if (!Number.isFinite(startTime) || video.readyState < 1) return;
+
+    try {
+      video.currentTime = startTime;
+    } catch {
+      // Ignore seek failures until the browser is ready.
+    }
+  };
 
   if (prefersReducedMotion.matches) {
     motionTargets.forEach((element) => {
@@ -219,6 +206,12 @@ const getCaptionClass = (index: number, project: SelectedWorkProject) => {
       video.pause();
     });
   } else if ("IntersectionObserver" in window) {
+    const handlePlaybackPromise = (playbackPromise) => {
+      if (typeof playbackPromise?.catch === "function") {
+        playbackPromise.catch(() => {});
+      }
+    };
+
     const videoObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -226,21 +219,70 @@ const getCaptionClass = (index: number, project: SelectedWorkProject) => {
 
           if (!(video instanceof HTMLVideoElement)) return;
 
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.45) {
-            video.play().catch(() => {});
+          const startTime = Number(video.dataset.previewStart ?? "0");
+          const endTimeRaw = video.dataset.previewEnd;
+          const endTime =
+            endTimeRaw !== undefined && endTimeRaw !== "" ? Number(endTimeRaw) : null;
+          const shouldPlay =
+            entry.isIntersecting &&
+            entry.intersectionRatio >= 0.25 &&
+            !document.hidden &&
+            !prefersReducedData;
+
+          if (shouldPlay) {
+            if (video.dataset.previewPrimed !== "true") {
+              video.dataset.previewPrimed = "true";
+              video.preload = "auto";
+              video.load();
+            }
+
+            if (video.readyState < 1) {
+              video.dataset.previewPlayPending = "true";
+              return;
+            }
+
+            if (
+              Number.isFinite(startTime) &&
+              (video.currentTime < startTime || (Number.isFinite(endTime) && video.currentTime >= endTime))
+            ) {
+              setPreviewTime(video, startTime);
+            }
+
+            const playbackPromise = video.play();
+            handlePlaybackPromise(playbackPromise);
+            video.dataset.previewPlayPending = "false";
           } else {
             video.pause();
+            video.dataset.previewPlayPending = "false";
           }
         });
       },
       {
-        threshold: [0, 0.2, 0.45, 0.75],
-        rootMargin: "10% 0px 10% 0px",
+        threshold: [0, 0.1, 0.25, 0.5, 0.75],
+        rootMargin: "15% 0px 15% 0px",
       }
     );
 
     videoTargets.forEach((video) => {
       if (video instanceof HTMLVideoElement) {
+        const startTime = Number(video.dataset.previewStart ?? "0");
+
+        video.addEventListener("loadedmetadata", () => {
+          setPreviewTime(video, startTime);
+        });
+
+        video.addEventListener("canplay", () => {
+          if (video.dataset.previewPlayPending !== "true") return;
+
+          video.dataset.previewPlayPending = "false";
+          const playbackPromise = video.play();
+          handlePlaybackPromise(playbackPromise);
+        });
+
+        video.addEventListener("playing", () => {
+          video.dataset.previewPlayPending = "false";
+        });
+
         videoObserver.observe(video);
       }
     });
@@ -295,6 +337,11 @@ const getCaptionClass = (index: number, project: SelectedWorkProject) => {
     will-change: opacity, transform;
   }
 
+  .selected-work-editorial__item--lead .selected-work-editorial__media {
+    max-width: 100vw;
+    max-height: 78vh;
+  }
+
   .selected-work-editorial__caption {
     opacity: 0;
     transform: translate3d(0, 0.45rem, 0);
@@ -321,6 +368,12 @@ const getCaptionClass = (index: number, project: SelectedWorkProject) => {
     max-width: 82vw;
     max-height: 72vh;
     object-fit: contain;
+  }
+
+  .selected-work-editorial__item--lead .selected-work-editorial__image,
+  .selected-work-editorial__item--lead .selected-work-editorial__video {
+    max-width: 100vw;
+    max-height: 78vh;
   }
 
   .selected-work-editorial__media :global(.responsive-image) {
@@ -412,14 +465,6 @@ const getCaptionClass = (index: number, project: SelectedWorkProject) => {
     text-align: right;
   }
 
-  .selected-work-editorial__caption-row {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-    width: 100%;
-  }
-
   .selected-work-editorial__title {
     margin: 0;
     font-family: var(--font-serif);
@@ -428,18 +473,6 @@ const getCaptionClass = (index: number, project: SelectedWorkProject) => {
     letter-spacing: -0.02em;
     line-height: 1.05;
     text-wrap: balance;
-  }
-
-  .selected-work-editorial__category {
-    margin: 0;
-    font-family: var(--font-sans);
-    font-size: 0.66rem;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    line-height: 1.35;
-    text-transform: uppercase;
-    color: rgba(64, 58, 52, 0.72);
-    white-space: nowrap;
   }
 
   @media (min-width: 40rem) {
@@ -513,12 +546,6 @@ const getCaptionClass = (index: number, project: SelectedWorkProject) => {
     .selected-work-editorial__video {
       max-height: none;
       width: 100%;
-    }
-
-    .selected-work-editorial__caption-row {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.35rem;
     }
 
     .selected-work-editorial__item--left .selected-work-editorial__caption,
