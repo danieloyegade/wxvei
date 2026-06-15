@@ -50,6 +50,58 @@ body {
   font-weight: 500;
 }
 
+#project-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  display: grid;
+  gap: 0.38rem;
+  width: max-content;
+  max-width: min(24rem, 34vw);
+  pointer-events: none;
+  opacity: 0;
+  color: #ffffff;
+  mix-blend-mode: difference;
+  transform: translate3d(-9999px, -9999px, 0);
+  transition: opacity 120ms ease;
+  will-change: transform, opacity;
+  white-space: normal;
+}
+
+#project-cursor.is-visible {
+  opacity: 1;
+}
+
+#project-cursor:not(.has-info) .project-cursor__info {
+  display: none;
+}
+
+.project-cursor__title {
+  font-family: var(--font-sans);
+  font-size: clamp(0.98rem, 1.15vw, 1.38rem);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+  text-wrap: balance;
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.14);
+}
+
+.project-cursor__info {
+  font-family: var(--font-sans);
+  font-size: clamp(0.66rem, 0.72vw, 0.84rem);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.35;
+  white-space: pre-line;
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.14);
+}
+
+body.has-project-cursor [data-cursor-title] {
+  cursor: none;
+}
+
 ::selection {
   background: rgba(22, 20, 18, 0.12);
 }
@@ -85,5 +137,15 @@ img {
 @media (min-width: 64rem) {
   :root {
     --page-inline-padding: 4rem;
+  }
+}
+
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  #project-cursor {
+    display: none;
+  }
+
+  body.has-project-cursor [data-cursor-title] {
+    cursor: pointer;
   }
 }

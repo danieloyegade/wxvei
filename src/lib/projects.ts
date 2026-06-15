@@ -66,6 +66,7 @@ const compareTitles = (left: ProjectEntry, right: ProjectEntry) =>
   left.data.title.localeCompare(right.data.title, "en", { sensitivity: "base" });
 
 const resolveVideoPath = (src?: string) => resolveProjectVideoSrc(src) ?? src;
+const cleanInfoLine = (value: string) => value.trim().replace(/\.$/, "");
 
 const isPublishedProject = (project: ProjectEntry) => project.data.editorial.visibility === "published";
 
@@ -147,6 +148,48 @@ export const getResolvedProjectMedia = (project: ProjectEntry): ResolvedProjectM
   detailImages: project.data.detailImages,
 });
 
+const formatCursorRole = (role: string) => {
+  const normalizedRole = cleanInfoLine(role);
+  const roleMap: Record<string, string> = {
+    photographed: "Photography",
+    styling: "Styling",
+    styled: "Styling",
+    "creative direction": "Creative Direction",
+    directed: "Directed",
+    "director of photography": "Director of Photography",
+  };
+
+  return roleMap[normalizedRole.toLowerCase()] ?? normalizedRole;
+};
+
+export const getProjectCursorInfoLines = (project: ProjectEntry) => {
+  const manualCursorInfo = project.data.cursorInfo?.map(cleanInfoLine).filter(Boolean);
+
+  if (manualCursorInfo && manualCursorInfo.length > 0) {
+    return manualCursorInfo;
+  }
+
+  const creditLines = project.data.credits
+    ?.map(({ role, name }) => {
+      const cleanRole = formatCursorRole(role);
+      const cleanName = cleanInfoLine(name);
+
+      if (!cleanRole || !cleanName) return "";
+
+      return `${cleanRole} — ${cleanName}`;
+    })
+    .map(cleanInfoLine)
+    .filter(Boolean);
+
+  if (creditLines && creditLines.length > 0) {
+    return creditLines;
+  }
+
+  const metadataLines = project.data.metadata?.map(cleanInfoLine).filter(Boolean);
+
+  return metadataLines ?? [];
+};
+
 export const mapProjectForGrid = (project: ProjectEntry) => {
   const media = getResolvedProjectMedia(project);
 
@@ -163,11 +206,10 @@ export const mapProjectForGrid = (project: ProjectEntry) => {
     video: media.video,
     hoverPreview: media.hoverPreview,
     detailImages: media.detailImages,
+    cursorInfo: getProjectCursorInfoLines(project),
     homepage: project.data.editorial.homepage,
   };
 };
-
-const cleanInfoLine = (value: string) => value.trim().replace(/\.$/, "");
 
 export const getProjectInfoLines = (project: ProjectEntry) => {
   const metadataLines = project.data.metadata?.map(cleanInfoLine).filter(Boolean);

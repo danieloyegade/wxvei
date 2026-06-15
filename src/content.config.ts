@@ -124,6 +124,7 @@ const projects = defineCollection({
       detailVideos: z.array(projectVideoSchema).optional(),
       hoverPreview: projectHoverPreviewSchema.optional(),
       detailImages: z.array(z.string()).optional(),
+      cursorInfo: z.array(z.string()).optional(),
       metadata: z.array(z.string()).optional(),
       credits: z
         .array(

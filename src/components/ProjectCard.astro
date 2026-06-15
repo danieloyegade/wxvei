@@ -12,6 +12,7 @@ interface Props {
   descriptor: string;
   video?: ProjectVideoAsset;
   hoverPreview?: ProjectHoverPreview;
+  cursorInfo?: string[];
   href?: string;
   indexLabel?: string;
   layoutClass: string;
@@ -30,6 +31,7 @@ const {
   descriptor,
   video,
   hoverPreview,
+  cursorInfo,
   href = projectPath(slug),
   indexLabel,
   layoutClass,
@@ -75,7 +77,13 @@ const imageClass = [
   data-card-media={isVideoFirst ? "video-first" : "image-first"}
   data-visual-weight={visualWeight}
 >
-  <a class="project-card__link" href={href} aria-label={`View ${title}`}>
+  <a
+    class="project-card__link"
+    href={href}
+    aria-label={`View ${title}`}
+    data-cursor-title={title}
+    data-cursor-info={cursorInfo?.length ? JSON.stringify(cursorInfo) : undefined}
+  >
     <div
       class:list={["project-card__image-wrap", frameClass]}
       style={frameStyle}
