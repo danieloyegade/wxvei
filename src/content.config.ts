@@ -82,6 +82,46 @@ const projectEditorialSchema = z
     }
   });
 
+const selectedWorkOrder = defineCollection({
+  type: "content",
+  schema: z
+    .object({
+      beats: z
+        .array(
+          z.object({
+            template: z.enum(homepageBeatTemplateValues),
+            projects: z.array(z.string()).min(1).max(2),
+          })
+        )
+        .min(1),
+    })
+    .superRefine(({ beats }, context) => {
+      const usedProjectSlugs = new Set<string>();
+
+      beats.forEach((beat, beatIndex) => {
+        if (beat.template === "solo" && beat.projects.length > 1) {
+          context.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'The "solo" template can only include one project.',
+            path: ["beats", beatIndex, "projects"],
+          });
+        }
+
+        beat.projects.forEach((projectSlug, projectIndex) => {
+          if (usedProjectSlugs.has(projectSlug)) {
+            context.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `Duplicate selected work project: ${projectSlug}`,
+              path: ["beats", beatIndex, "projects", projectIndex],
+            });
+          }
+
+          usedProjectSlugs.add(projectSlug);
+        });
+      });
+    }),
+});
+
 const mixedMediaAssetPathPrefix = "/projects/mixed-media/";
 
 const collectProjectMediaPaths = (
@@ -183,4 +223,5 @@ const posts = defineCollection({
 export const collections = {
   projects,
   posts,
+  selectedWorkOrder,
 };

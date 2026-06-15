@@ -1,12 +1,22 @@
 ---
-import { getCollection } from "astro:content";
+import { getCollection, getEntry } from "astro:content";
 import SelectedWorkSequence from "../components/SelectedWorkSequence.astro";
 import { projectSectionConfigs } from "../data/editorial";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getHomepageProjects, mapProjectForGrid } from "../lib/projects";
+import { getSelectedWorkSequenceProjects } from "../lib/projects";
 
-const projects = getHomepageProjects(await getCollection("projects"));
-const selectedWorkProjects = projects.map(mapProjectForGrid);
+const selectedWorkOrder = await getEntry("selectedWorkOrder", "selected-works");
+
+if (!selectedWorkOrder) {
+  throw new Error(
+    'Missing selected work order file at "src/content/selectedWorkOrder/selected-works.md".'
+  );
+}
+
+const selectedWorkProjects = getSelectedWorkSequenceProjects(
+  await getCollection("projects"),
+  selectedWorkOrder.data.beats
+);
 ---
 
 <BaseLayout

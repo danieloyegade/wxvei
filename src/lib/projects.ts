@@ -46,6 +46,11 @@ export interface ProjectHomepagePlacement {
   slot: number;
 }
 
+export interface SelectedWorkOrderBeat {
+  template: HomepageBeatTemplate;
+  projects: string[];
+}
+
 export {
   projectSectionConfigs,
   projectSectionIds,
@@ -105,6 +110,38 @@ export const getHomepageProjects = (projects: ProjectEntry[]) =>
         compareTitles(left, right)
       );
     });
+
+export const getSelectedWorkSequenceProjects = (
+  projects: ProjectEntry[],
+  beats: SelectedWorkOrderBeat[]
+) => {
+  const selectedWorkProjects = new Map(
+    getVisibleProjects(projects)
+      .filter((project) => projectHasSection(project, "selected-work"))
+      .map((project) => [project.slug, project])
+  );
+
+  return beats.flatMap((beat, beatIndex) =>
+    beat.projects.map((projectSlug, projectIndex) => {
+      const project = selectedWorkProjects.get(projectSlug);
+
+      if (!project) {
+        throw new Error(
+          `Selected work order references "${projectSlug}", but no published selected-work project with that slug exists.`
+        );
+      }
+
+      return {
+        ...mapProjectForGrid(project),
+        homepage: {
+          order: beatIndex + 1,
+          template: beat.template,
+          slot: projectIndex + 1,
+        },
+      };
+    })
+  );
+};
 
 export const projectHasSection = (project: ProjectEntry, sectionId: ProjectSectionId) =>
   project.data.editorial.sections.includes(sectionId);
