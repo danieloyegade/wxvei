@@ -196,7 +196,7 @@ const preconnectOrigins = Array.from(
         <nav class="site-header__nav" aria-label="Primary">
           <div class="site-header__zone site-header__zone--left">
             <a
-              href={withBase("/")}
+              href={withBase("/selected-work/")}
               class="site-header__link site-header__link--brand"
               aria-label="Daniel Oyegade"
             >
@@ -234,6 +234,11 @@ const preconnectOrigins = Array.from(
       </main>
     </div>
 
+    <div id="project-cursor" aria-hidden="true">
+      <div class="project-cursor__title"></div>
+      <div class="project-cursor__info"></div>
+    </div>
+
     <script
       is:inline
       define:vars={{
@@ -267,6 +272,155 @@ const preconnectOrigins = Array.from(
           }
         } catch {
           // Ignore storage access issues and keep the server-rendered fallback label.
+        }
+      }
+    </script>
+
+    <script is:inline>
+      const cursorRoot = document.getElementById("project-cursor");
+      const supportsCursor =
+        window.matchMedia("(hover: hover)").matches &&
+        window.matchMedia("(pointer: fine)").matches &&
+        !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (cursorRoot instanceof HTMLElement && supportsCursor) {
+        const titleNode = cursorRoot.querySelector(".project-cursor__title");
+        const infoNode = cursorRoot.querySelector(".project-cursor__info");
+        const cursorTargets = Array.from(
+          document.querySelectorAll("[data-project-cursor-scope] [data-cursor-title]")
+        ).filter((element) => element instanceof HTMLElement);
+
+        if (titleNode instanceof HTMLElement && infoNode instanceof HTMLElement && cursorTargets.length > 0) {
+          const body = document.body;
+          let activeTarget = null;
+          let mouseX = 0;
+          let mouseY = 0;
+          let currentX = 0;
+          let currentY = 0;
+          let rafId = 0;
+
+          const parseCursorInfo = (value) => {
+            if (!value) return [];
+
+            try {
+              const parsed = JSON.parse(value);
+
+              if (Array.isArray(parsed)) {
+                return parsed.map((line) => String(line).trim()).filter(Boolean);
+              }
+            } catch {
+              // Fall back to pipe-delimited text below.
+            }
+
+            return value.split("|").map((line) => line.trim()).filter(Boolean);
+          };
+
+          const renderCursor = () => {
+            if (!activeTarget) {
+              rafId = 0;
+              return;
+            }
+
+            currentX += (mouseX - currentX) * 0.22;
+            currentY += (mouseY - currentY) * 0.22;
+            cursorRoot.style.transform = `translate3d(${currentX + 18}px, ${currentY + 18}px, 0)`;
+
+            if (Math.abs(mouseX - currentX) > 0.1 || Math.abs(mouseY - currentY) > 0.1) {
+              rafId = window.requestAnimationFrame(renderCursor);
+              return;
+            }
+
+            rafId = 0;
+          };
+
+          const startCursorAnimation = () => {
+            if (!rafId) {
+              rafId = window.requestAnimationFrame(renderCursor);
+            }
+          };
+
+          const showCursor = () => {
+            cursorRoot.classList.add("is-visible");
+            body.classList.add("has-project-cursor");
+          };
+
+          const hideCursor = () => {
+            activeTarget = null;
+            cursorRoot.classList.remove("is-visible");
+            body.classList.remove("has-project-cursor");
+
+            if (rafId) {
+              window.cancelAnimationFrame(rafId);
+              rafId = 0;
+            }
+          };
+
+          const setCursorContent = (target) => {
+            const title = target.dataset.cursorTitle?.trim() ?? "";
+            const info = parseCursorInfo(target.dataset.cursorInfo ?? "");
+
+            titleNode.textContent = title;
+            infoNode.textContent = info.join("\n");
+            cursorRoot.classList.toggle("has-info", info.length > 0);
+          };
+
+          const activateCursor = (target, event) => {
+            if (activeTarget === target) return;
+
+            activeTarget = target;
+            setCursorContent(target);
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+            currentX = mouseX;
+            currentY = mouseY;
+            cursorRoot.style.transform = `translate3d(${mouseX + 18}px, ${mouseY + 18}px, 0)`;
+            showCursor();
+            startCursorAnimation();
+          };
+
+          document.addEventListener("pointerover", (event) => {
+            const target = event.target instanceof Element
+              ? event.target.closest("[data-cursor-title]")
+              : null;
+
+            if (!(target instanceof HTMLElement)) return;
+
+            activateCursor(target, event);
+          });
+
+          document.addEventListener("pointerout", (event) => {
+            const target = event.target instanceof Element
+              ? event.target.closest("[data-cursor-title]")
+              : null;
+
+            if (!(target instanceof HTMLElement) || target !== activeTarget) return;
+
+            const relatedTarget = event.relatedTarget instanceof Element
+              ? event.relatedTarget.closest("[data-cursor-title]")
+              : null;
+
+            if (relatedTarget instanceof HTMLElement && relatedTarget !== target) {
+              activeTarget = relatedTarget;
+              setCursorContent(relatedTarget);
+              return;
+            }
+
+            hideCursor();
+          });
+
+          document.addEventListener("pointermove", (event) => {
+            if (!activeTarget) return;
+
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+            startCursorAnimation();
+          });
+
+          document.addEventListener("pointerdown", () => {
+            if (!activeTarget) return;
+
+            hideCursor();
+          });
         }
       }
     </script>

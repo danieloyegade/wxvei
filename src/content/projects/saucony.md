@@ -23,7 +23,7 @@ editorial:
   sectionOrder:
     selected-work: 13
   homepage:
-    order: 5
+    order: 11
     template: "solo"
     slot: 1
 status: "placeholder"

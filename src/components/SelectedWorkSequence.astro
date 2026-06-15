@@ -17,6 +17,7 @@ interface SelectedWorkProject {
   title: string;
   image: string;
   descriptor: string;
+  cursorInfo?: string[];
   video?: ProjectVideoAsset;
   hoverPreview?: ProjectHoverPreview;
   visualWeight?: ProjectVisualWeight;
@@ -143,7 +144,12 @@ const resolvedBeats = Array.from(beatGroups.values())
   });
 ---
 
-<section id="selected-work" class="selected-work-sequence" aria-label="Selected Works">
+<section
+  id="selected-work"
+  class="selected-work-sequence"
+  aria-label="Selected Works"
+  data-project-cursor-scope="selected-work"
+>
   <div class="selected-work-sequence__frame">
     <div class="selected-work-sequence__stack">
       {
@@ -157,6 +163,7 @@ const resolvedBeats = Array.from(beatGroups.values())
                 descriptor={project.descriptor}
                 video={project.video}
                 hoverPreview={project.hoverPreview}
+                cursorInfo={project.cursorInfo}
                 visualWeight={project.visualWeight}
                 layoutClass={project.layoutClass}
                 frameClass={projectFrameClasses[project.orientation ?? "landscape"]}

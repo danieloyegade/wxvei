@@ -1,5 +1,5 @@
 ---
-title: "Mia"
+title: "Mia for Neo Models"
 slug: "mia"
 image: "/projects/mia/photos/cover.jpg"
 descriptor: "Photographed by Daniel Oyegade."
@@ -27,7 +27,7 @@ editorial:
     selected-work: 4
     portraiture: 4
   homepage:
-    order: 3
+    order: 9
     template: "balanced"
     slot: 1
 status: "placeholder"

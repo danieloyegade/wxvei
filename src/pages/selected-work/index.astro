@@ -1,17 +1,5 @@
 ---
-import { getCollection } from "astro:content";
-import SelectedWorkSequence from "../../components/SelectedWorkSequence.astro";
-import { projectSectionConfigs } from "../../data/editorial";
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getHomepageProjects, mapProjectForGrid } from "../../lib/projects";
-
-const projects = getHomepageProjects(await getCollection("projects"));
-const selectedWorkProjects = projects.map(mapProjectForGrid);
+import SelectedWorksPage from "../../components/SelectedWorksPage.astro";
 ---
 
-<BaseLayout
-  title="Selected Works | Daniel Oyegade"
-  description={projectSectionConfigs["selected-work"].description}
->
-  <SelectedWorkSequence projects={selectedWorkProjects} />
-</BaseLayout>
+<SelectedWorksPage />

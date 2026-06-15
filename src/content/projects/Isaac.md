@@ -1,5 +1,5 @@
 ---
-title: "Isaac"
+title: "Isaac Neo Models"
 slug: "isaac"
 image: "/projects/isaac/photos/cover.jpg"
 descriptor: "Manchester, 2025."
@@ -19,7 +19,7 @@ editorial:
     selected-work: 10
     portraiture: 9
   homepage:
-    order: 7
+    order: 10
     template: "closing"
     slot: 2
 status: "placeholder"
