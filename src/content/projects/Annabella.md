@@ -36,7 +36,7 @@ editorial:
   sectionOrder:
     selected-work: 5
   homepage:
-    order: 3
+    order: 13
     template: "balanced"
     slot: 2
 status: "placeholder"

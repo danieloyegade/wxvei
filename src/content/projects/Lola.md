@@ -21,7 +21,7 @@ editorial:
     selected-work: 14
     portraiture: 6
   homepage:
-    order: 9
+    order: 17
     template: "solo"
     slot: 1
 status: "placeholder"

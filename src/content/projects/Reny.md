@@ -23,7 +23,7 @@ editorial:
     selected-work: 2
     portraiture: 1
   homepage:
-    order: 1
+    order: 2
     template: "opening"
     slot: 2
 status: "placeholder"

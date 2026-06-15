@@ -28,7 +28,7 @@ editorial:
     selected-work: 11
     short-films: 3
   homepage:
-    order: 8
+    order: 18
     template: "solo"
     slot: 1
 status: "placeholder"

@@ -19,7 +19,7 @@ editorial:
     selected-work: 10
     portraiture: 9
   homepage:
-    order: 7
+    order: 10
     template: "closing"
     slot: 2
 status: "placeholder"
