@@ -6,9 +6,8 @@ descriptor: "London, 2026. Styled by Mia Chung."
 detailImages:
   - "/projects/cheri/photos/detail-01.jpg"
   - "/projects/cheri/photos/detail-02.jpg"
-  - "/projects/cheri/photos/detail-03.jpg"
-  - "/projects/cheri/photos/detail-04.jpg"
   - "/projects/cheri/photos/detail-05.jpg"
+  - "/projects/cheri/photos/detail-03.jpg"
 metadata:
   - "London"
 layoutPattern: "offset-right"
