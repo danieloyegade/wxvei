@@ -1,5 +1,20 @@
 ---
-import SelectedWorksPage from "../components/SelectedWorksPage.astro";
+const target = "/selected-work/";
 ---
 
-<SelectedWorksPage />
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="canonical" href={target} />
+    <title>Selected Works | Daniel Oyegade</title>
+    <script is:inline>
+      window.location.replace("/selected-work/");
+    </script>
+  </head>
+  <body>
+    <a href={target}>Selected Works</a>
+  </body>
+</html>
