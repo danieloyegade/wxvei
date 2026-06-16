@@ -1,8 +1,14 @@
 ---
-title: "Isaac Neo Models"
+title: "Isaac for Neo Models"
 slug: "isaac"
 image: "/projects/isaac/photos/cover.jpg"
 descriptor: "Manchester, 2025."
+detailImages:
+  - "/projects/isaac/photos/05.jpg"
+  - "/projects/isaac/photos/28.jpg"
+  - "/projects/isaac/photos/06.jpg"
+  - "/projects/isaac/photos/AA.jpg"
+  - "/projects/isaac/photos/11.jpg"
 metadata:
   - "Manchester"
   - "2025"

@@ -10,6 +10,7 @@ interface Props {
   title: string;
   image: string;
   descriptor: string;
+  sectionId?: string;
   video?: ProjectVideoAsset;
   hoverPreview?: ProjectHoverPreview;
   cursorInfo?: string[];
@@ -29,6 +30,7 @@ const {
   title,
   image,
   descriptor,
+  sectionId,
   video,
   hoverPreview,
   cursorInfo,
@@ -67,10 +69,11 @@ const imageClass = [
   "project-card__image",
   hasPreview ? "project-card__image--has-preview" : "",
 ].filter(Boolean).join(" ");
+const isMixedMediaSection = sectionId === "mixed-media";
 ---
 
 <article
-  class:list={["project-card", layoutClass, cardClassName]}
+  class:list={["project-card", layoutClass, cardClassName, isMixedMediaSection && "project-card--mixed-media"]}
   data-project-card
   data-project-slug={slug}
   data-preview-in-view={playsPreviewInView ? "true" : undefined}
@@ -121,11 +124,19 @@ const imageClass = [
           <source src={encodeURI(withBase(previewVideoSrc!))} type={previewVideoType} />
         </video>
       )}
-      <div class="project-card__overlay"></div>
-      <div class="project-card__hover-copy">
-        <h2 class="project-card__hover-title">{title}</h2>
-        <p class="project-card__hover-descriptor">{descriptor}</p>
-      </div>
+      {!isMixedMediaSection ? (
+        <>
+          <div class="project-card__overlay"></div>
+          <div class="project-card__hover-copy">
+            <h2 class="project-card__hover-title">{title}</h2>
+            <p class="project-card__hover-descriptor">{descriptor}</p>
+          </div>
+        </>
+      ) : (
+        <div class="project-card__caption">
+          <h2 class="project-card__caption-title">{title}</h2>
+        </div>
+      )}
     </div>
   </a>
   {indexLabel && (
@@ -228,6 +239,24 @@ const imageClass = [
     opacity: 0;
     transition: opacity 260ms ease-out;
     pointer-events: none;
+  }
+
+  .project-card__caption {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 0.58rem;
+  }
+
+  .project-card__caption-title {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(1.02rem, 1.18vw, 1.28rem);
+    font-weight: 500;
+    letter-spacing: -0.028em;
+    line-height: 1;
+    color: rgba(36, 31, 27, 0.94);
+    text-align: right;
+    text-wrap: balance;
   }
 
   .project-card__hover-copy {
@@ -373,6 +402,14 @@ const imageClass = [
       max-width: 22ch;
       font-size: 0.74rem;
       line-height: 1.42;
+    }
+
+    .project-card--mixed-media .project-card__caption {
+      padding-top: 0.46rem;
+    }
+
+    .project-card--mixed-media .project-card__caption-title {
+      font-size: clamp(1.02rem, 4.6vw, 1.26rem);
     }
   }
 

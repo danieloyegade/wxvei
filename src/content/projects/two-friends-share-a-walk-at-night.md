@@ -18,7 +18,7 @@ status: "published"
 
 **ENTRY**
 
-Mixed media study for two figures sharing a walk at night.
+Mixed media study for friends who share a walk at night.
 
 **OBSERVATIONS**
 

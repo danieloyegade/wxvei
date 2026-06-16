@@ -5,8 +5,21 @@ import { projectSectionConfigs } from "../data/editorial";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getHomepageProjects, mapProjectForGrid } from "../lib/projects";
 
-const projects = getHomepageProjects(await getCollection("projects"));
+const allProjects = await getCollection("projects");
+const projects = getHomepageProjects(allProjects);
 const selectedWorkProjects = projects.map(mapProjectForGrid);
+const bottomSelectedWorkSlugs = [
+  "soft-surveillance",
+  "side-bag-with-embelishments",
+  "two-friends-share-a-walk-at-night",
+  "rectangle-with-embellishments",
+  "black-union-jack",
+];
+const selectedWorkProjectMap = new Map(allProjects.map((project) => [project.slug, project]));
+const bottomSelectedWorkProjects = bottomSelectedWorkSlugs
+  .map((slug) => selectedWorkProjectMap.get(slug))
+  .filter((project): project is (typeof projects)[number] => Boolean(project))
+  .map(mapProjectForGrid);
 const winterNotesSlug = "Winter notes";
 const reorderedSelectedWorkSlugs = [
   "weng-u",
@@ -28,8 +41,15 @@ const selectedWorkProjectsInOrder =
           (project) => !reorderedSelectedWorkSlugs.includes(project.slug)
         ),
       ];
+const selectedWorkProjectsWithBottomAppend = [
+  ...selectedWorkProjectsInOrder,
+  ...bottomSelectedWorkProjects.filter(
+    (project) => !selectedWorkProjectsInOrder.some((existing) => existing.slug === project.slug)
+  ),
+];
 const preloadImage =
-  selectedWorkProjectsInOrder[0]?.video?.poster ?? selectedWorkProjectsInOrder[0]?.image;
+  selectedWorkProjectsWithBottomAppend[0]?.video?.poster ??
+  selectedWorkProjectsWithBottomAppend[0]?.image;
 ---
 
 <BaseLayout
@@ -37,5 +57,5 @@ const preloadImage =
   description={projectSectionConfigs["selected-work"].description}
   preloadImage={preloadImage}
 >
-  <SelectedWorkEditorialSequence projects={selectedWorkProjectsInOrder} />
+  <SelectedWorkEditorialSequence projects={selectedWorkProjectsWithBottomAppend} />
 </BaseLayout>

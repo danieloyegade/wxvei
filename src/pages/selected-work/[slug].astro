@@ -5,21 +5,58 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import type { ProjectEntry, ProjectSequenceLink } from "../../lib/projects";
 import {
   getProjectInfoLines,
-  getProjectSequenceForSection,
   getProjectSectionLinks,
-  getProjectsBySection,
   getResolvedProjectMedia,
+  getHomepageProjects,
 } from "../../lib/projects";
 
 export async function getStaticPaths() {
-  const projects = await getCollection("projects");
-  const selectedWorkProjects = getProjectsBySection(projects, "selected-work");
+  const allProjects = await getCollection("projects");
+  const selectedWorkProjects = getHomepageProjects(allProjects);
+  const bottomSelectedWorkSlugs = [
+    "soft-surveillance",
+    "side-bag-with-embelishments",
+    "two-friends-share-a-walk-at-night",
+    "rectangle-with-embellishments",
+    "black-union-jack",
+  ];
+  const selectedWorkProjectMap = new Map(allProjects.map((project) => [project.slug, project]));
+  const bottomSelectedWorkProjects = bottomSelectedWorkSlugs
+    .map((slug) => selectedWorkProjectMap.get(slug))
+    .filter((project): project is (typeof allProjects)[number] => Boolean(project));
+  const selectedWorkProjectsInOrder = [
+    ...selectedWorkProjects,
+    ...bottomSelectedWorkProjects.filter(
+      (project) => !selectedWorkProjects.some((existing) => existing.slug === project.slug)
+    ),
+  ];
 
-  return selectedWorkProjects.map((project) => ({
+  return selectedWorkProjectsInOrder.map((project, index) => ({
     params: { slug: project.slug },
     props: {
       project,
-      ...getProjectSequenceForSection(projects, "selected-work", project.slug, "/selected-work/"),
+      previousProject: {
+        slug: selectedWorkProjectsInOrder[
+          (index - 1 + selectedWorkProjectsInOrder.length) % selectedWorkProjectsInOrder.length
+        ].slug,
+        title:
+          selectedWorkProjectsInOrder[
+            (index - 1 + selectedWorkProjectsInOrder.length) % selectedWorkProjectsInOrder.length
+          ].data.title,
+        href: `/selected-work/${
+          selectedWorkProjectsInOrder[
+            (index - 1 + selectedWorkProjectsInOrder.length) % selectedWorkProjectsInOrder.length
+          ].slug
+        }/`,
+      },
+      nextProject: {
+        slug: selectedWorkProjectsInOrder[(index + 1) % selectedWorkProjectsInOrder.length].slug,
+        title:
+          selectedWorkProjectsInOrder[(index + 1) % selectedWorkProjectsInOrder.length].data.title,
+        href: `/selected-work/${
+          selectedWorkProjectsInOrder[(index + 1) % selectedWorkProjectsInOrder.length].slug
+        }/`,
+      },
     },
   }));
 }
@@ -35,7 +72,9 @@ const { Content } = await project.render();
 const hasProjectBody = project.data.status !== "placeholder" && project.body.trim().length > 0;
 const infoLines = getProjectInfoLines(project);
 const media = getResolvedProjectMedia(project);
-const sectionLinks = getProjectSectionLinks(project, "selected-work");
+const sectionLinks = project.data.editorial.sections.includes("selected-work")
+  ? getProjectSectionLinks(project, "selected-work")
+  : getProjectSectionLinks(project, "mixed-media");
 ---
 
 <BaseLayout
