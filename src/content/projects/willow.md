@@ -17,7 +17,7 @@ editorial:
     selected-work: 11
     portraiture: 11
   homepage:
-    order: 14
+    order: 13
     template: "reverse"
     slot: 1
 status: "placeholder"

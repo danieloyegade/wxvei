@@ -24,7 +24,7 @@ editorial:
   sectionOrder:
     selected-work: 7
   homepage:
-    order: 16
+    order: 18
     template: "split"
     slot: 2
 status: "placeholder"

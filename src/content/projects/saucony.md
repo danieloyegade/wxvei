@@ -32,7 +32,7 @@ editorial:
   sectionOrder:
     selected-work: 13
   homepage:
-    order: 11
+    order: 16
     template: "solo"
     slot: 1
 status: "placeholder"

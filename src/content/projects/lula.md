@@ -1,7 +1,7 @@
 ---
 title: "Lula"
 image: "/projects/lula/photos/cover.jpg"
-descriptor: "Portrait study."
+descriptor: "Manchester, 2021."
 detailImages:
   - "/projects/lula/photos/detail-01.jpg"
   - "/projects/lula/photos/detail-02.jpg"
@@ -14,9 +14,15 @@ cropFocus: "center"
 editorial:
   visibility: "published"
   sections:
+    - "selected-work"
     - "portraiture"
   sectionOrder:
-    portraiture: 22
+    selected-work: 21
+    portraiture: 13
+  homepage:
+    order: 12
+    template: "balanced"
+    slot: 1
 status: "placeholder"
 ---
 

@@ -1,7 +1,9 @@
 ---
 title: "Naima"
 image: "/projects/naima/photos/cover.jpg"
-descriptor: "London, 2023. Creative Direction by Feya Lanice. Styled by Chaniel Abwola"
+descriptor: "London, 2023. Creative Direction by Feya Lanice. 
+
+Styled by Chaniel Abwola"
 detailImages:
   - "/projects/naima/photos/detail-01.jpg"
   - "/projects/naima/photos/detail-02.jpg"
@@ -18,9 +20,9 @@ editorial:
     - "portraiture"
   sectionOrder:
     selected-work: 12
-    portraiture: 12
+    portraiture: 25
   homepage:
-    order: 15
+    order: 8
     template: "solo"
     slot: 1
 status: "placeholder"

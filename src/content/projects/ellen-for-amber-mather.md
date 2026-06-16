@@ -17,7 +17,7 @@ editorial:
   sections:
     - "portraiture"
   sectionOrder:
-    portraiture: 18
+    portraiture: 31
 status: "placeholder"
 ---
 

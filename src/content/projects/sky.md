@@ -19,10 +19,10 @@ editorial:
     - "selected-work"
     - "portraiture"
   sectionOrder:
-    selected-work: 13
-    portraiture: 13
+    selected-work: 20
+    portraiture: 22
   homepage:
-    order: 22
+    order: 26
     template: "opening"
     slot: 1
 status: "placeholder"

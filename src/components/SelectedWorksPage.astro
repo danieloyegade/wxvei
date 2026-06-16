@@ -7,7 +7,29 @@ import { getHomepageProjects, mapProjectForGrid } from "../lib/projects";
 
 const projects = getHomepageProjects(await getCollection("projects"));
 const selectedWorkProjects = projects.map(mapProjectForGrid);
-const preloadImage = selectedWorkProjects[0]?.video?.poster ?? selectedWorkProjects[0]?.image;
+const winterNotesSlug = "Winter notes";
+const reorderedSelectedWorkSlugs = [
+  "weng-u",
+  "george-for-imm-models",
+  "moses-for-amber-mather",
+];
+
+const winterNotesIndex = selectedWorkProjects.findIndex(({ slug }) => slug === winterNotesSlug);
+
+const selectedWorkProjectsInOrder =
+  winterNotesIndex === -1
+    ? selectedWorkProjects
+    : [
+        ...selectedWorkProjects.slice(0, winterNotesIndex + 1),
+        ...reorderedSelectedWorkSlugs
+          .map((slug) => selectedWorkProjects.find((project) => project.slug === slug))
+          .filter((project): project is (typeof selectedWorkProjects)[number] => Boolean(project)),
+        ...selectedWorkProjects.slice(winterNotesIndex + 1).filter(
+          (project) => !reorderedSelectedWorkSlugs.includes(project.slug)
+        ),
+      ];
+const preloadImage =
+  selectedWorkProjectsInOrder[0]?.video?.poster ?? selectedWorkProjectsInOrder[0]?.image;
 ---
 
 <BaseLayout
@@ -15,5 +37,5 @@ const preloadImage = selectedWorkProjects[0]?.video?.poster ?? selectedWorkProje
   description={projectSectionConfigs["selected-work"].description}
   preloadImage={preloadImage}
 >
-  <SelectedWorkEditorialSequence projects={selectedWorkProjects} />
+  <SelectedWorkEditorialSequence projects={selectedWorkProjectsInOrder} />
 </BaseLayout>
