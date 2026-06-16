@@ -16,7 +16,7 @@ editorial:
     - "portraiture"
   sectionOrder:
     selected-work: 12
-    portraiture: 30
+    portraiture: 3
   homepage:
     order: 1
     template: "opening"

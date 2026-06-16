@@ -1,7 +1,7 @@
 ---
 title: "Ylla"
 image: "/projects/ylla/photos/cover.jpg"
-descriptor: "Portrait study."
+descriptor: "Manchester. 2022."
 detailImages:
   - "/projects/ylla/photos/detail-01.jpg"
   - "/projects/ylla/photos/detail-02.jpg"
@@ -15,9 +15,15 @@ cropFocus: "center"
 editorial:
   visibility: "published"
   sections:
+    - "selected-work"
     - "portraiture"
   sectionOrder:
-    portraiture: 29
+    selected-work: 23
+    portraiture: 33
+  homepage:
+    order: 28
+    template: "solo"
+    slot: 1
 status: "placeholder"
 ---
 

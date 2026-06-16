@@ -19,9 +19,9 @@ editorial:
     - "portraiture"
   sectionOrder:
     selected-work: 15
-    portraiture: 19
+    portraiture: 32
   homepage:
-    order: 23
+    order: 25
     template: "reverse"
     slot: 1
 status: "placeholder"

@@ -27,7 +27,7 @@ editorial:
     selected-work: 4
     portraiture: 4
   homepage:
-    order: 9
+    order: 10
     template: "balanced"
     slot: 1
 status: "placeholder"

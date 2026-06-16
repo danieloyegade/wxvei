@@ -1,5 +1,5 @@
 ---
-title: "Louise for Milk models"
+title: "Louise for Milk Models"
 image: "/projects/louise-for-milk-models/photos/cover.jpg"
 descriptor: "London, 2019. Styled by Charlotte Lanigan."
 detailImages:

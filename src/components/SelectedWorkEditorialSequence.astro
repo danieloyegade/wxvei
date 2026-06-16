@@ -9,6 +9,7 @@ interface SelectedWorkProject {
   title: string;
   image: string;
   descriptor: string;
+  href?: string;
   cursorInfo?: string[];
   orientation?: "portrait" | "landscape" | "wide";
   selectedWorkAspectRatio?: string;
@@ -118,7 +119,7 @@ const getCaptionClass = (index: number, project: SelectedWorkProject) => {
             <figure class={figureClass}>
               <a
                 class="selected-work-editorial__link"
-                href={projectPath(project.slug)}
+                href={project.href ?? projectPath(project.slug)}
                 aria-label={`View ${project.title}`}
                 data-cursor-title={project.title}
                 data-cursor-info={cursorInfo?.length ? JSON.stringify(cursorInfo) : undefined}

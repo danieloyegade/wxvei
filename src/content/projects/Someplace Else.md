@@ -29,7 +29,7 @@ editorial:
     selected-work: 3
     short-films: 2
   homepage:
-    order: 5
+    order: 14
     template: "reverse"
     slot: 2
 status: "placeholder"

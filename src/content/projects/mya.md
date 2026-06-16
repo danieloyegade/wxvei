@@ -23,9 +23,9 @@ editorial:
     - "portraiture"
   sectionOrder:
     selected-work: 14
-    portraiture: 27
+    portraiture: 29
   homepage:
-    order: 19
+    order: 21
     template: "balanced"
     slot: 1
 status: "placeholder"
