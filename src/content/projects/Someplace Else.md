@@ -2,7 +2,7 @@
 title: "Someplace Else"
 slug: "someplace-else"
 image: "/projects/someplace-else/photos/cover.jpg"
-descriptor: "Directed By Daniel Oyegade"
+descriptor: "Directed by Daniel Oyegade. Starring Shanae Jenkins. Spoken word by 2B.Frank. DOP Daniel Oyegade. First assistant camera Ben Stevenson. Camera operator Ben Stevenson. First assistant director Daniel Amadi. Sound design Jordan Raymond. Production assistant Anthony Namba. Editor & colourist Robert Loud."
 video:
   src: "/projects/someplace-else/videos/feature.mp4"
   poster: "/projects/someplace-else/photos/cover.jpg"

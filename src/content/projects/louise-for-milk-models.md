@@ -1,7 +1,7 @@
 ---
 title: "Louise for Milk models"
 image: "/projects/louise-for-milk-models/photos/cover.jpg"
-descriptor: "Portraiture for Milk models."
+descriptor: "London, 2019. Styled by Charlotte Lanigan."
 detailImages:
   - "/projects/louise-for-milk-models/photos/detail-01.jpg"
   - "/projects/louise-for-milk-models/photos/detail-02.jpg"

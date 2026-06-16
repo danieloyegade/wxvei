@@ -1,7 +1,7 @@
 ---
 title: "Willow"
 image: "/projects/willow/photos/cover.jpg"
-descriptor: "Portrait study."
+descriptor: "Preston, 2020."
 detailImages:
   - "/projects/willow/photos/detail-01.jpg"
 layoutPattern: "offset-right"

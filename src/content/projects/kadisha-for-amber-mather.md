@@ -1,7 +1,7 @@
 ---
 title: "Kadisha for Amber Mather"
 image: "/projects/kadisha-for-amber-mather/photos/cover.jpg"
-descriptor: "Portraiture for Amber Mather."
+descriptor: "Manchester, 2020. Creative Direction: Amber Mather. Styling: Isaac Luutu"
 detailImages:
   - "/projects/kadisha-for-amber-mather/photos/detail-01.jpg"
   - "/projects/kadisha-for-amber-mather/photos/detail-02.jpg"

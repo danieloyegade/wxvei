@@ -1,7 +1,7 @@
 ---
-title: "Sky"
+title: "Skye"
 image: "/projects/sky/photos/cover.jpg"
-descriptor: "Portrait study."
+descriptor: "Manchester, 2020."
 detailImages:
   - "/projects/sky/photos/detail-01.jpg"
   - "/projects/sky/photos/detail-02.jpg"

@@ -1,7 +1,7 @@
 ---
-title: "Jamine"
+title: "Jamine for Cube Casting"
 image: "/projects/jamine/photos/cover.jpg"
-descriptor: "Photographed by Daniel Oyegade, Styled by Mia Chung."
+descriptor: "London, 20226. Styled by Mia Chung."
 credits:
   - role: "Photographed"
     name: "Daniel Oyegade"

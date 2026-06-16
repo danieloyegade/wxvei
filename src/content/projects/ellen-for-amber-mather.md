@@ -1,7 +1,7 @@
 ---
 title: "Ellen for Amber Mather"
 image: "/projects/ellen-for-amber-mather/photos/cover.jpg"
-descriptor: "Portraiture for Amber Mather."
+descriptor: "Manchester, 2020. Creative Direction: Amber Mather. Styling: Isaac Luutu"
 detailImages:
   - "/projects/ellen-for-amber-mather/photos/detail-01.jpg"
   - "/projects/ellen-for-amber-mather/photos/detail-02.jpg"

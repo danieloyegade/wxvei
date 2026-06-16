@@ -1,7 +1,16 @@
 ---
-title: "Saucony"
+title: "Saucony X New Wave Magazine"
 image: "/projects/saucony/photos/cover.jpg"
-descriptor: "Moving image for Saucony. Director: Anthony Namba, Director of Photography: Daniel Oyegade"
+descriptor: "Moving image for Saucony X New Wave Magazine. Director: Anthony Namba
+1st AD: Daniel Amadi 
+Director Of Photography: Daniel Oyegade
+Camera Operator: Oscar Cloud
+1st Assistant Camera: Sujanhariharan Ragunathan
+2nd Assistant Camera, Edit and Grade: Hriday Das 
+Stylist: Mya Shahna-Rose
+Styling assistant: Buky Komolafe
+Photographer: Ella Mayamothi 
+Model: Rivers Waters"
 video:
   src: "/projects/saucony/videos/feature.mp4"
   poster: "/projects/saucony/photos/cover.jpg"

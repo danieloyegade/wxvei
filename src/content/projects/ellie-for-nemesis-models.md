@@ -1,7 +1,7 @@
 ---
 title: "Ellie for Nemesis Models"
 image: "/projects/ellie-for-nemesis-models/photos/cover.jpg"
-descriptor: "Portraiture for Nemesis Models."
+descriptor: "Manchester, 2023. Styled by Mya Shahna-Rose."
 detailImages:
   - "/projects/ellie-for-nemesis-models/photos/detail-01.jpg"
   - "/projects/ellie-for-nemesis-models/photos/detail-02.jpg"

@@ -2,7 +2,7 @@
 title: "Winter notes on summer impressions"
 slug: "Winter notes"
 image: "/projects/annabella/photos/cover.jpg"
-descriptor: "Manchester, 2025."
+descriptor: "Manchester, 2025. Directed By Daniel Oyegade. 1st Ad: Albert Biney"
 video:
   src: "/projects/annabella/videos/feature.mp4"
   poster: "/projects/annabella/photos/cover.jpg"

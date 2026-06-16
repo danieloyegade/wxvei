@@ -2,7 +2,7 @@
 title: "DJ Paullette for SEEN MAG"
 slug: "dj-paullette-for-seen-mag"
 image: "/projects/dj-paullette-for-seen-mag/photos/cover.jpg"
-descriptor: "Photographed by Daniel Oyegade."
+descriptor: "Manchester, 2022."
 credits:
   - role: "Photographed"
     name: "Daniel Oyegade"

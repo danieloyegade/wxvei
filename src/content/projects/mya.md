@@ -1,7 +1,7 @@
 ---
 title: "Mya"
 image: "/projects/mya/photos/cover.jpg"
-descriptor: "Portrait study."
+descriptor: "Manchester, 2021"
 detailImages:
   - "/projects/mya/photos/detail-01.jpg"
   - "/projects/mya/photos/detail-02.jpg"

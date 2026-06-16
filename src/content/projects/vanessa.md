@@ -1,7 +1,7 @@
 ---
 title: "Vanessa"
 image: "/projects/vanessa/photos/cover.jpg"
-descriptor: "Portrait study."
+descriptor: "Manchester, 2022. Assisted by Archie Davidson."
 detailImages:
   - "/projects/vanessa/photos/detail-01.jpg"
   - "/projects/vanessa/photos/detail-02.jpg"

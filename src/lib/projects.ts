@@ -163,6 +163,12 @@ const formatCursorRole = (role: string) => {
 };
 
 export const getProjectCursorInfoLines = (project: ProjectEntry) => {
+  const descriptor = cleanInfoLine(project.data.descriptor);
+
+  if (descriptor) {
+    return [descriptor];
+  }
+
   const manualCursorInfo = project.data.cursorInfo?.map(cleanInfoLine).filter(Boolean);
 
   if (manualCursorInfo && manualCursorInfo.length > 0) {
@@ -212,6 +218,12 @@ export const mapProjectForGrid = (project: ProjectEntry) => {
 };
 
 export const getProjectInfoLines = (project: ProjectEntry) => {
+  const descriptor = cleanInfoLine(project.data.descriptor);
+
+  if (descriptor) {
+    return [descriptor];
+  }
+
   const metadataLines = project.data.metadata?.map(cleanInfoLine).filter(Boolean);
 
   if (metadataLines && metadataLines.length > 0) {
@@ -230,31 +242,7 @@ export const getProjectInfoLines = (project: ProjectEntry) => {
     .map(cleanInfoLine)
     .filter(Boolean);
 
-  if (creditLines && creditLines.length > 0) {
-    return creditLines;
-  }
-
-  const descriptor = cleanInfoLine(project.data.descriptor);
-
-  if (!descriptor) {
-    return [];
-  }
-
-  if (descriptor.includes(",")) {
-    return descriptor
-      .split(",")
-      .map(cleanInfoLine)
-      .filter(Boolean);
-  }
-
-  if (descriptor.includes(". ")) {
-    return descriptor
-      .split(". ")
-      .map(cleanInfoLine)
-      .filter(Boolean);
-  }
-
-  return [descriptor];
+  return creditLines ?? [];
 };
 
 const createProjectSequence = (

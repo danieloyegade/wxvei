@@ -2,7 +2,7 @@
 title: "Mia for Neo Models"
 slug: "mia"
 image: "/projects/mia/photos/cover.jpg"
-descriptor: "Photographed by Daniel Oyegade."
+descriptor: "London, 2026."
 credits:
   - role: "Photographed"
     name: "Daniel Oyegade"

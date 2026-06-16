@@ -1,8 +1,8 @@
 ---
-title: "Lola"
+title: "Lola for Cube Casting"
 slug: "lola"
 image: "/projects/lola/photos/cover.jpg"
-descriptor: "Photographed by Daniel Oyegade, Styled by Mia Chung."
+descriptor: "London, 2026. Styled by Mia Chung."
 credits:
   - role: "Photographed"
     name: "Daniel Oyegade"

@@ -1,7 +1,7 @@
 ---
 title: "Naima"
 image: "/projects/naima/photos/cover.jpg"
-descriptor: "Portrait study."
+descriptor: "London, 2023. Creative Direction by Feya Lanice. Styled by Chaniel Abwola"
 detailImages:
   - "/projects/naima/photos/detail-01.jpg"
   - "/projects/naima/photos/detail-02.jpg"

@@ -1,7 +1,7 @@
 ---
 title: "Weng-U"
 image: "/projects/weng-u/photos/cover.jpg"
-descriptor: "Portrait study."
+descriptor: "Manchester, 2021."
 detailImages:
   - "/projects/weng-u/photos/detail-01.jpg"
 layoutPattern: "tail-right"
