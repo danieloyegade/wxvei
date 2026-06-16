@@ -2,7 +2,7 @@
 title: "Public Illumination Studies"
 slug: "public-illumination-studies"
 image: "/projects/these-northern-lights/photos/next-bus.jpg"
-descriptor: "Circa 2020."
+descriptor: "A moving-image and photographic study of artificial light, waiting spaces, and the nocturnal city. Part of an ongoing investigation into public illumination, urban mythology, and the politics of attention. Circa 2020."
 detailImages:
   - "/projects/these-northern-lights/photos/cover.jpg"
   - "/projects/these-northern-lights/photos/Dreams.jpg"
