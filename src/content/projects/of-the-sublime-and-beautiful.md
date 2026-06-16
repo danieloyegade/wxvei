@@ -12,6 +12,13 @@ hoverPreview:
   src: "/projects/of-the-sublime-and-beautiful/videos/preview.mp4"
   startTime: 0
   endTime: 10
+detailImages:
+  - "/projects/of-the-sublime-and-beautiful/photos/13.jpg"
+  - "/projects/of-the-sublime-and-beautiful/photos/16.jpg"
+  - "/projects/of-the-sublime-and-beautiful/photos/04.jpg"
+  - "/projects/of-the-sublime-and-beautiful/photos/08.jpg"
+  - "/projects/of-the-sublime-and-beautiful/photos/07.jpg"
+  - "/projects/of-the-sublime-and-beautiful/photos/09.jpg"
 credits:
   - role: "Directed"
     name: "Daniel Oyegade"
