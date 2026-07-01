@@ -1,5 +1,5 @@
 ---
-title: "DJ Paullette for SEEN MAG"
+title: "DJ Paulette for SEEN MAG"
 slug: "dj-paullette-for-seen-mag"
 image: "/projects/dj-paullette-for-seen-mag/photos/cover.jpg"
 descriptor: "Manchester, 2022."
