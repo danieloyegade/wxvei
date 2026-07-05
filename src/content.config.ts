@@ -115,6 +115,7 @@ const projects = defineCollection({
       title: z.string(),
       image: z.string(),
       descriptor: z.string(),
+      infoLines: z.array(z.string()).optional(),
       layoutPattern: z.enum(projectLayoutPatternValues),
       visualWeight: z.enum(projectVisualWeightValues).default("standard"),
       orientation: z.enum(projectOrientationValues),

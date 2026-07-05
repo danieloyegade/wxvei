@@ -218,6 +218,12 @@ export const mapProjectForGrid = (project: ProjectEntry) => {
 };
 
 export const getProjectInfoLines = (project: ProjectEntry) => {
+  const explicitInfoLines = project.data.infoLines?.map(cleanInfoLine).filter(Boolean);
+
+  if (explicitInfoLines && explicitInfoLines.length > 0) {
+    return explicitInfoLines;
+  }
+
   const descriptor = cleanInfoLine(project.data.descriptor);
 
   if (descriptor) {
