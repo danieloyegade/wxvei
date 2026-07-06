@@ -80,7 +80,7 @@ const isMixedMediaSection = sectionId === "mixed-media";
   data-card-media={isVideoFirst ? "video-first" : "image-first"}
   data-visual-weight={visualWeight}
 >
-  <a
+<a
     class="project-card__link"
     href={href}
     aria-label={`View ${title}`}
@@ -124,7 +124,7 @@ const isMixedMediaSection = sectionId === "mixed-media";
           <source src={encodeURI(withBase(previewVideoSrc!))} type={previewVideoType} />
         </video>
       )}
-      {!isMixedMediaSection ? (
+      {!isMixedMediaSection && (
         <>
           <div class="project-card__overlay"></div>
           <div class="project-card__hover-copy">
@@ -132,12 +132,13 @@ const isMixedMediaSection = sectionId === "mixed-media";
             <p class="project-card__hover-descriptor">{descriptor}</p>
           </div>
         </>
-      ) : (
-        <div class="project-card__caption">
-          <h2 class="project-card__caption-title">{title}</h2>
-        </div>
       )}
     </div>
+    {isMixedMediaSection && (
+      <div class="project-card__caption">
+        <h2 class="project-card__caption-title">{title}</h2>
+      </div>
+    )}
   </a>
   {indexLabel && (
     <div class="project-card__meta">
@@ -155,7 +156,9 @@ const isMixedMediaSection = sectionId === "mixed-media";
   }
 
   .project-card__link {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    gap: 0.58rem;
     color: inherit;
     cursor: pointer;
     text-decoration: none;
@@ -244,7 +247,7 @@ const isMixedMediaSection = sectionId === "mixed-media";
   .project-card__caption {
     display: flex;
     justify-content: flex-end;
-    padding-top: 0.58rem;
+    padding-top: 0;
   }
 
   .project-card__caption-title {
@@ -405,7 +408,7 @@ const isMixedMediaSection = sectionId === "mixed-media";
     }
 
     .project-card--mixed-media .project-card__caption {
-      padding-top: 0.46rem;
+      padding-top: 0;
     }
 
     .project-card--mixed-media .project-card__caption-title {

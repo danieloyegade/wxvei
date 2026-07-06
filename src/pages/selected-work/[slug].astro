@@ -19,6 +19,7 @@ export async function getStaticPaths() {
     "two-friends-share-a-walk-at-night",
     "rectangle-with-embellishments",
     "black-union-jack",
+    "lousy-t-shirt-8099e5",
   ];
   const selectedWorkProjectMap = new Map(allProjects.map((project) => [project.slug, project]));
   const bottomSelectedWorkProjects = bottomSelectedWorkSlugs
@@ -69,7 +70,8 @@ interface Props {
 
 const { project, previousProject, nextProject } = Astro.props;
 const { Content } = await project.render();
-const hasProjectBody = project.data.status !== "placeholder" && project.body.trim().length > 0;
+const hasProjectBody =
+  project.data.status !== "placeholder" && (project.body?.trim().length ?? 0) > 0;
 const infoLines = getProjectInfoLines(project);
 const media = getResolvedProjectMedia(project);
 const sectionLinks = project.data.editorial.sections.includes("selected-work")

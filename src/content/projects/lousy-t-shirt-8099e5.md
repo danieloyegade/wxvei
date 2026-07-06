@@ -5,8 +5,8 @@ image: "/projects/mixed-media/lousy-t-shirt/photos/SNELL_12.jpg"
 descriptor: ""
 infoLines:
   - "2026"
-  - "Screen print on Heavyweight cotton"
-  - "Edition 1 of 3"
+  - "Screen print on heavyweight cotton"
+  - "Edition 1/3"
   - "£9,250"
 cursorInfo:
   - "Screen print on Heavyweight cotton."

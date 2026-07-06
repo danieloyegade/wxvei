@@ -2,7 +2,7 @@
 title: "Black Union Jack (2025), Rope on canvas, 150 x 120 cm"
 slug: "black-union-jack"
 image: "/projects/mixed-media/black-union-jack/photos/cover.jpg"
-descriptor: "A dark flag study built from layered gesture and structure."
+descriptor: "A dark flag study."
 detailImages:
   - "/projects/mixed-media/black-union-jack/photos/DSC_9347A.JPG"
   - "/projects/mixed-media/black-union-jack/photos/DSC_1072.JPG"
