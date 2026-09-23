@@ -8,53 +8,51 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 >
   <section class="zealot-page">
     <div class="zealot-page__frame">
-      <div class="zealot-page__layout">
-        <div class="zealot-page__stage">
-          <div id="zealot-game-frame" class="zealot-page__game-frame">
-            <iframe
-              src="https://zealot-of-harpurhey.danieloyegadephoto.workers.dev/"
-              title="Zealot of Harpurhey"
-              loading="lazy"
-              allow="autoplay; fullscreen"
-            ></iframe>
-          </div>
+      <div class="zealot-page__stage">
+        <div id="zealot-game-frame" class="zealot-page__game-frame">
+          <iframe
+            src="https://zealot-of-harpurhey.danieloyegadephoto.workers.dev/"
+            title="Zealot of Harpurhey"
+            loading="lazy"
+            allow="autoplay; fullscreen"
+          ></iframe>
+        </div>
+      </div>
 
-          <div class="zealot-page__about">
-            <p class="zealot-page__info-label">About</p>
-            <p class="zealot-page__info-copy">
-              Zealot of Harpurhey is an upcoming game by Daniel Oyegade, currently in
-              development. Final description to follow.
-            </p>
-          </div>
+      <div class="zealot-page__info" aria-label="Project information">
+        <div class="zealot-page__info-group">
+          <p class="zealot-page__info-label">About</p>
+          <p class="zealot-page__info-copy">
+            Zealot of Harpurhey is an upcoming game by Daniel Oyegade, currently in
+            development. Final description to follow.
+          </p>
         </div>
 
-        <aside class="zealot-page__info" aria-label="Project information">
-          <div class="zealot-page__info-group">
-            <p class="zealot-page__info-label">Controls</p>
+        <div class="zealot-page__info-group">
+          <p class="zealot-page__info-label">Controls</p>
 
-            <div class="zealot-page__controls">
-              <p class="zealot-page__controls-heading">On foot</p>
-              <ul class="zealot-page__controls-list">
-                <li><span class="zealot-page__key">WASD / Arrow keys</span>move</li>
-                <li><span class="zealot-page__key">Shift or Space</span>run</li>
-                <li><span class="zealot-page__key">Pointer drag</span>orbit camera</li>
-                <li><span class="zealot-page__key">C</span>recenter camera</li>
-                <li><span class="zealot-page__key">E</span>contextual action</li>
-              </ul>
-            </div>
-
-            <div class="zealot-page__controls">
-              <p class="zealot-page__controls-heading">On a bike</p>
-              <ul class="zealot-page__controls-list">
-                <li><span class="zealot-page__key">W</span>pedal</li>
-                <li><span class="zealot-page__key">Shift</span>assist</li>
-                <li><span class="zealot-page__key">Space</span>boost</li>
-                <li><span class="zealot-page__key">A / D</span>steer</li>
-                <li><span class="zealot-page__key">S</span>brake</li>
-              </ul>
-            </div>
+          <div class="zealot-page__controls">
+            <p class="zealot-page__controls-heading">On foot</p>
+            <ul class="zealot-page__controls-list">
+              <li><span class="zealot-page__key">WASD / Arrow keys</span>move</li>
+              <li><span class="zealot-page__key">Shift or Space</span>run</li>
+              <li><span class="zealot-page__key">Pointer drag</span>orbit camera</li>
+              <li><span class="zealot-page__key">C</span>recenter camera</li>
+              <li><span class="zealot-page__key">E</span>contextual action</li>
+            </ul>
           </div>
-        </aside>
+
+          <div class="zealot-page__controls">
+            <p class="zealot-page__controls-heading">On a bike</p>
+            <ul class="zealot-page__controls-list">
+              <li><span class="zealot-page__key">W</span>pedal</li>
+              <li><span class="zealot-page__key">Shift</span>assist</li>
+              <li><span class="zealot-page__key">Space</span>boost</li>
+              <li><span class="zealot-page__key">A / D</span>steer</li>
+              <li><span class="zealot-page__key">S</span>brake</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -70,25 +68,16 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     margin: 0 auto;
   }
 
-  .zealot-page__layout {
-    display: grid;
-    gap: 2.5rem;
-  }
-
   .zealot-page__stage {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.4rem;
+    display: grid;
+    justify-items: center;
   }
 
   .zealot-page__game-frame {
-    width: min(76vh, 74vw);
-    aspect-ratio: 1 / 1;
-    max-width: 100%;
+    width: 100%;
+    aspect-ratio: 16 / 9;
     overflow: clip;
-    background: rgba(20, 18, 16, 0.04);
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: #000;
   }
 
   .zealot-page__game-frame iframe {
@@ -98,16 +87,11 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     border: 0;
   }
 
-  .zealot-page__about {
-    width: min(76vh, 74vw);
-    max-width: 100%;
-  }
-
   .zealot-page__info {
     display: grid;
-    gap: 1.6rem;
-    max-width: 34rem;
-    margin: 0 auto;
+    gap: 1.75rem;
+    max-width: 40rem;
+    margin: 2rem auto 0;
   }
 
   .zealot-page__info-group {
@@ -143,6 +127,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   .zealot-page__controls {
     display: grid;
     gap: 0.5rem;
+  }
+
+  .zealot-page__controls + .zealot-page__controls {
+    margin-top: 0.4rem;
   }
 
   .zealot-page__controls-heading {
@@ -181,15 +169,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       padding: 2.25rem 2.5rem 8rem;
     }
 
-    .zealot-page__layout {
-      grid-template-columns: minmax(0, 1.5fr) minmax(15.5rem, 18.25rem);
-      align-items: start;
-      gap: 2.25rem;
-    }
-
     .zealot-page__info {
-      margin: 0;
-      padding-top: 0.16rem;
+      margin-top: 2.5rem;
     }
   }
 
