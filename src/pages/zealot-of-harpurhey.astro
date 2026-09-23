@@ -18,17 +18,17 @@ import BaseLayout from "../layouts/BaseLayout.astro";
               allow="autoplay; fullscreen"
             ></iframe>
           </div>
-        </div>
 
-        <aside class="zealot-page__info" aria-label="Project information">
-          <div class="zealot-page__info-group">
+          <div class="zealot-page__about">
             <p class="zealot-page__info-label">About</p>
             <p class="zealot-page__info-copy">
               Zealot of Harpurhey is an upcoming game by Daniel Oyegade, currently in
               development. Final description to follow.
             </p>
           </div>
+        </div>
 
+        <aside class="zealot-page__info" aria-label="Project information">
           <div class="zealot-page__info-group">
             <p class="zealot-page__info-label">Controls</p>
 
@@ -77,11 +77,13 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
   .zealot-page__stage {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.4rem;
   }
 
   .zealot-page__game-frame {
-    width: min(70vh, 70vw);
+    width: min(76vh, 74vw);
     aspect-ratio: 1 / 1;
     max-width: 100%;
     overflow: clip;
@@ -94,6 +96,11 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     width: 100%;
     height: 100%;
     border: 0;
+  }
+
+  .zealot-page__about {
+    width: min(76vh, 74vw);
+    max-width: 100%;
   }
 
   .zealot-page__info {
@@ -175,13 +182,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     }
 
     .zealot-page__layout {
-      grid-template-columns: minmax(0, 1.35fr) minmax(15.5rem, 18.25rem);
+      grid-template-columns: minmax(0, 1.5fr) minmax(15.5rem, 18.25rem);
       align-items: start;
       gap: 2.25rem;
-    }
-
-    .zealot-page__stage {
-      justify-content: center;
     }
 
     .zealot-page__info {
