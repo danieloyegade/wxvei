@@ -31,9 +31,28 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
           <div class="zealot-page__info-group">
             <p class="zealot-page__info-label">Controls</p>
-            <p class="zealot-page__info-copy zealot-page__info-copy--placeholder">
-              Controls will be listed here once the game defines its input scheme.
-            </p>
+
+            <div class="zealot-page__controls">
+              <p class="zealot-page__controls-heading">On foot</p>
+              <ul class="zealot-page__controls-list">
+                <li><span class="zealot-page__key">WASD / Arrow keys</span>move</li>
+                <li><span class="zealot-page__key">Shift or Space</span>run</li>
+                <li><span class="zealot-page__key">Pointer drag</span>orbit camera</li>
+                <li><span class="zealot-page__key">C</span>recenter camera</li>
+                <li><span class="zealot-page__key">E</span>contextual action</li>
+              </ul>
+            </div>
+
+            <div class="zealot-page__controls">
+              <p class="zealot-page__controls-heading">On a bike</p>
+              <ul class="zealot-page__controls-list">
+                <li><span class="zealot-page__key">W</span>pedal</li>
+                <li><span class="zealot-page__key">Shift</span>assist</li>
+                <li><span class="zealot-page__key">Space</span>boost</li>
+                <li><span class="zealot-page__key">A / D</span>steer</li>
+                <li><span class="zealot-page__key">S</span>brake</li>
+              </ul>
+            </div>
           </div>
         </aside>
       </div>
@@ -112,6 +131,42 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   .zealot-page__info-copy--placeholder {
     color: var(--subtle-foreground);
     font-style: italic;
+  }
+
+  .zealot-page__controls {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .zealot-page__controls-heading {
+    margin: 0;
+    color: var(--page-foreground);
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .zealot-page__controls-list {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .zealot-page__controls-list li {
+    color: var(--muted-foreground);
+    font-family: var(--font-sans);
+    font-size: clamp(0.85rem, 0.8rem + 0.1vw, 0.92rem);
+    line-height: 1.5;
+  }
+
+  .zealot-page__key {
+    display: inline-block;
+    min-width: 8.5rem;
+    margin-right: 0.5rem;
+    color: var(--page-foreground);
+    font-weight: 500;
   }
 
   @media (min-width: 48rem) {
